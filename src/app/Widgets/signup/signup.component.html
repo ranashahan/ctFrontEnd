@@ -1,0 +1,202 @@
+<div
+  class="modal fade"
+  id="signupModel"
+  tabindex="-1"
+  aria-labelledby="signupModelLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info-subtle">
+        <h6 class="modal-title" id="signupModelLabel">SignUp Form</h6>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          data-bs-toggle
+          aria-label="Close"
+        ></button>
+      </div>
+      <app-toast></app-toast>
+      <div class="modal-body">
+        <form [formGroup]="formSignUp">
+          <div class="row">
+            <div class="col-12">
+              <div class="form-group">
+                <label
+                  for="singupname"
+                  class="form-label control-label required"
+                  >Full Name</label
+                >
+                <input
+                  type="text"
+                  name="singupname"
+                  class="form-control form-control-sm"
+                  id="singupname"
+                  placeholder="Muhammad Ahmed"
+                  formControlName="name"
+                  required
+                />
+                @if (formSignUp.controls['name'].errors &&
+                formSignUp.controls['name'].touched) {
+                <span class="text-danger small">This field is required</span>
+                }
+              </div>
+            </div>
+          </div>
+          <div class="row mt-2">
+            <div class="col-6">
+              <label for="singupmobile" class="form-label">Cell Number</label>
+              <input
+                type="text"
+                name="singupmobile"
+                class="form-control form-control-sm"
+                id="singupmobile"
+                placeholder="0300-333-3333"
+                formControlName="mobile"
+              />
+            </div>
+            <div class="col-6">
+              <label for="singupcompany" class="form-label">Company</label>
+              <input
+                type="text"
+                name="singupcompany"
+                class="form-control form-control-sm"
+                id="singupcompany"
+                placeholder="Consult & Train"
+                formControlName="company"
+              />
+            </div>
+          </div>
+          <div class="row mt-2">
+            <div class="col-6">
+              <div class="form-group">
+                <label
+                  for="singupusername"
+                  class="form-label control-label required"
+                  >UserName</label
+                >
+                <input
+                  type="text"
+                  name="singupusername"
+                  class="form-control form-control-sm"
+                  id="singupusername"
+                  placeholder="muhammad.ahmed"
+                  formControlName="username"
+                  required
+                />
+                @if (formSignUp.controls['username'].errors &&
+                formSignUp.controls['username'].touched) {
+                <span class="text-danger small">This field is required</span>
+                }
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="form-group">
+                <label
+                  for="singuppassword"
+                  class="form-label control-label required"
+                  >Password</label
+                >
+                <input
+                  type="password"
+                  name="singuppassword"
+                  class="form-control form-control-sm"
+                  id="singuppassword"
+                  placeholder="Password"
+                  formControlName="password"
+                  required
+                />
+                @if (formSignUp.controls['password'].errors &&
+                formSignUp.controls['password'].touched) {
+                <span class="text-danger small">This field is required</span>
+                }
+              </div>
+            </div>
+          </div>
+          <div class="row mt-2">
+            <div class="col-12">
+              <div class="form-group">
+                <label
+                  for="singupemail"
+                  class="form-label control-label required"
+                  >Email Address</label
+                >
+                <input
+                  type="email"
+                  name="singupemail"
+                  class="form-control form-control-sm"
+                  id="singupemail"
+                  placeholder="eg@example.com"
+                  formControlName="email"
+                  required
+                />
+                @if (formSignUp.controls['email'].invalid &&
+                formSignUp.controls['email'].touched) {
+                @if(formSignUp.controls['email'].errors?.['email']) {
+                <span class="text-danger small">Email is invalid</span>
+                }@else{
+                <span class="text-danger small">This field is required</span>
+                } }
+              </div>
+            </div>
+          </div>
+          <div class="row mt-2">
+            <div class="col-6">
+              <label for="singupdesignation" class="form-label"
+                >Designation</label
+              >
+              <input
+                type="text"
+                name="singupdesignation"
+                class="form-control form-control-sm"
+                id="singupdesignation"
+                placeholder="Sr. Safety Engr."
+                formControlName="designation"
+              />
+            </div>
+            <div class="col-6">
+              <div class="form-group">
+                <label
+                  for="singuprole"
+                  class="form-label control-label required"
+                  >Role</label
+                >
+                <select
+                  id="singuprole"
+                  name="singuprole"
+                  class="form-select form-select-sm"
+                  aria-label="Default select example"
+                  formControlName="role"
+                  required
+                >
+                  <option disabled value="null">Select User Role</option>
+                  @for (item of roles(); track $index) {
+                  <option>{{ item }}</option>
+                  }
+                </select>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer bg-info-subtle">
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          data-bs-dismiss="modal"
+        >
+          Close
+        </button>
+        <button
+          type="submit"
+          class="btn btn-outline-secondary"
+          [disabled]="formSignUp.invalid"
+          (click)="onSignUp()"
+        >
+          Save changes
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

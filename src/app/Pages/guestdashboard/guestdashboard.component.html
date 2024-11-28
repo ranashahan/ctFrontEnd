@@ -1,0 +1,203 @@
+<div class="container-fluid">
+  <hr />
+  <div class="row">
+    <div class="col-auto">
+      <img
+        src="img/allassessment.jpg"
+        alt="Dashboard"
+        width="180px"
+        height="150px"
+      />
+    </div>
+    <div class="col-auto">
+      <h2>Dashboard</h2>
+      <p>
+        You can search driver driver defencive course by driver's N.I.C # (if
+        needed):
+      </p>
+    </div>
+  </div>
+  <hr />
+  <app-toast></app-toast>
+  <div class="bg-warning bg-opacity-25">
+    <form
+      [formGroup]="formSession"
+      class="row row-cols-lg-auto g-3 align-items-end ms-1"
+    >
+      <div class="col-auto">
+        <label class="label ms-1 strong required" for="inlineFormInputGroupNic"
+          >Driver NIC</label
+        >
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control form-control-sm my-inputextend"
+            id="inlineFormInputGroupNic"
+            placeholder="xxxxx-xxxxxxx-x"
+            formControlName="nic"
+          />
+        </div>
+      </div>
+      <div class="col-auto">
+        <label class="label ms-1 strong" for="inlineFormInputGroupSessionDate"
+          >Session/Road Date</label
+        >
+        <div class="input-group">
+          <input
+            type="date"
+            class="form-control form-control-sm my-input"
+            id="inlineFormInputGroupSessionDate"
+            formControlName="sessiondate"
+          />
+        </div>
+      </div>
+      <div class="col-auto">
+        <label class="label ms-1 strong" for="inlineFormSelectLocation"
+          >Location</label
+        >
+        <select
+          class="form-select form-select-sm"
+          id="inlineFormSelectLocation"
+          formControlName="locationid"
+        >
+          <option disabled value="null">-----Select-----</option>
+          @for (item of locations(); track $index) {
+          <option [value]="item.id">{{ item.name }}</option>
+          }
+        </select>
+      </div>
+      <div class="col-auto">
+        <label class="label ms-1 strong" for="inlineFormSelectResult"
+          >Result</label
+        >
+        <select
+          class="form-select form-select-sm"
+          id="inlineFormSelectResult"
+          formControlName="resultid"
+        >
+          <option disabled value="null">-----Select-----</option>
+          @for (item of results(); track $index) {
+          <option [value]="item.id">{{ item.name }}</option>
+          }
+        </select>
+      </div>
+      <div class="col-auto">
+        <label class="label ms-1 strong" for="inlineFormSelectStage"
+          >Stage</label
+        >
+        <select
+          class="form-select form-select-sm"
+          id="inlineFormSelectStage"
+          formControlName="stageid"
+        >
+          <option disabled value="null">-----Select-----</option>
+          @for (item of stages(); track $index) {
+          <option [value]="item.id">{{ item.name }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="col-auto">
+        <button
+          type="submit"
+          class="btn btn-primary btn-sm"
+          [disabled]="formSession.invalid"
+          (click)="getFillterredData()"
+        >
+          <i class="fa-brands fa-searchengin me-1"></i>Search
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-secondary btn-sm ms-1"
+          (click)="formRest()"
+        >
+          <i class="fa-solid fa-window-restore me-1"></i>Reset
+        </button>
+      </div>
+    </form>
+    <hr />
+  </div>
+  <hr />
+  <div class="table-responsive">
+    <table
+      class="table table-hover table-bordered fs-7"
+      id="allassessment-table"
+    >
+      <thead class="table-warning">
+        <tr>
+          <th>#</th>
+          <th>Session Name</th>
+          <th>Session Date</th>
+          <th>Driver Name</th>
+          <th>Driver NIC</th>
+          <th>Contractor</th>
+          <th>Location</th>
+          <th>Result</th>
+          <th>Stage</th>
+          <th>Score</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of sessions(); track $index) {
+        <tr>
+          <td>
+            <div>
+              {{ $index + 1 }}
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ item.name }}
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ item.sessiondate | date }}
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ item.drivername }}
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ item.nic }}
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ getContractorName(item.contractorid) }}
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ getLocationName(item.locationid) }}
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ getResultName(item.resultid) }}
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ getStageName(item.stageid) }}
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ item.totalscore }}
+            </div>
+          </td>
+        </tr>
+        }@empty {
+        <tr>
+          <p>Please update your search criteria for items to be displayed</p>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

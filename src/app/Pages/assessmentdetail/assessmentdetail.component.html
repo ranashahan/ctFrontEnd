@@ -1,0 +1,603 @@
+<div class="container-fluid">
+  <div
+    *ngIf="isLoading"
+    class="d-flex justify-content-center align-items-center"
+    style="height: 100vh"
+  >
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
+  <div *ngIf="!isLoading">
+    <app-toast></app-toast>
+
+    <div class="bg-success bg-opacity-50 fs-7 fw-medium mt-3">
+      <h6 class="ms-3">Driver Information</h6>
+
+      <form
+        [formGroup]="formDriver"
+        class="row row-cols-lg-auto g-3 align-items-end ms-1"
+      >
+        <div class="col-auto required">
+          <label class="label ms-1" for="inlineFormInputGroupid"
+            >Driver ID</label
+          >
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control form-control-sm my-input"
+              id="inlineFormInputGroupid"
+              placeholder="122323"
+              formControlName="id"
+            />
+          </div>
+        </div>
+        <div class="col-auto">
+          <label class="label ms-1" for="inlineFormInputGroupname"
+            >Driver Name</label
+          >
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              id="inlineFormInputGroupname"
+              placeholder="Muhammad Ahmed"
+              formControlName="name"
+            />
+          </div>
+        </div>
+        <div class="col-auto">
+          <label class="label ms-1" for="inlineFormInputGroupNic"
+            >Driver NIC</label
+          >
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              id="inlineFormInputGroupNic"
+              placeholder="xxxxx-xxxxxxx-x"
+              formControlName="nic"
+            />
+          </div>
+        </div>
+        <div class="col-auto">
+          <label class="label ms-1" for="inlineFormInputGroupNICExpiry"
+            >Driver NIC Expiry</label
+          >
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control form-control-sm my-input"
+              id="inlineFormInputGroupNICExpiry"
+              placeholder="mm/dd/yyyy"
+              formControlName="nicexpiry"
+            />
+          </div>
+        </div>
+        <div class="col-auto">
+          <label class="label ms-1" for="inlineFormInputGroupDOB"
+            >Driver DOB</label
+          >
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control form-control-sm my-input"
+              id="inlineFormInputGroupDOB"
+              placeholder="mm/dd/yyyy"
+              formControlName="dob"
+            />
+          </div>
+        </div>
+        <div class="col-auto">
+          <label class="label ms-1" for="inlineFormInputGroupAGE"
+            >Driver Age</label
+          >
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control form-control-sm my-input"
+              id="inlineFormInputGroupAGE"
+              placeholder="22"
+              formControlName="age"
+            />
+          </div>
+        </div>
+        <div class="col-auto">
+          <label class="label ms-1" for="inlineFormInputGroupLicense"
+            >License #</label
+          >
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              id="inlineFormInputGroupLicense"
+              placeholder="AA-xxxxx"
+              formControlName="licensenumber"
+            />
+          </div>
+        </div>
+        <div class="col-auto">
+          <label class="label ms-1" for="inlineFormInputGroupLicenseExpiry"
+            >License Expiry</label
+          >
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control form-control-sm my-input"
+              id="inlineFormInputGroupLicenseExpiry"
+              formControlName="licenseexpiry"
+              placeholder="mm/dd/yyyy"
+            />
+          </div>
+        </div>
+        <div class="col-auto">
+          <label class="label ms-1" for="inlineFormInputGroupPermit"
+            >Permit #</label
+          >
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              id="inlineFormInputGroupPermit"
+              placeholder="CONT-xxxx"
+              formControlName="permitnumber"
+            />
+          </div>
+        </div>
+        <div class="col-auto">
+          <label class="label ms-1" for="inlineFormInputGroupPermitExpiry"
+            >Permit Expiry</label
+          >
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              id="inlineFormInputGroupPermitExpiry"
+              formControlName="permitexpiry"
+              placeholder="mm/dd/yyyy"
+            />
+          </div>
+        </div>
+        <div class="col-auto">
+          <label class="label ms-1" for="inlineFormInputGroupClient"
+            >Clients</label
+          >
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              id="inlineFormInputGroupClient"
+              placeholder="U.E.P."
+              formControlName="clientName"
+            />
+          </div>
+        </div>
+        <div class="col-auto">
+          <label class="label ms-1" for="inlineFormInputGroupContractor"
+            >Contractor</label
+          >
+          <div class="input-group">
+            <select
+              class="form-select form-select-sm"
+              id="inlineFormInputGroupContractor"
+              formControlName="contractorid"
+            >
+              @for (item of contractors(); track $index) {
+              <option [value]="item.id">
+                {{ item.name }}
+              </option>
+              }
+            </select>
+          </div>
+        </div>
+      </form>
+      <hr />
+    </div>
+
+    <form
+      *ngIf="assessmentForm && categoriesArray"
+      [formGroup]="assessmentForm"
+    >
+      <div class="bg-warning bg-opacity-25 fs-7 fw-medium">
+        <div class="row row-cols-lg-auto g-3 justify-content-start ms-1">
+          <div class="col-auto required">
+            <label class="label ms-1" for="inlineFormInputGroupSessionName"
+              >SessionID</label
+            >
+            <div class="input-group">
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                id="inlineFormInputGroupSessionName"
+                formControlName="sessionName"
+                placeholder="UEP-LPG-2308-01-01"
+                required
+              />
+            </div>
+          </div>
+          <div class="col-auto required">
+            <label class="label ms-1" for="inlineFormInputGroupSessionDate"
+              >Session/Road Test Date</label
+            >
+            <div class="input-group">
+              <input
+                type="date"
+                class="form-control form-control-sm"
+                id="inlineFormInputGroupSessionDate"
+                formControlName="sessionDate"
+                placeholder="mm/dd/yyyy"
+                required
+              />
+            </div>
+          </div>
+          <div class="col-auto">
+            <label class="label ms-1" for="inlineFormInputGroupClassDate"
+              >Class Room Date</label
+            >
+            <div class="input-group">
+              <input
+                type="date"
+                class="form-control form-control-sm"
+                id="inlineFormInputGroupClassDate"
+                formControlName="classdate"
+                placeholder="mm/dd/yyyy"
+              />
+            </div>
+          </div>
+          <div class="col-auto">
+            <label class="label ms-1" for="inlineFormInputGroupyardTestDate"
+              >Yard Test Date</label
+            >
+            <div class="input-group">
+              <input
+                type="date"
+                class="form-control form-control-sm"
+                id="inlineFormInputGroupyardTestDate"
+                formControlName="yarddate"
+                placeholder="mm/dd/yyyy"
+              />
+            </div>
+          </div>
+          <div class="col-auto">
+            <label class="label ms-1" for="inlineFormInputGroupRoute"
+              >Route</label
+            >
+            <div class="input-group">
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                id="inlineFormInputGroupRoute"
+                formControlName="route"
+                placeholder="Malir Road"
+              />
+            </div>
+          </div>
+          <div class="col-auto">
+            <label class="label ms-1" for="inlineFormInputGroupRoadTraffic"
+              >Road Traffic</label
+            >
+            <div class="input-group">
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                id="inlineFormInputGroupRoadTraffic"
+                formControlName="traffic"
+                placeholder="Highway"
+              />
+            </div>
+          </div>
+          <div class="col-auto">
+            <label class="label ms-1" for="inlineFormInputGroupWeather"
+              >Weather</label
+            >
+            <div class="input-group">
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                id="inlineFormInputGroupSessionDate"
+                formControlName="weather"
+                placeholder="Sunny"
+              />
+            </div>
+          </div>
+          <div class="col-auto">
+            <label class="label ms-1" for="inlineFormInputGroupquizScore"
+              >Quiz Score</label
+            >
+            <div class="input-group">
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                id="inlineFormInputGroupquizScore"
+                formControlName="quizscore"
+                placeholder="00"
+              />
+            </div>
+          </div>
+          <div class="col-auto">
+            <label class="label ms-1" for="inlineFormInputGroupResult"
+              >Result</label
+            >
+            <div class="input-group">
+              <select
+                class="form-select form-select-sm"
+                id="inlineFormInputGroupResult"
+                formControlName="resultId"
+              >
+                <option disabled value="null">-----Select-----</option>
+                @for (item of results(); track $index) {
+                <option [value]="item.id">{{ item.name }}</option>
+                }
+              </select>
+            </div>
+          </div>
+          <div class="col-auto">
+            <label class="label ms-1" for="inlineFormInputGroupLocation"
+              >Location</label
+            >
+            <div class="input-group">
+              <select
+                class="form-select form-select-sm"
+                id="inlineFormInputGroupLocation"
+                formControlName="locationId"
+              >
+                <option disabled value="null">-----Select-----</option>
+                @for (item of locations(); track $index) {
+                <option [value]="item.id">{{ item.name }}</option>
+                }
+              </select>
+            </div>
+          </div>
+          <div class="col-auto">
+            <label class="label ms-1" for="inlineFormInputGroupStage"
+              >Stage</label
+            >
+            <div class="input-group">
+              <select
+                class="form-select form-select-sm"
+                id="inlineFormInputGroupStage"
+                formControlName="stageId"
+              >
+                <option disabled value="null">-----Select-----</option>
+                @for (item of stages(); track $index) {
+                <option [value]="item.id">{{ item.name }}</option>
+                }
+              </select>
+            </div>
+          </div>
+          <div class="col-auto">
+            <label class="label ms-1" for="inlineFormInputGroupTitle"
+              >Title</label
+            >
+            <div class="input-group">
+              <select
+                class="form-select form-select-sm"
+                id="inlineFormInputGroupTitle"
+                formControlName="titleId"
+              >
+                <option disabled value="null">-----Select-----</option>
+                @for (item of titles(); track $index) {
+                <option [value]="item.id">{{ item.name }}</option>
+                }
+              </select>
+            </div>
+          </div>
+          <div class="col-auto">
+            <label class="label ms-1" for="inlineFormInputGroupVehicle"
+              >Vehicle</label
+            >
+            <div class="input-group">
+              <select
+                class="form-select form-select-sm"
+                id="inlineFormInputGroupVehicle"
+                formControlName="vehicleId"
+              >
+                <option disabled value="null">-----Select-----</option>
+                @for (item of vehicles(); track $index) {
+                <option [value]="item.id">{{ item.name }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="col-auto required">
+            <label class="label ms-1" for="inlineFormInputGroupTrainer"
+              >Trainer</label
+            >
+            <select
+              class="form-select form-select-sm"
+              id="inlineFormInputGroupTrainer"
+              formControlName="trainerid"
+            >
+              <option disabled value="null">-----Select-----</option>
+              @for (item of trainers(); track $index) {
+              <option [value]="item.id">{{ item.name }}</option>
+              }
+            </select>
+          </div>
+        </div>
+        <hr />
+      </div>
+      <div
+        *ngFor="let category of categoriesArray.controls; let i = index"
+        [formGroup]="$any(category)"
+        class="border"
+      >
+        <div class="form-check bg-warning bg-opacity-50">
+          <input
+            type="checkbox"
+            class="form-check-input"
+            [id]="'category' + i"
+            formControlName="selected"
+          />
+          <label [for]="'category' + i" class="form-check-label">
+            {{ categories()[i].name }}
+          </label>
+        </div>
+
+        <!-- Show assessments if the category is selected -->
+        <div
+          *ngIf="category.get('selected')?.value"
+          class="table-responsive mt-2"
+        >
+          <table class="table table-sm table-hover table-bordered fs-7">
+            <thead class="table-warning">
+              <tr>
+                <th>Assessment</th>
+                <th>Ini</th>
+                <th>Initial Assessment</th>
+                <th>Middle Assessment</th>
+                <th>Final Assessment</th>
+              </tr>
+            </thead>
+            <tbody class="table-group-divider" formArrayName="assessments">
+              <tr
+                *ngFor="
+                  let assessmentControl of getAssessments(category).controls;
+                  let j = index;
+                  trackBy: trackByIndex
+                "
+                [formGroup]="$any(assessmentControl)"
+              >
+                <td class="text-sm-end">
+                  {{ assessmentControl.get("name")?.value }}
+                </td>
+                <td class="text-sm-end" style="width: 30px">
+                  {{ categories()[i].initials
+                  }}{{ assessmentControl.get("initials")?.value }}
+                </td>
+                <td style="width: 150px">
+                  <div
+                    class="form-check form-check-inline radio-group"
+                    *ngFor="let score of [0, 1, 2, 3]; let idx = index"
+                  >
+                    <input
+                      type="radio"
+                      class="form-check-input"
+                      [id]="'scoreInitial' + j + idx"
+                      [value]="score"
+                      formControlName="scoreInitial"
+                    />
+                    <label
+                      [for]="'scoreInitial' + j + idx"
+                      class="form-check-label"
+                    >
+                      {{ score }}
+                    </label>
+                  </div>
+                </td>
+                <td style="width: 150px">
+                  <div
+                    class="form-check form-check-inline radio-group"
+                    *ngFor="let score of [0, 1, 2, 3]; let idx = index"
+                  >
+                    <input
+                      type="radio"
+                      class="form-check-input"
+                      [id]="'scoreMiddle' + j + idx"
+                      [value]="score"
+                      formControlName="scoreMiddle"
+                    />
+                    <label
+                      [for]="'scoreInitial' + j + idx"
+                      class="form-check-label"
+                    >
+                      {{ score }}
+                    </label>
+                  </div>
+                </td>
+                <td style="width: 150px">
+                  <div
+                    class="form-check form-check-inline radio-group"
+                    *ngFor="let score of [0, 1, 2, 3]; let idx = index"
+                  >
+                    <input
+                      type="radio"
+                      class="form-check-input"
+                      [id]="'scoreFinal' + j + idx"
+                      [value]="score"
+                      formControlName="scoreFinal"
+                      [checked]="
+                        assessmentControl.get('scoreFinal')?.value === score
+                      "
+                    />
+                    <label
+                      [for]="'scoreInitial' + j + idx"
+                      class="form-check-label"
+                    >
+                      {{ score }}
+                    </label>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-5 ml-auto">
+          <button
+            class="btn btn-outline-warning btn-sm ms-1"
+            type="button"
+            routerLink="/addassessment"
+          >
+            <i class="fa-solid fa-circle-plus"></i>
+            Add Assessment
+          </button>
+          <button
+            class="btn btn-outline-warning btn-sm ms-1"
+            type="button"
+            (click)="printPage()"
+          >
+            <i class="fa-solid fa-print"></i>
+            Print
+          </button>
+          @if (isEdit) {
+          <button
+            id="savebtn"
+            class="btn btn-outline-warning btn-sm ms-1"
+            type="submit"
+            [disabled]="assessmentForm.invalid"
+            (click)="updateAssessmentForm(); toggleEdit()"
+          >
+            <i class="fa-regular fa-floppy-disk"></i>
+            @if (isAPICallInProgress()) {
+            <span
+              class="spinner-border spinner-border-sm"
+              aria-hidden="true"
+            ></span>
+            <span role="status">Loading...</span>
+            } Save
+          </button>
+
+          <button
+            type="reset"
+            class="btn btn-outline-warning btn-sm ms-1"
+            (click)="resetForm()"
+          >
+            <i class="fa-solid fa-window-restore"></i>
+            Reset
+          </button>
+          <button
+            class="btn btn-outline-warning btn-sm ms-1"
+            (click)="toggleEdit()"
+          >
+            <i class="fa-regular fa-rectangle-xmark"></i>
+            cancel
+          </button>
+          }@else{
+          <button
+            class="btn btn-outline-warning btn-sm ms-1"
+            type="button"
+            (click)="toggleEdit()"
+          >
+            <i class="far fa-edit"></i>
+
+            {{ "Edit" }}
+          </button>
+          }
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

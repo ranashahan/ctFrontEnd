@@ -1,0 +1,95 @@
+<div class="container-fluid margintop">
+  <hr />
+  <div class="row">
+    <div class="col-auto">
+      <img
+        src="img/configuration.jpg"
+        alt="Configure Assessment"
+        width="700px"
+        height="200px"
+      />
+    </div>
+    <div class="col-3">
+      <h2>Assessment Configuration</h2>
+      <p>
+        You can select it my navigating tabs and add - update - delete (if
+        needed):
+      </p>
+    </div>
+  </div>
+  <hr />
+  <ul class="nav nav-tabs nav-fill" id="crudTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button
+        class="nav-link active"
+        id="tab1-tab"
+        data-bs-toggle="tab"
+        data-bs-target="#tab1"
+        type="button"
+        role="tab"
+        aria-controls="tab1"
+        aria-selected="true"
+      >
+        Primary Category
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button
+        class="nav-link"
+        id="tab2-tab"
+        data-bs-toggle="tab"
+        data-bs-target="#tab2"
+        type="button"
+        role="tab"
+        aria-controls="tab2"
+        aria-selected="false"
+      >
+        Secondary Category
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button
+        class="nav-link"
+        id="tab3-tab"
+        data-bs-toggle="tab"
+        data-bs-target="#tab3"
+        type="button"
+        role="tab"
+        aria-controls="tab3"
+        aria-selected="false"
+      >
+        Activities
+      </button>
+    </li>
+  </ul>
+
+  <div class="tab-content" id="crudTabsContent">
+    <div
+      class="tab-pane fade show active"
+      id="tab1"
+      role="tabpanel"
+      aria-labelledby="tab1-tab"
+    >
+      <!-- Content for Tab 1 -->
+      <app-mastercategory></app-mastercategory>
+    </div>
+    <div
+      class="tab-pane fade"
+      id="tab2"
+      role="tabpanel"
+      aria-labelledby="tab2-tab"
+    >
+      <!-- Content for Tab 2 -->
+      <app-slavecategory></app-slavecategory>
+    </div>
+    <div
+      class="tab-pane fade"
+      id="tab3"
+      role="tabpanel"
+      aria-labelledby="tab3-tab"
+    >
+      <!-- Content for Tab 3 -->
+      <app-activities></app-activities>
+    </div>
+  </div>
+</div>

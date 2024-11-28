@@ -1,0 +1,200 @@
+<div class="container-fluid">
+  <hr />
+  <div class="row">
+    <div class="col-auto">
+      <img src="img/vehicle.jpg" alt="Vehicle" width="180px" height="150px" />
+    </div>
+    <div class="col-auto">
+      <h2>Vehicles</h2>
+      <p>You can select it my navigating one by one and edit it (if needed):</p>
+    </div>
+  </div>
+  <hr />
+  <app-toast></app-toast>
+  <button
+    class="btn btn-sm btn-outline-secondary float-end"
+    (click)="executeExport()"
+    title="Export to Excel"
+  >
+    <i class="fa-solid fa-file-excel me-1"></i>Export
+  </button>
+  <button
+    class="btn btn-sm btn-outline-secondary float-end me-1"
+    title="Add new"
+    data-bs-toggle="modal"
+    data-bs-target="#vehicleSaveModal"
+    (click)="formRest()"
+  >
+    <i class="fa-solid fa-plus me-1"></i>Add
+  </button>
+  <table
+    class="table table-hover table-bordered table-responsive-md"
+    id="vehicle-table"
+  >
+    <thead class="table-info">
+      <tr>
+        <th>#</th>
+        <th>ID</th>
+        <th>Vehicle Name</th>
+        <th>Vehicle Description</th>
+        <th>Created By</th>
+        <th>Created Date</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let vehicle of vehicles(); let i = index">
+        <td class="col col-lg-1">{{ i + 1 }}</td>
+        <td>
+          <div>
+            {{ vehicle.id }}
+          </div>
+        </td>
+        <td>
+          <div *ngIf="vehicle.isEdit">
+            <input
+              type="text"
+              [(ngModel)]="vehicle.name"
+              class="form-control"
+            />
+          </div>
+          <div *ngIf="!vehicle.isEdit">
+            {{ vehicle.name }}
+          </div>
+        </td>
+        <td>
+          <div *ngIf="vehicle.isEdit">
+            <input
+              type="text"
+              [(ngModel)]="vehicle.description"
+              class="form-control"
+            />
+          </div>
+          <div *ngIf="!vehicle.isEdit">
+            {{ vehicle.description }}
+          </div>
+        </td>
+        <td>
+          <div>
+            {{ vehicle.createdby }}
+          </div>
+        </td>
+        <td>
+          <div>
+            {{ vehicle.created_at | date }}
+          </div>
+        </td>
+        <td class="col col-lg-2">
+          <div *ngIf="vehicle.isEdit">
+            <button
+              class="btn btn-sm btn-outline-primary"
+              (click)="
+                update(vehicle.id, vehicle.name, vehicle.description);
+                vehicle.isEdit = false
+              "
+            >
+              <i class="fa-regular fa-floppy-disk"></i>
+              save
+            </button>
+            <button
+              class="btn btn-sm btn-outline-primary ms-1"
+              (click)="vehicle.isEdit = false"
+            >
+              <i class="fa-regular fa-rectangle-xmark"></i>
+              cancel
+            </button>
+          </div>
+          <div *ngIf="!vehicle.isEdit">
+            <button
+              class="btn btn-sm btn-outline-primary"
+              (click)="onEdit(vehicle)"
+            >
+              <i class="far fa-edit"></i>
+              edit
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr />
+  <!-- Modal -->
+  <div
+    class="modal fade"
+    id="vehicleSaveModal"
+    tabindex="-1"
+    aria-labelledby="exampleModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-info-subtle">
+          <h6 class="modal-title" id="exampleModalLabel">Add New Vehicle</h6>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="formSaveVehicle">
+            <div class="row">
+              <div class="col-12">
+                <label for="vehicle" class="form-label required"
+                  >Vehicle Name</label
+                >
+                <input
+                  type="text"
+                  name="vehicle"
+                  class="form-control"
+                  id="vehicle"
+                  placeholder="LTV"
+                  formControlName="name"
+                  required
+                />
+              </div>
+              <div class="col-12">
+                <label for="description" class="form-label"
+                  >Vehicle Description</label
+                >
+                <input
+                  type="text"
+                  name="description"
+                  class="form-control"
+                  id="description"
+                  placeholder="Vehicle Description"
+                  formControlName="description"
+                />
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer bg-info-subtle">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Close
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            (click)="
+              create(
+                formSaveVehicle.value.name,
+                formSaveVehicle.value.description
+              )
+            "
+            [disabled]="formSaveVehicle.invalid"
+            data-bs-dismiss="modal"
+          >
+            Save changes
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

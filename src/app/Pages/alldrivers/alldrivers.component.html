@@ -1,0 +1,174 @@
+<div class="container-fluid">
+  <app-toast></app-toast>
+  <hr />
+  <div class="row">
+    <div class="col-auto">
+      <img
+        src="img/alldriver.png"
+        alt="AllDrivers"
+        width="180px"
+        height="150px"
+      />
+    </div>
+    <div class="col-auto">
+      <h2>All Drivers</h2>
+      <p>You can select it my navigating one by one and edit it (if needed):</p>
+    </div>
+  </div>
+  <hr />
+  <div class="bg-success bg-opacity-50">
+    <form
+      [formGroup]="formSaveDrivers"
+      class="row row-cols-lg-auto g-3 align-items-end ms-1"
+    >
+      <div class="col-auto">
+        <label class="label ms-1 strong" for="inlineFormInputGroupname"
+          >Driver Name</label
+        >
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            id="inlineFormInputGroupname"
+            placeholder="Muhammad Ahmed"
+            formControlName="name"
+          />
+        </div>
+      </div>
+      <div class="col-auto">
+        <label class="label ms-1 strong" for="inlineFormInputGroupNic"
+          >Driver NIC</label
+        >
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            id="inlineFormInputGroupNic"
+            placeholder="xxxxx-xxxxxxx-x"
+            formControlName="nic"
+          />
+        </div>
+      </div>
+      <div class="col-auto">
+        <label class="label ms-1 strong" for="inlineFormInputGroupLicense"
+          >License #</label
+        >
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            id="inlineFormInputGroupLicense"
+            placeholder="AA-xxxxx"
+            formControlName="licensenumber"
+          />
+        </div>
+      </div>
+      <div class="col-auto">
+        <label class="label ms-1 strong" for="inlineFormInputGroupPermit"
+          >Permit #</label
+        >
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            id="inlineFormInputGroupPermit"
+            placeholder="CONT-xxxx"
+            formControlName="permitnumber"
+          />
+        </div>
+      </div>
+      <div class="col-auto">
+        <label class="label ms-1 strong" for="inlineFormInputGroupExpiry"
+          >Permit Expiry</label
+        >
+        <div class="input-group">
+          <input
+            type="date"
+            class="form-control form-control-sm"
+            id="inlineFormInputGroupExpiry"
+            formControlName="permitexpiry"
+          />
+        </div>
+      </div>
+
+      <div class="col-auto">
+        <label class="label ms-1 strong" for="inlineFormSelectPref"
+          >Contractor</label
+        >
+        <select
+          class="form-select form-select-sm"
+          id="inlineFormSelectPref"
+          formControlName="contractorid"
+        >
+          <option disabled value="null">Select Contractor name</option>
+          <option *ngFor="let group of contractors()" [value]="group.id">
+            {{ group.name }}
+          </option>
+        </select>
+      </div>
+
+      <div class="col-auto">
+        <button
+          type="submit"
+          class="btn btn-success btn-sm"
+          (click)="getFillterredData()"
+        >
+          <i class="fa-brands fa-searchengin me-1"></i>Search
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-secondary btn-sm ms-1"
+          (click)="formRest()"
+        >
+          <i class="fa-solid fa-window-restore me-1"></i>Reset
+        </button>
+      </div>
+    </form>
+    <hr />
+  </div>
+  <div class="form-group">
+    <input
+      type="search"
+      class="form-control"
+      placeholder="Filter driver records......"
+      id="filter-text-box"
+      (input)="onFilterTextBoxChanged()"
+    />
+  </div>
+  <hr />
+  <div class="row">
+    <div class="col-12">
+      <button
+        class="btn btn-sm btn-outline-secondary ms-1 float-end"
+        (click)="executeExport()"
+        title="Export to Excel"
+      >
+        <i class="fa-solid fa-file-excel me-1"></i>Export
+      </button>
+      <button
+        class="btn btn-sm btn-outline-secondary float-end"
+        routerLink="/adddriver"
+      >
+        <i class="fa-solid fa-circle-plus me-1"></i>Add new driver
+      </button>
+    </div>
+  </div>
+
+  <div>
+    <ag-grid-angular
+      [class]="themeClass"
+      [rowData]="drivers()"
+      [columnDefs]="colDefs"
+      [getRowStyle]="getRowStyle"
+      [pagination]="true"
+      [paginationPageSize]="20"
+      [paginationPageSizeSelector]="[5, 10, 20, 50, 100]"
+      [defaultColDef]="defaultColDef"
+      (gridReady)="onGridReady($event)"
+      [gridOptions]="gridOptions"
+    ></ag-grid-angular>
+  </div>
+  <app-delete-confirmation #confirmationModal></app-delete-confirmation>
+  <router-outlet></router-outlet>
+</div>

@@ -1,0 +1,426 @@
+<div class="container-fluid small">
+  <hr />
+  <div class="row">
+    <div class="col-auto">
+      <img
+        src="img/contractor.jpg"
+        alt="contractor"
+        width="230px"
+        height="150px"
+      />
+    </div>
+    <div class="col-auto">
+      <h2>Contractors</h2>
+      <p>You can select it my navigating one by one and edit it (if needed):</p>
+    </div>
+  </div>
+  <hr />
+  <app-toast />
+  <div class="form-group">
+    <input
+      id="filterbyname"
+      type="text"
+      class="form-control"
+      placeholder="Filter by name..."
+      [(ngModel)]="searchTerm"
+      (input)="filterContractors()"
+    />
+  </div>
+  <hr />
+  <button
+    class="btn btn-sm btn-outline-secondary float-end"
+    (click)="executeExport()"
+    title="Export to Excel"
+  >
+    <i class="fa-solid fa-file-excel me-1"></i>Export
+  </button>
+  <button
+    class="btn btn-sm btn-outline-secondary float-end me-1"
+    title="Add new"
+    data-bs-toggle="modal"
+    data-bs-target="#contractorSaveModal"
+    (click)="formRest()"
+  >
+    <i class="fa-solid fa-plus me-1"></i>Add
+  </button>
+
+  <table
+    class="table table-hover table-bordered table-responsive-md small"
+    id="contractor-table"
+  >
+    <thead class="table-info">
+      <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>NTN Number</th>
+        <th>Contact Person Name</th>
+        <th>Contact Person Cell#</th>
+        <th>Contact Designation</th>
+        <th>Contact Department</th>
+        <th>Address</th>
+        <th>Initials</th>
+        <th>ClientName</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (contractor of paginatedContractors(); track contractor.id) {
+      <tr>
+        <td class="col-auto">{{ $index + 1 }}</td>
+        <td class="col-auto">
+          <div *ngIf="contractor.isEdit">
+            <input
+              type="text"
+              [(ngModel)]="contractor.name"
+              class="form-control form-control-sm"
+            />
+          </div>
+          <div *ngIf="!contractor.isEdit">
+            {{ contractor.name }}
+          </div>
+        </td>
+        <td class="col-auto">
+          <div *ngIf="contractor.isEdit">
+            <input
+              type="text"
+              [(ngModel)]="contractor.ntnnumber"
+              class="form-control form-control-sm"
+            />
+          </div>
+          <div *ngIf="!contractor.isEdit">
+            {{ contractor.ntnnumber }}
+          </div>
+        </td>
+        <td class="col-auto">
+          <div *ngIf="contractor.isEdit">
+            <input
+              type="text"
+              [(ngModel)]="contractor.contactname"
+              class="form-control form-control-sm"
+            />
+          </div>
+          <div *ngIf="!contractor.isEdit">
+            {{ contractor.contactname }}
+          </div>
+        </td>
+        <td class="col-auto">
+          <div *ngIf="contractor.isEdit">
+            <input
+              type="text"
+              [(ngModel)]="contractor.contactnumber"
+              class="form-control form-control-sm"
+            />
+          </div>
+          <div *ngIf="!contractor.isEdit">
+            {{ contractor.contactnumber }}
+          </div>
+        </td>
+        <td class="col-auto">
+          <div *ngIf="contractor.isEdit">
+            <input
+              type="text"
+              [(ngModel)]="contractor.contactdesignation"
+              class="form-control form-control-sm"
+            />
+          </div>
+          <div *ngIf="!contractor.isEdit">
+            {{ contractor.contactdesignation }}
+          </div>
+        </td>
+        <td class="col-auto">
+          <div *ngIf="contractor.isEdit">
+            <input
+              type="text"
+              [(ngModel)]="contractor.contactdepartment"
+              class="form-control form-control-sm"
+            />
+          </div>
+          <div *ngIf="!contractor.isEdit">
+            {{ contractor.contactdepartment }}
+          </div>
+        </td>
+        <td class="col-auto">
+          <div *ngIf="contractor.isEdit">
+            <input
+              type="text"
+              [(ngModel)]="contractor.address"
+              class="form-control form-control-sm"
+            />
+          </div>
+          <div *ngIf="!contractor.isEdit">
+            {{ contractor.address }}
+          </div>
+        </td>
+        <td class="col-auto">
+          <div *ngIf="contractor.isEdit">
+            <input
+              type="text"
+              [(ngModel)]="contractor.initials"
+              class="form-control form-control-sm"
+            />
+          </div>
+          <div *ngIf="!contractor.isEdit">
+            {{ contractor.initials }}
+          </div>
+        </td>
+        <td class="col-auto">
+          @if(contractor.isEdit){
+          <select
+            class="form-select form-select-sm"
+            id="clientid"
+            [(ngModel)]="contractor.clientid"
+          >
+            @for (item of clients(); track $index) {
+            <option [value]="item.id">{{ item.name }}</option>
+            }
+          </select>
+          }@else { {{ getClientName(contractor.clientid) }}
+          }
+        </td>
+
+        <td class="col-auto">
+          <div *ngIf="contractor.isEdit">
+            <button
+              class="btn btn-sm btn-outline-primary"
+              (click)="
+                updateContractor(
+                  contractor.id,
+                  contractor.name,
+                  contractor.ntnnumber,
+                  contractor.contactname,
+                  contractor.contactnumber,
+                  contractor.contactdesignation,
+                  contractor.contactdepartment,
+                  contractor.address,
+                  contractor.initials,
+                  contractor.clientid
+                );
+                contractor.isEdit = false
+              "
+            >
+              <i class="fa-regular fa-floppy-disk"></i>
+              save
+            </button>
+            <button
+              class="btn btn-sm btn-outline-primary ms-1"
+              (click)="contractor.isEdit = false"
+            >
+              <i class="fa-regular fa-rectangle-xmark"></i>
+              cancel
+            </button>
+          </div>
+          <div *ngIf="!contractor.isEdit">
+            <button
+              class="btn btn-sm btn-outline-primary"
+              (click)="onEdit(contractor)"
+            >
+              <i class="far fa-edit"></i>
+              edit
+            </button>
+          </div>
+        </td>
+      </tr>
+      }@empty {
+      <tr>
+        There are no items to be displayed.
+      </tr>
+      }
+    </tbody>
+  </table>
+  <nav>
+    <ul class="pagination justify-content-center">
+      <li class="page-item" [class.disabled]="currentPage === 1">
+        <a class="page-link" type="button" (click)="previousPage()">Previous</a>
+      </li>
+      <li
+        class="page-item"
+        *ngFor="let page of pages()"
+        [class.active]="page === currentPage"
+      >
+        <a class="page-link" type="button" (click)="goToPage(page)">{{
+          page
+        }}</a>
+      </li>
+      <li class="page-item" [class.disabled]="currentPage === totalPages">
+        <a class="page-link" type="button" (click)="nextPage()">Next</a>
+      </li>
+    </ul>
+  </nav>
+  <hr />
+
+  <!-- Modal -->
+  <div
+    class="modal fade modal-lg"
+    id="contractorSaveModal"
+    tabindex="-1"
+    aria-labelledby="exampleModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-info-subtle">
+          <h4 class="modal-title strong text-color" id="exampleModalLabel">
+            Add New Contractor
+          </h4>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="formSaveContractor">
+            <div class="row">
+              <div class="col-md-6 ms-auto required">
+                <label for="contractorName" class="form-label"
+                  >Contractor Full Name</label
+                >
+                <input
+                  type="text"
+                  name="contractorName"
+                  class="form-control form-control-sm"
+                  id="contractorName"
+                  placeholder="Shaheen Frieght"
+                  formControlName="name"
+                  required
+                />
+              </div>
+              <div class="col-md-6 ms-auto">
+                <label for="ntnnumber" class="form-label">NTN #</label>
+                <input
+                  type="text"
+                  name="ntnnumber"
+                  class="form-control form-control-sm"
+                  id="ntnnumber"
+                  placeholder="NTN-223344 OR SNTN-332233"
+                  formControlName="ntnnumber"
+                />
+              </div>
+            </div>
+            <div class="row mt-1">
+              <div class="col-md-6 ms-auto">
+                <label for="contactname" class="form-label"
+                  >Contact Person Name</label
+                >
+                <input
+                  type="text"
+                  name="contactname"
+                  class="form-control form-control-sm"
+                  id="contactname"
+                  placeholder="Muhammad Ahmed"
+                  formControlName="contactname"
+                />
+              </div>
+              <div class="col-md-6 ms-auto">
+                <label for="contactnumber" class="form-label"
+                  >Contact Person Cell#</label
+                >
+                <input
+                  type="text"
+                  name="contactnumber"
+                  class="form-control form-control-sm"
+                  id="contactnumber"
+                  placeholder="0300-00000000"
+                  formControlName="contactnumber"
+                />
+              </div>
+            </div>
+            <div class="row mt-1">
+              <div class="col-md-6 ms-auto">
+                <label for="contactdesignation" class="form-label"
+                  >Contact Designation</label
+                >
+                <input
+                  type="text"
+                  name="contactdesignation"
+                  class="form-control form-control-sm"
+                  id="contactdesignation"
+                  placeholder="General Manager"
+                  formControlName="contactdesignation"
+                />
+              </div>
+              <div class="col-md-6 ms-auto">
+                <label for="contactdepartment" class="form-label"
+                  >Contact Department</label
+                >
+                <input
+                  type="text"
+                  name="contactdepartment"
+                  class="form-control form-control-sm"
+                  id="contactdepartment"
+                  placeholder="HSSEQ & HR"
+                  formControlName="contactdepartment"
+                />
+              </div>
+            </div>
+            <div class="row mt-1">
+              <div class="col-md-6 ms-auto">
+                <label for="contractorAddress" class="form-label"
+                  >Address</label
+                >
+                <input
+                  type="text"
+                  name="contractorAddress"
+                  class="form-control form-control-sm"
+                  id="contractorAddress"
+                  placeholder="Address"
+                  formControlName="address"
+                />
+              </div>
+              <div class="col-md-6 ms-auto">
+                <label for="contractorInitials" class="form-label"
+                  >Initials</label
+                >
+                <input
+                  type="text"
+                  name="contractorInitials"
+                  class="form-control form-control-sm"
+                  id="contractorInitials"
+                  placeholder="RMA"
+                  formControlName="initials"
+                />
+              </div>
+            </div>
+            <div class="row mt-1">
+              <div class="col-12 required">
+                <label for="clients" class="form-label">Clients</label>
+                <select
+                  id="clients"
+                  formControlName="clientid"
+                  class="form-select form-select-sm"
+                  required
+                >
+                  <option disabled selected value="null">
+                    -----Select-----
+                  </option>
+                  @for (item of clients(); track item.id) {
+                  <option [value]="item.id">{{ item.name }}</option>
+                  }
+                </select>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer bg-info-subtle">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Close
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            (click)="createContractor(formSaveContractor.value)"
+            [disabled]="formSaveContractor.invalid"
+            data-bs-dismiss="modal"
+          >
+            Save changes
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,16 @@
+.action-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.btn {
+  height: 28px; /* Adjust the height */
+  line-height: 1;
+  padding: 4px 8px; /* Smaller padding */
+  font-size: 12px; /* Adjust font size */
+}
+.small-badge {
+  font-size: 10px; /* Smaller font for the badge */
+  padding: 2px 5px; /* Adjust badge size */
+}

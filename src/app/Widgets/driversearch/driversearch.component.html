@@ -1,0 +1,83 @@
+<!-- Driver Search Modal -->
+<div
+  class="modal fade modal-lg"
+  id="driverSearchModal"
+  tabindex="-1"
+  aria-labelledby="driverSearchModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info-subtle">
+        <h6 class="modal-title" id="driverSearchModalLabel">Search Driver</h6>
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <!-- Search Form -->
+        <form [formGroup]="searchForm">
+          <div class="mb-3">
+            <label for="nic" class="form-label"
+              >Driver National Identity Card #</label
+            >
+            <input
+              type="search"
+              id="nic"
+              formControlName="nic"
+              class="form-control"
+              placeholder="xxxxx-xxxxxxx-x"
+            />
+          </div>
+          <button
+            type="button"
+            class="btn btn-success"
+            (click)="searchDrivers()"
+            [disabled]="searchForm.invalid"
+          >
+            Search
+          </button>
+        </form>
+
+        <!-- Driver Results -->
+        @if (drivers() && drivers().length>0) {
+        <table class="table table-hover table-bordered mt-2">
+          <thead class="table-success">
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>NIC</th>
+              <th>Select</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of drivers(); track $index) {
+            <td>{{ item.id }}</td>
+            <td>{{ item.name }}</td>
+            <td>{{ item.nic }}</td>
+            <td>
+              <button
+                class="btn btn-sm btn-outline-success"
+                type="submit"
+                (click)="selectDriver(item)"
+                data-bs-dismiss="modal"
+              >
+                <i class="fa-regular fa-square-check"></i>
+                select
+              </button>
+            </td>
+            }
+          </tbody>
+        </table>
+        }@else {
+        <div>
+          <span>No record found</span>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,457 @@
+<div class="container-fluid">
+  <app-toast></app-toast>
+  <div>
+    @if (driverForm.get('id')?.value) {
+    <form [formGroup]="driverForm">
+      <div class="form-group small">
+        <hr />
+        <div class="row">
+          <div class="col-auto">
+            <img
+              src="img/driver.jpg"
+              alt="Driver"
+              width="180px"
+              height="150px"
+            />
+          </div>
+          <div class="col-auto">
+            <h3>
+              <i class="fa-regular fa-user me-1 text-success"></i
+              >{{ driverForm.get("name")?.value }}
+            </h3>
+            <p>
+              <i class="fa-regular fa-building me-1 text-success"></i>
+              {{ getContractorName(driverForm.get("contractorid")?.value) }}
+            </p>
+            <p>
+              <i class="fa-regular fa-id-badge me-1 text-success"></i
+              >{{ driverForm.get("id")?.value }}
+            </p>
+            <p>
+              <i class="fa-solid fa-user-tie me-1 text-success"></i
+              >{{ driverForm.get("createdby")?.value }}
+            </p>
+          </div>
+          <div class="mb-3 col-auto">
+            <button
+              class="btn btn-outline-success btn-sm ms-1"
+              type="button"
+              routerLink="/adddriver"
+            >
+              <i class="fa-solid fa-circle-plus"></i>
+              Add New Driver
+            </button>
+            <button
+              class="btn btn-outline-success btn-sm ms-1"
+              type="button"
+              (click)="printPage()"
+            >
+              <i class="fa-solid fa-print"></i>
+              Print
+            </button>
+            @if (isEdit) {
+            <button
+              id="savebtn"
+              class="btn btn-outline-success btn-sm ms-1"
+              type="submit"
+              [disabled]="driverForm.invalid"
+              (click)="updateDriver(); toggleEdit()"
+            >
+              <i class="fa-regular fa-floppy-disk"></i>
+              Save
+            </button>
+
+            <button
+              type="reset"
+              class="btn btn-outline-secondary btn-sm ms-1"
+              (click)="resetForm()"
+            >
+              <i class="fa-solid fa-window-restore"></i>
+              Reset
+            </button>
+            <button
+              class="btn btn-outline-success btn-sm ms-1"
+              (click)="toggleEdit()"
+            >
+              <i class="fa-regular fa-rectangle-xmark"></i>
+              cancel
+            </button>
+            }@else{
+            <button
+              class="btn btn-outline-success btn-sm ms-1"
+              type="button"
+              (click)="toggleEdit()"
+            >
+              <i class="far fa-edit"></i>
+
+              {{ "Edit" }}
+            </button>
+            }
+          </div>
+        </div>
+        <hr />
+        <div class="text-success fw-medium fs-7">
+          <div class="mb-3 row border">
+            <label for="dname" class="col-sm-1 col-form-label required"
+              >Name:</label
+            >
+            <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+              <input
+                id="dname"
+                type="text"
+                name="dname"
+                class="form-control form-control-sm"
+                formControlName="name"
+              />
+              @if (name?.invalid && (name?.dirty || name?.touched)) {
+              <div class="text-danger">
+                @if (name?.errors?.['required']) {
+                <small>Driver name is required</small>
+                }
+              </div>
+              }
+            </div>
+            <label for="dob" class="col-sm-1 col-form-label"
+              >Date of birth:</label
+            >
+            <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+              <input
+                id="dob"
+                type="text"
+                class="form-control form-control-sm"
+                formControlName="dob"
+                placeholder="mm/dd/yyyy"
+              />
+            </div>
+            <label for="age" class="col-sm-1 col-form-label">Driver Age:</label>
+            <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+              <input
+                id="age"
+                class="form-control form-control-sm"
+                formControlName="age"
+                placeholder="NONE"
+              />
+            </div>
+
+            <label for="nic" class="col-sm-1 col-form-label required"
+              >NIC Card#:</label
+            >
+            <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+              <input
+                id="nic"
+                class="form-control form-control-sm"
+                type="text"
+                formControlName="nic"
+              />
+              @if (nic?.invalid && (nic?.dirty || nic?.touched)) {
+              <div class="text-danger">
+                @if (nic?.errors?.['required']) {
+                <small>NIC is required</small>
+                } @if(nic?.errors?.['pattern']){
+                <small>Invalid NIC format. Please insert xxxxx-xxxxxxx-x</small>
+                }
+              </div>
+              }
+            </div>
+            <label for="nicexpiry" class="col-sm-1 col-form-label"
+              >NIC Expiry:</label
+            >
+            <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+              <input
+                id="nicexpiry"
+                type="text"
+                name="nicexpiry"
+                class="form-control form-control-sm"
+                formControlName="nicexpiry"
+                placeholder="mm/dd/yyyy"
+              />
+            </div>
+            <label
+              for="ddesignation"
+              class="col-sm-1 col-form-label text-success"
+              >Designation:</label
+            >
+            <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+              <input
+                id="ddesignation"
+                type="text"
+                name="ddesignation"
+                placeholder="Safety Manager"
+                class="form-control form-control-sm"
+                formControlName="designation"
+              />
+            </div>
+            <label for="licensenumber" class="col-sm-1 col-form-label required"
+              >License #:</label
+            >
+            <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+              <input
+                id="licensenumber"
+                type="text"
+                name="licensenumber"
+                class="form-control form-control-sm"
+                formControlName="licensenumber"
+              />
+              @if (licensenumber?.invalid && (licensenumber?.dirty ||
+              licensenumber?.touched)) {
+              <div class="text-danger">
+                @if (licensenumber?.errors?.['required']) {
+                <small>Driver license number is required</small>
+                }
+              </div>
+              }
+            </div>
+            <label for="licensetypeid" class="col-sm-1 col-form-label"
+              >License Type:</label
+            >
+            <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+              @if (isEdit) {
+              <select
+                class="form-select form-select-sm"
+                id="licensetypeid"
+                formControlName="licensetypeid"
+              >
+                <option disabled selected value="null">-----Select-----</option>
+                @for (item of dltypes(); track $index) {
+                <option [value]="item.id">{{ item.name }}</option>
+                }
+              </select>
+              }@else {
+              <input
+                class="form-control form-control-sm"
+                id="licensetypeid"
+                placeholder="-----Select-----"
+                [value]="getDLTypeName(driverForm.get('licensetypeid')?.value)"
+                disabled
+              />}
+            </div>
+            <label for="licenseexpiry" class="col-sm-1 col-form-label"
+              >License Expiry:</label
+            >
+            <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+              <input
+                id="licenseexpiry"
+                type="text"
+                name="licenseexpiry"
+                class="form-control form-control-sm"
+                formControlName="licenseexpiry"
+                placeholder="mm/dd/yyyy"
+              />
+            </div>
+            <label for="licenseverified" class="col-sm-1 col-form-label"
+              >Verification:</label
+            >
+            <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+              @if (isEdit) {
+              <select
+                class="form-select form-select-sm"
+                id="licenseverified"
+                formControlName="licenseverified"
+              >
+                <option disabled selected value="null">-----Select-----</option>
+                @for (item of licenseVerification(); track $index) {
+                <option [value]="item.id">{{ item.name }}</option>
+                }
+              </select>
+              }@else {
+              <input
+                class="form-control form-control-sm"
+                id="licenseverified"
+                placeholder="-----Select-----"
+                [value]="
+                  getVerificationName(driverForm.get('licenseverified')?.value)
+                "
+                disabled
+              />
+              }
+            </div>
+            <label for="permitnumber" class="col-sm-1 col-form-label"
+              >Permit #:</label
+            >
+            <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+              <input
+                id="permitnumber"
+                type="text"
+                name="permitnumber"
+                placeholder="CONT-2892"
+                class="form-control form-control-sm"
+                formControlName="permitnumber"
+              />
+            </div>
+            <label for="permitissue" class="col-sm-1 col-form-label"
+              >Permit Issue:</label
+            >
+            <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+              <input
+                id="permitissue"
+                type="text"
+                name="permitissue"
+                class="form-control form-control-sm"
+                formControlName="permitissue"
+                placeholder="mm/dd/yyyy"
+              />
+            </div>
+            <label for="permitexpiry" class="col-sm-1 col-form-label"
+              >Permit Expiry:</label
+            >
+            <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+              <input
+                id="permitexpiry"
+                type="text"
+                name="permitexpiry"
+                class="form-control form-control-sm"
+                formControlName="permitexpiry"
+                placeholder="mm/dd/yyyy"
+              />
+            </div>
+            <label for="bloodgroup" class="col-sm-1 col-form-label"
+              >Blood Group:</label
+            >
+            <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+              @if (isEdit) {
+              <select
+                class="form-select form-select-sm"
+                id="bloodgroup"
+                formControlName="bloodgroupid"
+              >
+                <option disabled selected value="null">-----Select-----</option>
+                @for (item of bloodgroups(); track $index) {
+                <option [value]="item.id">{{ item.name }}</option>
+                }
+              </select>
+              }@else {
+              <input
+                class="form-control form-control-sm"
+                id="bloodgroup"
+                placeholder="-----Select-----"
+                [value]="
+                  getBloodGroupName(driverForm.get('bloodgroupid')?.value)
+                "
+                disabled
+              />
+              }
+            </div>
+            <label for="contractorid" class="col-sm-1 col-form-label"
+              >Contractor:</label
+            >
+            <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+              @if (isEdit) {
+              <select
+                class="form-select form-select-sm"
+                id="contractorid"
+                formControlName="contractorid"
+              >
+                <option disabled selected value="null">-----Select-----</option>
+                @for (item of contractors(); track $index) {
+                <option [value]="item.id">{{ item.name }}</option>
+                }
+              </select>
+              }@else {
+              <input
+                class="form-control form-control-sm"
+                id="contractorid"
+                placeholder="-----Select-----"
+                [value]="
+                  getContractorName(driverForm.get('contractorid')?.value)
+                "
+                disabled
+              />
+              }
+            </div>
+            <label for="visualid" class="col-sm-1 col-form-label"
+              >Visual Test:</label
+            >
+            <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+              @if (isEdit) {
+              <select
+                class="form-select form-select-sm"
+                id="visualid"
+                formControlName="visualid"
+              >
+                <option disabled selected value="null">-----Select-----</option>
+                @for (item of visuals(); track $index) {
+                <option [value]="item.id">{{ item.name }}</option>
+                }
+              </select>
+              }@else {
+              <input
+                class="form-control form-control-sm"
+                id="visualid"
+                placeholder="-----Select-----"
+                [value]="getVisualName(driverForm.get('visualid')?.value)"
+                disabled
+              />
+              }
+            </div>
+            <label for="ddccount" class="col-sm-1 col-form-label"
+              >DDC Count:</label
+            >
+            <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+              <input
+                id="ddccount"
+                type="number"
+                min="0"
+                name="ddccount"
+                placeholder="1"
+                class="form-control form-control-sm"
+                formControlName="ddccount"
+              />
+            </div>
+            <label for="experience" class="col-sm-1 col-form-label"
+              >Experience:</label
+            >
+            <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+              <input
+                id="experience"
+                type="number"
+                min="0"
+                name="experience"
+                placeholder="1"
+                class="form-control form-control-sm"
+                formControlName="experience"
+              />
+            </div>
+            <label for="department" class="col-sm-1 col-form-label"
+              >Department:</label
+            >
+            <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+              <input
+                id="department"
+                type="text"
+                name="department"
+                placeholder="Quality Control"
+                class="form-control form-control-sm"
+                formControlName="department"
+              />
+            </div>
+            <label for="drivercode" class="col-sm-1 col-form-label"
+              >Driver Code:</label
+            >
+            <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+              <input
+                id="drivercode"
+                type="text"
+                name="drivercode"
+                placeholder="STC-CT-001"
+                class="form-control form-control-sm"
+                formControlName="code"
+              />
+            </div>
+            <label for="comment" class="col-sm-1 col-form-label"
+              >Comment:</label
+            >
+            <div class="col-lg-7 col-md-11 col-sm-11 mt-2">
+              <textarea
+                id="comment"
+                name="comment"
+                class="form-control form-control-sm"
+                formControlName="comment"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+    }
+  </div>
+</div>

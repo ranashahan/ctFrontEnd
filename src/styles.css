@@ -1,1 +1,37 @@
 /* You can add global styles to this file, and also import other style files */
+.margintop {
+  margin-top: 1rem;
+}
+.fs-7 {
+  font-size: 0.75rem !important;
+}
+.fs-8 {
+  font-size: 0.5rem !important;
+}
+.bg-gradient1 {
+  background: linear-gradient(to right, #4889de 0%, #0923cb 100%);
+}
+
+.required::before {
+  content: "*";
+  color: red;
+}
+
+.custom-active {
+  /* background-color: transparent !important; Or set a custom background color */
+  background-color: #3c81c7 !important; /* Or set a custom background color */
+  color: #96979c !important; /* Change text color for the active link */
+}
+.custom-active-dropdown {
+  background-color: #e9edf0 !important; /* Custom background for active dropdown links */
+  color: #e9edf0 !important; /* Custom text color */
+}
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}

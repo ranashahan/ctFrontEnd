@@ -1,0 +1,296 @@
+<div class="container-fluid">
+  <hr />
+  <div class="row">
+    <div class="col-auto">
+      <img
+        src="img/adddriver.jpg"
+        alt="AddDriver"
+        width="180px"
+        height="150px"
+      />
+    </div>
+    <div class="col-auto">
+      <h2>Add Driver</h2>
+      <p>Please fill complete form to be insert driver data into database:</p>
+    </div>
+  </div>
+  <hr />
+  <app-toast></app-toast>
+  <form [formGroup]="formDriver">
+    <div class="form-group small text-success fw-medium">
+      <div class="row">
+        <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
+          <div class="form-group">
+            <label class="label ms-1 required" for="drivername"
+              >Driver Name</label
+            >
+            <input
+              class="form-control form-control-sm"
+              id="drivername"
+              type="text"
+              placeholder="Muhammad Ahmed"
+              formControlName="name"
+              required
+            />
+          </div>
+          @if (name?.invalid && (name?.dirty || name?.touched)) {
+          <div class="text-danger">
+            @if (name?.errors?.['required']) {
+            <small>Driver name is required</small>
+            }
+          </div>
+          }
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
+          <label class="label label-sm ms-1" for="driverdob"
+            >Date of Birth</label
+          >
+          <input
+            class="form-control form-control-sm"
+            id="driverdob"
+            type="date"
+            formControlName="dob"
+          />
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
+          <div class="form-group">
+            <label class="label ms-1 required" for="nic">NIC # </label>
+            <input
+              class="form-control form-control-sm"
+              id="nic"
+              type="text"
+              placeholder="xxxxx-xxxxxxx-x"
+              formControlName="nic"
+              required
+            />
+          </div>
+          @if (nic?.invalid && (nic?.dirty || nic?.touched)) {
+          <div class="text-danger">
+            @if (nic?.errors?.['required']) {
+            <small>NIC is required</small>
+            } @if(nic?.errors?.['pattern']){
+            <small>Invalid NIC format. Please insert xxxxx-xxxxxxx-x</small>
+            }
+          </div>
+          }
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
+          <label class="label label-sm ms-1" for="drivernicexpiry"
+            >NIC. Expiry</label
+          >
+          <input
+            class="form-control form-control-sm"
+            id="drivernicexpiry"
+            type="date"
+            formControlName="nicexpiry"
+          />
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
+          <div class="form-group">
+            <label class="label ms-1 required" for="licensenumber"
+              >License #</label
+            >
+            <input
+              class="form-control form-control-sm"
+              id="licensenumber"
+              type="text"
+              placeholder="QA-2233"
+              formControlName="licensenumber"
+              required
+            />
+          </div>
+          @if (licensenumber?.invalid && (licensenumber?.dirty ||
+          licensenumber?.touched)) {
+          <div class="text-danger">
+            @if (licensenumber?.errors?.['required']) {
+            <small>Driver license number is required</small>
+            }
+          </div>
+          }
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
+          <label class="label ms-1" for="licensetypeid">License Type</label>
+          <select
+            class="form-select form-select-sm"
+            id="licensetypeid"
+            formControlName="licensetypeid"
+          >
+            <option disabled selected value="null">-----Select-----</option>
+            @for (item of dltypes(); track $index) {
+            <option [value]="item.id">{{ item.name }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
+          <label class="label ms-1" for="licenseexpiry">License Expiry</label>
+          <input
+            class="form-control form-control-sm"
+            id="licenseexpiry"
+            type="date"
+            placeholder="QA-2233"
+            formControlName="licenseexpiry"
+          />
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
+          <label class="label ms-1" for="lverification"
+            >License Verification</label
+          >
+          <select
+            class="form-select form-select-sm"
+            id="lverification"
+            formControlName="licenseverified"
+          >
+            <option disabled value="null">-----Select-----</option>
+            @for (item of licenseVerification(); track $index) {
+            <option [value]="item.id">{{ item.name }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
+          <label class="label ms-1" for="formcount">DDC Count</label>
+          <input
+            class="form-control form-control-sm"
+            min="0"
+            id="formcount"
+            type="number"
+            placeholder="0"
+            formControlName="ddccount"
+          />
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
+          <label class="label ms-1" for="contractor">Contractors</label>
+          <select
+            class="form-select form-select-sm"
+            id="contractor"
+            formControlName="contractorid"
+          >
+            <option disabled value="null">-----Select-----</option>
+            @for (item of contractors(); track $index) {
+            <option [value]="item.id">{{ item.name }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
+          <label class="label ms-1" for="ddesignation">Designation</label>
+          <input
+            class="form-control form-control-sm"
+            id="ddesignation"
+            type="text"
+            placeholder="Safety Manager"
+            formControlName="designation"
+          />
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
+          <label class="label ms-1" for="department">Department</label>
+          <input
+            class="form-control form-control-sm"
+            id="department"
+            type="text"
+            placeholder="Quality Control"
+            formControlName="department"
+          />
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
+          <label class="label ms-1" for="permit">Permit #</label>
+          <input
+            class="form-control form-control-sm"
+            id="permit"
+            type="text"
+            placeholder="CONT-2892"
+            formControlName="permitnumber"
+          />
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
+          <label class="label ms-1" for="permitissue">Permit IssueDate</label>
+          <input
+            class="form-control form-control-sm"
+            id="permitissue"
+            type="date"
+            placeholder="Quality Control"
+            formControlName="permitissue"
+          />
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
+          <label class="label ms-1" for="blood">Blood Groups</label>
+          <select
+            class="form-select form-select-sm"
+            id="blood"
+            formControlName="bloodgroupid"
+          >
+            <option disabled value="null">-----Select-----</option>
+            @for (item of bloodgroups(); track $index) {
+            <option [value]="item.id">{{ item.name }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
+          <label class="label ms-1" for="visual">Visual Test</label>
+          <select
+            class="form-select form-select-sm"
+            id="visual"
+            formControlName="visualid"
+          >
+            <option disabled value="null">-----Select-----</option>
+            @for (item of visuals(); track $index) {
+            <option [value]="item.id">{{ item.name }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
+          <label class="label ms-1" for="experience"
+            >Driver Experience in Years</label
+          >
+          <input
+            class="form-control form-control-sm"
+            min="0"
+            id="experience"
+            type="number"
+            placeholder="0"
+            formControlName="experience"
+          />
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
+          <label class="label ms-1" for="drivercode">Driver Code</label>
+          <input
+            class="form-control form-control-sm"
+            min="0"
+            id="drivercode"
+            type="text"
+            placeholder="STC-CT-001"
+            formControlName="code"
+          />
+        </div>
+        <div class="col-12 mt-2">
+          <label class="label ms-1" for="comment">Comments</label>
+          <textarea
+            class="form-control form-control-sm"
+            id="comment"
+            formControlName="comment"
+          ></textarea>
+        </div>
+      </div>
+      <div class="row mt-4">
+        <div class="col-12 text-center">
+          <div class="btn-group" role="group" aria-label="Default button group">
+            <button
+              type="submit"
+              class="btn btn-outline-success"
+              [disabled]="formDriver.invalid"
+              (click)="createDriver()"
+            >
+              Save
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              (click)="resetForm()"
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+  <hr />
+</div>

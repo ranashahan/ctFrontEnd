@@ -1,0 +1,320 @@
+<div class="container-fluid">
+  <hr />
+  <div class="row">
+    <div class="col-auto">
+      <img
+        src="img/allassessment.jpg"
+        alt="AllAssessments"
+        width="180px"
+        height="150px"
+      />
+    </div>
+    <div class="col-auto">
+      <h2>All Assessments</h2>
+      <p>You can select it my navigating one by one and edit it (if needed):</p>
+    </div>
+  </div>
+  <hr />
+  <app-toast></app-toast>
+  <div class="bg-warning bg-opacity-25">
+    <form
+      [formGroup]="formSession"
+      class="row row-cols-lg-auto g-3 align-items-end ms-1"
+    >
+      <div class="col-auto">
+        <label class="label ms-1 strong" for="inlineFormInputGroupNic"
+          >Driver NIC</label
+        >
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control form-control-sm my-inputextend"
+            id="inlineFormInputGroupNic"
+            placeholder="xxxxx-xxxxxxx-x"
+            formControlName="nic"
+          />
+        </div>
+      </div>
+      <div class="col-auto">
+        <label class="label ms-1 strong" for="inlineFormInputGroupSessionName"
+          >Session ID</label
+        >
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            id="inlineFormInputGroupSessionName"
+            placeholder="UEP-LPG-2308-01-01"
+            formControlName="name"
+          />
+        </div>
+      </div>
+      <div class="col-auto">
+        <label class="label ms-1 strong" for="inlineFormInputGroupSessionDate"
+          >Road Test Date</label
+        >
+        <div class="input-group">
+          <input
+            type="date"
+            class="form-control form-control-sm"
+            id="inlineFormInputGroupSessionDate"
+            formControlName="sessiondate"
+          />
+        </div>
+      </div>
+      <div class="col-auto">
+        <label class="label ms-1 strong" for="inlineFormSelectLocation"
+          >Location</label
+        >
+        <select
+          class="form-select form-select-sm"
+          id="inlineFormSelectLocation"
+          formControlName="locationid"
+        >
+          <option disabled value="null">-----Select-----</option>
+          @for (item of locations(); track $index) {
+          <option [value]="item.id">{{ item.name }}</option>
+          }
+        </select>
+      </div>
+      <div class="col-auto">
+        <label class="label ms-1 strong" for="inlineFormSelectResult"
+          >Result</label
+        >
+        <select
+          class="form-select form-select-sm"
+          id="inlineFormSelectResult"
+          formControlName="resultid"
+        >
+          <option disabled value="null">-----Select-----</option>
+          @for (item of results(); track $index) {
+          <option [value]="item.id">{{ item.name }}</option>
+          }
+        </select>
+      </div>
+      <div class="col-auto">
+        <label class="label ms-1 strong" for="inlineFormSelectStage"
+          >Stage</label
+        >
+        <select
+          class="form-select form-select-sm"
+          id="inlineFormSelectStage"
+          formControlName="stageid"
+        >
+          <option disabled value="null">-----Select-----</option>
+          @for (item of stages(); track $index) {
+          <option [value]="item.id">{{ item.name }}</option>
+          }
+        </select>
+      </div>
+      <div class="col-auto">
+        <label class="label ms-1 strong" for="inlineFormSelectContractor"
+          >Contractor</label
+        >
+        <select
+          class="form-select form-select-sm"
+          id="inlineFormSelectContractor"
+          formControlName="contractorid"
+        >
+          <option disabled value="null">-----Select-----</option>
+          @for (item of contractors(); track $index) {
+          <option [value]="item.id">{{ item.name }}</option>
+          }
+        </select>
+      </div>
+      <div class="col-auto">
+        <label class="label ms-1 strong" for="inlineFormInputGroupStartDate"
+          >From Date</label
+        >
+        <div class="input-group">
+          <input
+            type="date"
+            class="form-control form-control-sm my-input"
+            id="inlineFormInputGroupStartDate"
+            formControlName="startDate"
+          />
+        </div>
+      </div>
+      <div class="col-auto">
+        <label class="label ms-1 strong" for="inlineFormInputGroupEndDate"
+          >To Date</label
+        >
+        <div class="input-group">
+          <input
+            type="date"
+            class="form-control form-control-sm my-input"
+            id="inlineFormInputGroupEndDate"
+            formControlName="endDate"
+          />
+        </div>
+      </div>
+      <div class="col-auto">
+        <button
+          type="submit"
+          class="btn btn-primary btn-sm"
+          (click)="getFillterredData()"
+        >
+          <i class="fa-brands fa-searchengin me-1"></i>Search
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-secondary btn-sm ms-1"
+          (click)="formRest()"
+        >
+          <i class="fa-solid fa-window-restore me-1"></i>Reset
+        </button>
+      </div>
+    </form>
+    <hr />
+  </div>
+  <div class="form-group">
+    <input
+      type="text"
+      class="form-control"
+      placeholder="Filter by session name......"
+      [(ngModel)]="searchTerm"
+      (input)="filterSessions()"
+    />
+  </div>
+  <hr />
+  <div class="row">
+    <div class="col-12">
+      <button
+        class="btn btn-sm btn-outline-secondary ms-1 float-end"
+        (click)="executeExport()"
+        title="Export to Excel"
+      >
+        <i class="fa-solid fa-file-excel me-1"></i>Export
+      </button>
+
+      <button
+        class="btn btn-sm btn-outline-secondary float-end"
+        routerLink="/addassessment"
+      >
+        <i class="fa-solid fa-circle-plus me-1"></i>Add new assessment
+      </button>
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table
+      class="table table-hover table-bordered fs-7"
+      id="allassessment-table"
+    >
+      <thead class="table-warning">
+        <tr>
+          <th>#</th>
+          <th>Session Name</th>
+          <th>Session Date</th>
+          <th>Driver Name</th>
+          <th>Driver NIC</th>
+          <th>Contractor</th>
+          <th>Location</th>
+          <th>Result</th>
+          <th>Stage</th>
+          <th>Score</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of paginatedSessions(); track $index) {
+        <tr>
+          <td>
+            <div>
+              {{ $index + 1 }}
+            </div>
+          </td>
+          <td>
+            <div>
+              <a routerLink="/allassessments/{{ item.id }}">
+                {{ item.name }}
+              </a>
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ item.sessiondate | date }}
+            </div>
+          </td>
+          <td>
+            <div>
+              <a routerLink="/alldrivers/{{ item.driverid }}">
+                {{ item.drivername }}
+              </a>
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ item.nic }}
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ getContractorName(item.contractorid) }}
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ getLocationName(item.locationid) }}
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ getResultName(item.resultid) }}
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ getStageName(item.stageid) }}
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ item.totalscore }}
+            </div>
+          </td>
+          <td>
+            <button
+              type="button"
+              class="btn btn-outline-warning position-relative"
+              (click)="viewAssessmentDetails(item.id)"
+            >
+              <i class="fa-solid fa-circle-info"></i>
+            </button>
+            <button
+              class="btn btn-sm btn-outline-danger ms-3"
+              (click)="deleteAssessment(item.id)"
+            >
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </td>
+        </tr>
+        }@empty {
+        <tr>
+          <p>Please update your search criteria for items to be displayed</p>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <nav>
+    <ul class="pagination justify-content-center">
+      <li class="page-item" [class.disabled]="currentPage === 1">
+        <a class="page-link" type="button" (click)="previousPage()">Previous</a>
+      </li>
+      <li
+        class="page-item"
+        *ngFor="let page of pages"
+        [class.active]="page === currentPage"
+      >
+        <a class="page-link" type="button" (click)="goToPage(page)">{{
+          page
+        }}</a>
+      </li>
+      <li class="page-item" [class.disabled]="currentPage === totalPages">
+        <a class="page-link" type="button" (click)="nextPage()">Next</a>
+      </li>
+    </ul>
+  </nav>
+  <app-delete-confirmation #confirmationModal></app-delete-confirmation>
+</div>

@@ -1,0 +1,22 @@
+.table-bordered th,
+.table-bordered td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.form-check {
+  margin-bottom: 10px;
+}
+.my-input {
+  width: 100px; /* Adjust the width as needed */
+}
+.radio-group {
+  margin-right: 5px; /* Adjust this value to reduce the space between radio buttons */
+}
+
+.form-check-input {
+  margin-right: 3px; /* Adjust the space between the radio button and label */
+}
+td {
+  white-space: nowrap; /* Prevent the column content from wrapping */
+}

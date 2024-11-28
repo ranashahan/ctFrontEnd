@@ -1,0 +1,324 @@
+<div class="container-fluid">
+  <hr />
+  <div class="row">
+    <div class="col-auto">
+      <img src="img/client.jpg" alt="Clients" width="200px" height="150px" />
+    </div>
+    <div class="col-auto">
+      <h2>Clients</h2>
+      <p>You can select it my navigating one by one and edit it (if needed):</p>
+    </div>
+  </div>
+  <hr />
+  <app-toast />
+  <button
+    class="btn btn-sm btn-outline-secondary float-end"
+    (click)="executeExport()"
+    title="Export to Excel"
+  >
+    <i class="fa-solid fa-file-excel me-1"></i>Export
+  </button>
+  <button
+    class="btn btn-sm btn-outline-secondary float-end me-1"
+    title="Add new"
+    data-bs-toggle="modal"
+    data-bs-target="#clientSaveModal"
+    (click)="formRest()"
+  >
+    <i class="fa-solid fa-plus me-1"></i>Add
+  </button>
+  <table
+    class="table table-hover table-bordered table-responsive-md small"
+    id="client-table"
+  >
+    <thead class="table-info">
+      <tr>
+        <th>#</th>
+        <th>Client Name</th>
+        <th>Contact Person</th>
+        <th>Contact #</th>
+        <th>Address</th>
+        <th>Website</th>
+        <th>Agent Name</th>
+        <th>Agent Contact #</th>
+        <th>Created By</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of clients(); let i = index">
+        <td class="col-auto">{{ i + 1 }}</td>
+        <td class="col-auto">
+          <div *ngIf="item.isEdit">
+            <input
+              type="text"
+              [(ngModel)]="item.name"
+              class="form-control form-control-sm"
+            />
+          </div>
+          <div *ngIf="!item.isEdit">
+            {{ item.name }}
+          </div>
+        </td>
+        <td class="col-auto">
+          <div *ngIf="item.isEdit">
+            <input
+              type="text"
+              [(ngModel)]="item.contactperson"
+              class="form-control form-control-sm"
+              placeholder="Muhammad Ahmed"
+            />
+          </div>
+          <div *ngIf="!item.isEdit">
+            {{ item.contactperson }}
+          </div>
+        </td>
+        <td class="col-auto">
+          <div *ngIf="item.isEdit">
+            <input
+              type="text"
+              [(ngModel)]="item.contactnumber"
+              class="form-control form-control-sm"
+              placeholder="03XX-XXX-XXXX"
+            />
+          </div>
+          <div *ngIf="!item.isEdit">
+            {{ item.contactnumber }}
+          </div>
+        </td>
+        <td class="col-auto">
+          <div *ngIf="item.isEdit">
+            <input
+              type="text"
+              [(ngModel)]="item.address"
+              class="form-control form-control-sm"
+              placeholder="H#19,Block-14"
+            />
+          </div>
+          <div *ngIf="!item.isEdit">
+            {{ item.address }}
+          </div>
+        </td>
+        <td class="col-auto">
+          <div *ngIf="item.isEdit">
+            <input
+              type="text"
+              [(ngModel)]="item.website"
+              class="form-control form-control-sm"
+              placeholder="www.consult&train.com"
+            />
+          </div>
+          <div *ngIf="!item.isEdit">
+            {{ item.website }}
+          </div>
+        </td>
+        <td class="col-auto">
+          <div *ngIf="item.isEdit">
+            <input
+              type="text"
+              [(ngModel)]="item.agentname"
+              class="form-control form-control-sm"
+              placeholder="Ahmed"
+            />
+          </div>
+          <div *ngIf="!item.isEdit">
+            {{ item.agentname }}
+          </div>
+        </td>
+        <td class="col-auto">
+          <div *ngIf="item.isEdit">
+            <input
+              type="text"
+              [(ngModel)]="item.agentnumber"
+              class="form-control form-control-sm"
+              placeholder="03XX-XXX-XXXX"
+            />
+          </div>
+          <div *ngIf="!item.isEdit">
+            {{ item.agentnumber }}
+          </div>
+        </td>
+        <td class="col-auto">
+          <div>{{ item.createdby }}</div>
+        </td>
+        <td class="col-auto" style="width: calc(7.33% + 4.17%)">
+          <div *ngIf="item.isEdit">
+            <button
+              class="btn btn-sm btn-outline-primary"
+              (click)="
+                update(
+                  item.id,
+                  item.name,
+                  item.contactperson,
+                  item.contactnumber,
+                  item.address,
+                  item.website,
+                  item.agentname,
+                  item.agentnumber
+                );
+                item.isEdit = false
+              "
+            >
+              <i class="fa-regular fa-floppy-disk"></i>
+              save
+            </button>
+            <button
+              class="btn btn-sm btn-outline-primary ms-1"
+              (click)="item.isEdit = false"
+            >
+              <i class="fa-regular fa-rectangle-xmark"></i>
+              cancel
+            </button>
+          </div>
+          <div *ngIf="!item.isEdit">
+            <button
+              class="btn btn-sm btn-outline-primary"
+              (click)="onEdit(item)"
+            >
+              <i class="far fa-edit"></i>
+              edit
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr />
+  <!-- Modal -->
+  <div
+    class="modal fade"
+    id="clientSaveModal"
+    tabindex="-1"
+    aria-labelledby="exampleModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-info-subtle">
+          <h6 class="modal-title" id="exampleModalLabel">Add New Client</h6>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="formSaveClient">
+            <div class="row">
+              <div class="col-12 required">
+                <label for="name" class="form-label">Client Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  class="form-control"
+                  id="name"
+                  placeholder="UEP"
+                  formControlName="name"
+                  required
+                />
+              </div>
+              <div class="col-12">
+                <label for="contactp" class="form-label"
+                  >Client Contact Person</label
+                >
+                <input
+                  type="text"
+                  name="contactp"
+                  class="form-control"
+                  id="contactp"
+                  placeholder="Kashif"
+                  formControlName="contactperson"
+                />
+              </div>
+              <div class="col-12">
+                <label for="contactn" class="form-label">Contact #</label>
+                <input
+                  type="text"
+                  name="contactn"
+                  class="form-control"
+                  id="contactn"
+                  placeholder="03XX-XXX-XXXX"
+                  formControlName="contactnumber"
+                />
+              </div>
+              <div class="col-12">
+                <label for="address" class="form-label">Address</label>
+                <input
+                  type="text"
+                  name="address"
+                  class="form-control"
+                  id="address"
+                  placeholder="H#19,Block-14"
+                  formControlName="address"
+                />
+              </div>
+              <div class="col-12">
+                <label for="www" class="form-label">Website</label>
+                <input
+                  type="text"
+                  name="www"
+                  class="form-control"
+                  id="www"
+                  placeholder="www.consult&train.com"
+                  formControlName="website"
+                />
+              </div>
+              <div class="col-12">
+                <label for="agentn" class="form-label">Agent Name</label>
+                <input
+                  type="text"
+                  name="agentn"
+                  class="form-control"
+                  id="agentn"
+                  placeholder="Ahmed"
+                  formControlName="agentname"
+                />
+              </div>
+              <div class="col-12">
+                <label for="agentc" class="form-label">Agent Contact #</label>
+                <input
+                  type="text"
+                  name="agentc"
+                  class="form-control"
+                  id="agentc"
+                  placeholder="03XX-XXX-XXXX"
+                  formControlName="agentnumber"
+                />
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer bg-info-subtle">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Close
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            (click)="
+              create(
+                formSaveClient.value.name,
+                formSaveClient.value.contactperson,
+                formSaveClient.value.contactnumber,
+                formSaveClient.value.address,
+                formSaveClient.value.website,
+                formSaveClient.value.agentname,
+                formSaveClient.value.agentnumber
+              )
+            "
+            [disabled]="formSaveClient.invalid"
+            data-bs-dismiss="modal"
+          >
+            Save changes
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

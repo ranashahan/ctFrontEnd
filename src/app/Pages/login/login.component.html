@@ -1,0 +1,76 @@
+<div class="container">
+  <div class="left">
+    <div class="header">
+      <div class="row">
+        <div class="img">
+          <p>
+            <a href="#">
+              <img src="img/logo.png" alt="logo" width="250" height="133" />
+            </a>
+          </p>
+        </div>
+        <h2 class="animation a1">Welcome</h2>
+      </div>
+      <h4 class="animation a2">
+        Please get log-in for access Consult & Train Software.
+      </h4>
+    </div>
+    <app-toast></app-toast>
+    <form [formGroup]="formLogin" (ngSubmit)="onLogin()">
+      <div class="form">
+        <input
+          id="loginemail"
+          type="email"
+          class="form-field animation a3"
+          placeholder="Email Address"
+          formControlName="email"
+          required
+        />
+        @if (formLogin.controls['email'].invalid &&
+        formLogin.controls['email'].touched) {
+        @if(formLogin.controls['email'].errors?.['email']) {
+        <span class="text-danger small">Email is invalid</span>
+        }@else{
+        <span class="text-danger small">This field is required</span>
+        } }
+        <input
+          id="pwd"
+          type="password"
+          class="form-field animation a4"
+          placeholder="Password"
+          formControlName="password"
+          required
+        />
+        @if (formLogin.controls['password'].errors &&
+        formLogin.controls['password'].touched) {
+        <span class="text-danger small">This field is required</span>
+        }
+        <button
+          type="submit"
+          [disabled]="formLogin.invalid"
+          class="animation a6"
+        >
+          LOGIN
+        </button>
+        <div class="captcha-container">
+          <label>{{ captchaQuestion }}</label>
+          <input
+            type="number"
+            class="form-control form-control-sm"
+            formControlName="captchaAnswer"
+            placeholder="Answer"
+          />
+          @if (formLogin.controls['captchaAnswer'].errors &&
+          formLogin.controls['captchaAnswer'].touched) {
+          <span class="text-danger small"
+            >Please answer the question above</span
+          >
+          }
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="right"></div>
+
+  <!-- Modal -->
+</div>

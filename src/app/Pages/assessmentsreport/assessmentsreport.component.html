@@ -1,0 +1,117 @@
+<div class="container-fluid margintop">
+  <hr />
+  <div class="row">
+    <div class="col-auto">
+      <img
+        src="img/report.jpg"
+        alt="Assessment Report"
+        width="180px"
+        height="180px"
+      />
+    </div>
+    <div class="col-auto">
+      <h2>Assessment Reports</h2>
+      <p>You can select it my navigating one by one and edit it (if needed):</p>
+    </div>
+  </div>
+  <hr />
+  <app-toast />
+  <div class="bg-warning bg-opacity-50">
+    <form
+      [formGroup]="formSession"
+      class="row row-cols-lg-auto g-3 align-items-end ms-1"
+    >
+      <div class="col-auto">
+        <label class="label ms-1 strong" for="name">Session Name</label>
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            id="name"
+            placeholder="Session Name"
+            formControlName="name"
+          />
+        </div>
+      </div>
+      <div class="col-auto">
+        <button
+          class="btn btn-primary"
+          type="button"
+          (click)="getSessionData()"
+        >
+          <i class="fa-brands fa-searchengin me-1"></i>Search
+        </button>
+      </div>
+      <div class="col-auto">
+        <button
+          class="btn btn-primary"
+          type="button"
+          (click)="downloadSessionReport(session())"
+        >
+          <i class="fa-solid fa-file-pdf me-1"></i>Download Report
+        </button>
+      </div>
+    </form>
+    <hr />
+  </div>
+
+  <div class="table-responsive">
+    <table
+      class="table table-hover table-bordered fs-7"
+      id="allassessment-table"
+    >
+      <thead class="table-warning">
+        <tr>
+          <th>#</th>
+          <th>Session Name</th>
+          <th>Session Date</th>
+          <th>Driver Name</th>
+          <th>Driver NIC</th>
+          <th>Contractor</th>
+          <th>Location</th>
+          <th>Result</th>
+          <th>Stage</th>
+          <th>Score</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of session(); track $index) {
+        <tr>
+          <td>
+            <div>
+              {{ $index + 1 }}
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ item.name }}
+            </div>
+          </td>
+          <td>
+            {{ item.sessiondate | date }}
+          </td>
+          <td>
+            <div>
+              {{ item.drivername }}
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ item.nic }}
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ item.totalscore }}
+            </div>
+          </td>
+        </tr>
+        }@empty {
+        <tr>
+          <p>Please update your search criteria for items to be displayed</p>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

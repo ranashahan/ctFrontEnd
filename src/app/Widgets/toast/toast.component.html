@@ -1,0 +1,17 @@
+<div *ngFor="let toast of toasts" class="toast-item">
+  <div class="toast-container" [ngClass]="toast.type">
+    <i
+      class="toast-icon"
+      [ngClass]="
+        toast.type === 'success'
+          ? 'fa fa-check-circle'
+          : toast.type === 'warning'
+          ? 'fa fa-exclamation-triangle'
+          : toast.type === 'info'
+          ? 'fa-solid fa-book-open'
+          : 'fa fa-exclamation-circle'
+      "
+    ></i>
+    <span class="toast-message">{{ toast.message }}</span>
+  </div>
+</div>

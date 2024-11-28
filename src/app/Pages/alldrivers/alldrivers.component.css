@@ -1,0 +1,30 @@
+.ag-theme-quartz {
+  --ag-header-background-color: #a3cfbb;
+  --ag-font-size: 14px; /* Set your desired font size */
+  --ag-borders: solid 1px; /* Enable borders */
+  --ag-border-color: #ccc; /* Set border color */
+  --ag-row-border-style: solid;
+  --ag-row-border-width: 1px;
+  --ag-row-border-color: #ccc;
+  --ag-cell-horizontal-border: solid 1px #ccc;
+}
+
+.ag-theme-quartz-dark {
+  --ag-font-size: 14px; /* Set your desired font size */
+  --ag-borders: solid 1px; /* Enable borders */
+  --ag-border-color: #ccc; /* Set border color */
+  --ag-row-border-style: solid;
+  --ag-row-border-width: 1px;
+  --ag-row-border-color: #ccc;
+  --ag-cell-horizontal-border: solid 1px #ccc;
+}
+
+.rag-red {
+  background-color: #f8d7da !important; /* Light red background */
+  color: #842029 !important; /* Dark red text */
+}
+
+.ag-theme-quartz .rag-red {
+  background-color: #f8d7da !important;
+  color: #842029 !important;
+}

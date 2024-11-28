@@ -1,0 +1,180 @@
+<nav class="navbar navbar-expand-lg bg-gradient1 p-1">
+  <div class="container-fluid">
+    <div class="d-flex align-items-center">
+      @if (userRoles[0]==='guest') {
+      <a class="navbar-brand m-0 p-0" routerLink="/gdashboard">
+        <img src="img/logo.png" alt="Brand" width="30" height="24" />
+      </a>
+      }@else {
+      <a class="navbar-brand m-0 p-0" routerLink="/dashboard">
+        <img src="img/logo.png" alt="Brand" width="30" height="24" />
+      </a>
+      } @if (userRoles[0]==='guest') { }@else {
+      <!-- AJAX Search Field -->
+      <form
+        class="d-flex ms-2 position-relative"
+        role="search"
+        (submit)="clearSearch()"
+      >
+        <input
+          class="form-control form-control-sm me-2"
+          id="search"
+          type="search"
+          placeholder="Search driver by NIC"
+          [formControl]="searchControl"
+          aria-label="Search"
+        />
+        <button class="btn btn-outline-light btn-sm" type="submit">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+
+        <!-- Search Results Dropdown -->
+        @if (searchResults().length>0) {
+        <ul
+          class="list-group position-absolute mt-4"
+          style="width: 300px; z-index: 2000; background-color: white"
+        >
+          @for (item of searchResults(); track $index) {
+          <li class="list-group-item small">
+            <a [routerLink]="['/alldrivers/', item.id]" (click)="clearSearch()">
+              DriverName: {{ item.name }} <br />
+              DriverNIC:{{ item.nic }}
+            </a>
+          </li>
+          }
+        </ul>
+        } @if (isLoading()) {
+        <div class="spinner-grow spinner-grow-sm text-light m-2" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        }
+      </form>
+      }
+    </div>
+
+    <!-- Toggler for mobile view -->
+    <button
+      class="navbar-toggler p-1"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNavDropdown"
+      aria-controls="navbarNavDropdown"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Right Aligned Menu Items -->
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+      <ul class="navbar-nav ms-auto small">
+        <!-- Smaller text and right aligned -->
+        <li class="nav-item">
+          @if (userRoles[0]==='guest') {
+          <a
+            class="nav-link text-light"
+            routerLink="/gdashboard"
+            routerLinkActive="custom-active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            aria-current="page"
+          >
+            <i class="fa-solid fa-house fa-flip me-1"></i>Dashboard
+          </a>
+          }@else {
+          <a
+            class="nav-link text-light"
+            routerLink="/dashboard"
+            routerLinkActive="custom-active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            aria-current="page"
+          >
+            <i class="fa-solid fa-house fa-flip me-1"></i>Dashboard
+          </a>
+          }
+        </li>
+        @for (menu of dropdownMenus; track $index) { @if (canAccess(menu.roles))
+        {
+        <li
+          class="nav-item dropdown"
+          routerLinkActive="custom-active"
+          [routerLinkActiveOptions]="{ exact: false }"
+        >
+          <a
+            class="nav-link dropdown-toggle text-light"
+            href="#"
+            id="{{ menu.id }}"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <i [class]="menu.icon"></i> {{ menu.name }}
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="id">
+            @for (item of menu.items; track $index) {
+            @if(canAccess(item.roles)){
+            <li routerLinkActive="custom-active-dropdown">
+              <a
+                class="dropdown-item text-primary small"
+                [routerLink]="item.path"
+                routerLinkActive="custom-active-dropdown"
+                [routerLinkActiveOptions]="{ exact: true }"
+                ><i [class]="item.icon"></i>{{ item.name }}
+              </a>
+              <hr class="dropdown-divider" />
+            </li>
+            } }
+          </ul>
+        </li>
+        } }
+
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle text-light"
+            href="#"
+            id="user"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+            ><i class="fa-solid fa-user-gear fa-fade me-1"></i> {{ username() }}
+          </a>
+          <ul
+            class="dropdown-menu dropdown-menu-end"
+            aria-labelledby="navbarDropdown"
+          >
+            <li>
+              <a
+                class="dropdown-item text-primary small"
+                href="#"
+                (click)="openUserProfileModal(); $event.preventDefault()"
+                ><i class="fa-solid fa-user me-1"></i>Profile
+              </a>
+              <hr class="dropdown-divider" />
+            </li>
+            <li>
+              <a
+                class="dropdown-item text-primary small"
+                routerLink="/login"
+                routerLinkActive="active"
+                (click)="onLogOut()"
+                ><i class="fa-solid fa-right-from-bracket me-1"></i>LogOut
+              </a>
+              <hr class="dropdown-divider" />
+            </li>
+            <li>
+              @if (userRoles[0]==='admin'||userRoles[0]==='manager') {<a
+                class="dropdown-item text-primary small"
+                routerLink="/allusers"
+                ><i class="fa-solid fa-user-group me-1"></i>Employees
+              </a>
+              <hr class="dropdown-divider" />
+              }@else{ }
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<app-profile #userprofile></app-profile>
+<router-outlet></router-outlet>
+<app-footer></app-footer>
