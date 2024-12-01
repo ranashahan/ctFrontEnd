@@ -125,12 +125,10 @@ export class ContractorComponent implements OnInit, OnDestroy {
    * This method will fetch all the records from database.
    */
   getAll() {
-    this.subscriptionList.push(
-      this.contractorService.getAllContractors().subscribe((res: any) => {
-        this.contractors.set(res);
-        this.filterContractors();
-      })
-    );
+    this.contractorService.getAll().subscribe((res: any) => {
+      this.contractors.set(res);
+      this.filterContractors();
+    });
   }
 
   /**

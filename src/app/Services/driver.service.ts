@@ -1,17 +1,20 @@
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { AuthService } from './auth.service';
-import { catchError, forkJoin, map, Observable, throwError } from 'rxjs';
+import { catchError, forkJoin, map, Observable, tap, throwError } from 'rxjs';
 import { apiDriverModel } from '../Models/Driver';
 import { ContractorService } from './contractor.service';
 import { DltypeService } from './dltype.service';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { apiContractorModel } from '../Models/Contractor';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DriverService {
   private readonly apiURL = `${environment.apiUrl}driver/`;
+  private drivers = signal<apiDriverModel[]>([]);
   constructor(private http: HttpClient) {}
   private authService = inject(AuthService);
   private cService = inject(ContractorService);
@@ -34,7 +37,7 @@ export class DriverService {
   ): Observable<any[]> {
     return forkJoin({
       drivers: driverParam,
-      contractors: this.cService.getAllContractors(),
+      contractors: this.cService.getAll(),
       dlTypes: this.dlService.getAllDLTypes(),
     }).pipe(
       map(({ drivers, contractors, dlTypes }) => {
@@ -42,12 +45,10 @@ export class DriverService {
           map[contractor.id] = contractor.name;
           return map;
         }, {} as Record<number, string>);
-
         const dltypeMap = dlTypes.reduce((map, dltype: any) => {
           map[dltype.id] = dltype.name;
           return map;
         }, {} as Record<number, string>);
-
         // Map drivers to include contractorName
         return drivers.map((driver) => ({
           ...driver,
@@ -187,6 +188,7 @@ export class DriverService {
    * Update driver by id
    * @param id id
    * @param name name
+   * @param gender gender
    * @param dob date of birth
    * @param nic nic
    * @param nicexpiry nic expiry
@@ -210,6 +212,7 @@ export class DriverService {
   updatedriver(
     id: number,
     name: string,
+    gender: string,
     dob: string,
     nic: string,
     nicexpiry: Date,
@@ -232,6 +235,7 @@ export class DriverService {
   ): Observable<apiDriverModel> {
     return this.http.put<apiDriverModel>(this.apiURL + id, {
       name,
+      gender,
       dob,
       nic,
       nicexpiry,
@@ -258,6 +262,7 @@ export class DriverService {
   /**
    * Create Driver
    * @param name name
+   * @param gender driver gender
    * @param dob date of birth
    * @param nic nic
    * @param nicexpiry nic expiry
@@ -280,6 +285,7 @@ export class DriverService {
    */
   createDriver(
     name: string,
+    gender: string,
     dob: string,
     nic: string,
     nicexpiry: Date,
@@ -304,6 +310,7 @@ export class DriverService {
         this.apiURL + 'create',
         {
           name,
+          gender,
           dob,
           nic,
           nicexpiry,

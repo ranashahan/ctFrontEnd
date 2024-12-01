@@ -1,6 +1,12 @@
 {
   "name": "consult-train",
   "version": "2.0.0",
+  "author": {
+    "name": "Rana Mansoor Ahmed",
+    "email": "rana_shahan@hotmail.com",
+    "url": "https://github.com/ranashahan"
+  },
+  "description": "This is the fontend of consult & train software built by Rana Mansoor Ahmed",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

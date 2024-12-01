@@ -1,4 +1,4 @@
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -50,7 +50,6 @@ import { ClientService } from '../../Services/client.service';
   templateUrl: './assessmentdetail.component.html',
   styleUrl: './assessmentdetail.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [DatePipe],
 })
 export class AssessmentdetailComponent implements OnInit, OnDestroy {
   sessionID: number = 0;
@@ -92,7 +91,6 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
    * @param cdRef Change detector Reference
    * @param route route reference
    * @param driverService driver service
-   * @param datepipe datepipe
    */
   constructor(
     private fb: FormBuilder,
@@ -108,8 +106,7 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
     private cdRef: ChangeDetectorRef,
     private route: ActivatedRoute,
     private driverService: DriverService,
-    private clientService: ClientService,
-    private datepipe: DatePipe
+    private clientService: ClientService
   ) {
     this.sessionID = parseInt(this.route.snapshot.paramMap.get('id') ?? '0');
     this.utils.setTitle('Assessment Details');
@@ -155,23 +152,20 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
           this.sessionDetail.set(res[0]);
           this.initialSessionData = this.sessionDetail();
           this.getClients();
-          // console.log(this.sessionDetail());
           this.getDriver(res[0].driverid);
           const data = this.updatedCategories();
           this.categories.set(data);
-          const formattedSessionDate = this.datepipe.transform(
-            res[0].sessiondate,
-            'yyyy-MM-dd'
+
+          const formattedSessionDate = this.utils.convertToMySQLDate(
+            res[0].sessiondate
           );
-          const formattedClassDate = this.datepipe.transform(
-            res[0].classdate,
-            'yyyy-MM-dd'
+
+          const formattedClassDate = this.utils.convertToMySQLDate(
+            res[0].classdate
           );
-          const formattedYardDate = this.datepipe.transform(
-            res[0].yarddate,
-            'yyyy-MM-dd'
+          const formattedYardDate = this.utils.convertToMySQLDate(
+            res[0].yarddate
           );
-          console.log(res);
 
           this.assessmentForm.patchValue({
             sessionName: res[0].name,
@@ -186,6 +180,7 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
             vehicleId: res[0].vehicleid,
             route: res[0].route,
             quizscore: res[0].quizscore,
+            comment: res[0].comment,
             traffic: res[0].traffic,
             weather: res[0].weather,
             categories: this.categories(),
@@ -209,7 +204,6 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
         this.formDriver.patchValue({
           clientName: clietname,
         });
-        console.log(this.formDriver.getRawValue());
       })
     );
   }
@@ -241,7 +235,7 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
    */
   getContractors() {
     this.subscriptionList.push(
-      this.cService.getAllContractors().subscribe((res: any) => {
+      this.cService.getAll().subscribe((res: any) => {
         this.contractors.set(res);
       })
     );
@@ -363,6 +357,7 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
       vehicleId: [{ value: '', disabled: !this.isEdit }],
       route: [{ value: '', disabled: !this.isEdit }],
       quizscore: [{ value: '', disabled: !this.isEdit }],
+      comment: [{ value: '', disabled: !this.isEdit }],
       traffic: [{ value: '', disabled: !this.isEdit }],
       weather: [{ value: '', disabled: !this.isEdit }],
       categories: this.fb.array(

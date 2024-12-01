@@ -69,7 +69,7 @@ export class DriversreportComponent implements OnInit, OnDestroy {
    */
   getContractors() {
     this.subscriptionList.push(
-      this.cService.getAllContractors().subscribe((res: any) => {
+      this.cService.getAll().subscribe((res: any) => {
         this.contractors.set(res);
       })
     );
@@ -117,7 +117,7 @@ export class DriversreportComponent implements OnInit, OnDestroy {
     let name = this.getContractorName(
       this.formSelectContractor.get('contractorid')?.value
     );
-    console.log(name);
+    // console.log(name);
     this.reportService.generateDriverPdfReport(name, drivers);
     this.utils.showToast('Report generated', 'info');
   }

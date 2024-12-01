@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ICellRendererAngularComp } from 'ag-grid-angular';
 
@@ -8,6 +8,7 @@ import { ICellRendererAngularComp } from 'ag-grid-angular';
   template: `<a [routerLink]="['/alldrivers/' + params.data.id]">{{
     params.value
   }}</a>`,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LinkCellRendererComponent implements ICellRendererAngularComp {
   params: any;

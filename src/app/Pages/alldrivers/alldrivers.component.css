@@ -19,12 +19,36 @@
   --ag-cell-horizontal-border: solid 1px #ccc;
 }
 
-.rag-red {
-  background-color: #f8d7da !important; /* Light red background */
-  color: #842029 !important; /* Dark red text */
+.legend-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
-.ag-theme-quartz .rag-red {
-  background-color: #f8d7da !important;
-  color: #842029 !important;
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.legend-box {
+  width: 15px;
+  height: 15px;
+  display: inline-block;
+  border: 1px solid #ccc;
+}
+.legend-red {
+  background-color: #f8d7da; /* Red for License Expired */
+  border-color: #842029;
+}
+
+.legend-yellow {
+  background-color: #fff3cd; /* Yellow for Permit Expired */
+  border-color: #856404;
+}
+
+.legend-blue {
+  background-color: #85c0e4; /* Yellow for Permit Expired */
+  border-color: #856404;
 }

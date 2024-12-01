@@ -54,7 +54,6 @@
               id="savebtn"
               class="btn btn-outline-success btn-sm ms-1"
               type="submit"
-              [disabled]="driverForm.invalid"
               (click)="updateDriver(); toggleEdit()"
             >
               <i class="fa-regular fa-floppy-disk"></i>
@@ -111,13 +110,35 @@
               </div>
               }
             </div>
+            <label for="gender" class="col-sm-1 col-form-label">Gender:</label>
+            <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+              @if (isEdit) {
+              <select
+                class="form-select form-select-sm"
+                id="gender"
+                formControlName="gender"
+              >
+                <option disabled selected value="null">-----Select-----</option>
+                @for (item of gender(); track $index) {
+                <option [value]="item">{{ item }}</option>
+                }
+              </select>
+              }@else {
+              <input
+                class="form-control form-control-sm"
+                id="gender"
+                placeholder="-----Select-----"
+                [value]="driverForm.get('gender')?.value"
+                disabled
+              />}
+            </div>
             <label for="dob" class="col-sm-1 col-form-label"
               >Date of birth:</label
             >
             <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
               <input
                 id="dob"
-                type="text"
+                type="date"
                 class="form-control form-control-sm"
                 formControlName="dob"
                 placeholder="mm/dd/yyyy"
@@ -159,7 +180,7 @@
             <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
               <input
                 id="nicexpiry"
-                type="text"
+                type="date"
                 name="nicexpiry"
                 class="form-control form-control-sm"
                 formControlName="nicexpiry"
@@ -231,7 +252,7 @@
             <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
               <input
                 id="licenseexpiry"
-                type="text"
+                type="date"
                 name="licenseexpiry"
                 class="form-control form-control-sm"
                 formControlName="licenseexpiry"
@@ -284,7 +305,7 @@
             <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
               <input
                 id="permitissue"
-                type="text"
+                type="date"
                 name="permitissue"
                 class="form-control form-control-sm"
                 formControlName="permitissue"
@@ -297,7 +318,7 @@
             <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
               <input
                 id="permitexpiry"
-                type="text"
+                type="date"
                 name="permitexpiry"
                 class="form-control form-control-sm"
                 formControlName="permitexpiry"
@@ -440,7 +461,7 @@
             <label for="comment" class="col-sm-1 col-form-label"
               >Comment:</label
             >
-            <div class="col-lg-7 col-md-11 col-sm-11 mt-2">
+            <div class="col-lg-11 col-md-11 col-sm-11 mt-2">
               <textarea
                 id="comment"
                 name="comment"

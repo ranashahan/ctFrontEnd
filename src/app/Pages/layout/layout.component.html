@@ -36,7 +36,10 @@
         >
           @for (item of searchResults(); track $index) {
           <li class="list-group-item small">
-            <a [routerLink]="['/alldrivers/', item.id]" (click)="clearSearch()">
+            <a
+              (click)="navigateToDriver(item.id); $event.preventDefault()"
+              href="#"
+            >
               DriverName: {{ item.name }} <br />
               DriverNIC:{{ item.nic }}
             </a>

@@ -32,7 +32,7 @@ import { ToastComponent } from '../../Widgets/toast/toast.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DriverdetailComponent implements OnInit, OnDestroy {
-  driverId: number = 0;
+  driverId = signal<number>(0);
   isEdit = false;
   driverForm: FormGroup;
   bloodgroups = signal<apiGenericModel[]>([]);
@@ -40,6 +40,7 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
   visuals = signal<apiGenericModel[]>([]);
   contractors = signal<apiContractorModel[]>([]);
   licenseVerification = signal<any[]>([]);
+  gender = signal<string[]>([]);
   initialFormData: any;
   /**
    * Subscriptionlist so ngondestory will destory all registered subscriptions.
@@ -73,6 +74,7 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
     this.driverForm = this.fb.group({
       id: [{ value: '', disabled: true }], // Always disabled
       name: [{ value: '', disabled: !this.isEdit }, Validators.required],
+      gender: [{ value: null, disabled: !this.isEdit }],
       dob: [{ value: null, disabled: !this.isEdit }],
       age: [{ value: '', disabled: !this.isEdit }],
       nic: [
@@ -109,18 +111,20 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
    * This method will invoke all the methods while rendering the page
    */
   ngOnInit(): void {
-    // Get the ID from the route
-    this.driverId = parseInt(this.route.snapshot.paramMap.get('id') ?? '0');
-    // Fetch the driver details using the ID
-    if (this.driverId) {
-      this.getDriver();
-    }
+    this.route.paramMap.subscribe((param) => {
+      const driverid = parseInt(param.get('id') ?? '0');
+      this.driverId.set(driverid);
+      this.getDriver(this.driverId());
+    });
+
     this.getBloodGroups();
     this.getDLTypes();
     this.getContractors();
     this.getVisuals();
     this.licenseVerification.set(this.utils.verificationStatus());
+    this.gender.set(this.utils.gender());
   }
+
   /**
    * This method will get all the blood groups
    */
@@ -131,6 +135,7 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
       })
     );
   }
+
   /**
    * This method will get all the driving license types
    */
@@ -141,6 +146,7 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
       })
     );
   }
+
   /**
    * This method will get all the visuals
    */
@@ -157,7 +163,7 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
    */
   getContractors() {
     this.subscriptionList.push(
-      this.cService.getAllContractors().subscribe((res: any) => {
+      this.cService.getAll().subscribe((res: any) => {
         this.contractors.set(res);
       })
     );
@@ -208,14 +214,50 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
   /**
    * This method will get driver against driver id
    */
-  getDriver() {
+  getDriver(id: number) {
     this.subscriptionList.push(
-      this.driverService
-        .getDriverByID(this.driverId)
-        .subscribe((driverData: any) => {
-          this.driverForm.patchValue(driverData[0]);
-          this.cdRef.detectChanges();
-        })
+      this.driverService.getDriverByID(id).subscribe((driverData: any) => {
+        this.driverForm.patchValue(driverData[0]);
+
+        const formattedDOB = this.utils.convertToMySQLDate(driverData[0].dob);
+        this.driverForm.patchValue({
+          dob: formattedDOB,
+        });
+        this.driverForm.get('dob')?.updateValueAndValidity();
+
+        const formattedNIC = this.utils.convertToMySQLDate(
+          driverData[0].nicexpiry
+        );
+        this.driverForm.patchValue({
+          nicexpiry: formattedNIC,
+        });
+        this.driverForm.get('nicexpiry')?.updateValueAndValidity();
+
+        const formattedDLE = this.utils.convertToMySQLDate(
+          driverData[0].licenseexpiry
+        );
+        this.driverForm.patchValue({
+          licenseexpiry: formattedDLE,
+        });
+        this.driverForm.get('licenseexpiry')?.updateValueAndValidity();
+
+        const formattedPI = this.utils.convertToMySQLDate(
+          driverData[0].permitissue
+        );
+        this.driverForm.patchValue({
+          permitissue: formattedPI,
+        });
+        this.driverForm.get('permitissue')?.updateValueAndValidity();
+
+        const formattedPE = this.utils.convertToMySQLDate(
+          driverData[0].permitexpiry
+        );
+        this.driverForm.patchValue({
+          permitexpiry: formattedPE,
+        });
+        this.driverForm.get('permitexpiry')?.updateValueAndValidity();
+        this.cdRef.detectChanges();
+      })
     );
   }
 
@@ -232,35 +274,12 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
   updateDriver() {
     if (this.driverForm.valid) {
       let updatedDriver = this.driverForm.getRawValue();
-      if (updatedDriver.dob) {
-        updatedDriver.dob = this.utils.convertToMySQLDate(updatedDriver.dob);
-      }
-      if (updatedDriver.licenseexpiry) {
-        updatedDriver.licenseexpiry = this.utils.convertToMySQLDate(
-          updatedDriver.licenseexpiry
-        );
-      }
-      if (updatedDriver.permitissue) {
-        updatedDriver.permitissue = this.utils.convertToMySQLDate(
-          updatedDriver.permitissue
-        );
-      }
-      if (updatedDriver.nicexpiry) {
-        updatedDriver.nicexpiry = this.utils.convertToMySQLDate(
-          updatedDriver.nicexpiry
-        );
-      }
-
-      if (updatedDriver.permitexpiry) {
-        updatedDriver.permitexpiry = this.utils.convertToMySQLDate(
-          updatedDriver.permitexpiry
-        );
-      }
       this.subscriptionList.push(
         this.driverService
           .updatedriver(
             updatedDriver.id,
             updatedDriver.name,
+            updatedDriver.gender,
             updatedDriver.dob,
             updatedDriver.nic,
             updatedDriver.nicexpiry,
@@ -286,7 +305,7 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
               updatedDriver.name + ' Driver update successfully',
               'success'
             );
-            this.getDriver();
+            this.getDriver(this.driverId());
           })
       );
     }
@@ -337,7 +356,7 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
    */
   resetForm(): void {
     this.driverForm.reset();
-    this.getDriver();
+    this.getDriver(this.driverId());
   }
 
   /**

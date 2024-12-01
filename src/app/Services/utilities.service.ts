@@ -120,8 +120,12 @@ export class UtilitiesService {
    */
   public convertToMySQLDate(date: string): string {
     // Convert MM/DD/YYYY format to YYYY-MM-DD
-    const [month, day, year] = date.split('/');
-    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    if (date) {
+      const [month, day, year] = date.split('/');
+      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    } else {
+      return date;
+    }
   }
 
   /**
@@ -130,6 +134,14 @@ export class UtilitiesService {
    */
   public roles(): string[] {
     return ['admin', 'guest', 'member', 'manager', 'staff'];
+  }
+
+  /**
+   * This method only for get genders
+   * @returns array of string
+   */
+  public gender(): string[] {
+    return ['Male', 'Female', 'Not Specified'];
   }
 
   /**

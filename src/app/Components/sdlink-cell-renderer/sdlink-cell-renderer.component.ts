@@ -3,13 +3,14 @@ import { RouterLink } from '@angular/router';
 import { ICellRendererAngularComp } from 'ag-grid-angular';
 
 @Component({
-  selector: 'app-action-cell-renderer',
+  selector: 'app-sdlink-cell-renderer',
   imports: [RouterLink],
-  templateUrl: './action-cell-renderer.component.html',
-  styleUrl: './action-cell-renderer.component.css',
+  template: `<a [routerLink]="['/alldrivers/' + params.data.driverid]">{{
+    params.value
+  }}</a>`,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ActionCellRendererComponent implements ICellRendererAngularComp {
+export class SDLinkCellRendererComponent implements ICellRendererAngularComp {
   params: any;
 
   agInit(params: any): void {
@@ -19,11 +20,5 @@ export class ActionCellRendererComponent implements ICellRendererAngularComp {
   refresh(params: any): boolean {
     this.params = params;
     return true;
-  }
-
-  onDeleteUser() {
-    if (this.params.context.onDelete) {
-      this.params.context.onDelete(this.params.data.id);
-    }
   }
 }

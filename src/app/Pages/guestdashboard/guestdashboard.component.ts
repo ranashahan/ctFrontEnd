@@ -70,7 +70,7 @@ export class GuestdashboardComponent implements OnInit, OnDestroy {
 
   getContractors() {
     this.subscriptionList.push(
-      this.cService.getAllContractors().subscribe((res: any) => {
+      this.cService.getAll().subscribe((res: any) => {
         this.contractors.set(res);
       })
     );

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { computed, effect, inject, Injectable, signal } from '@angular/core';
 import { AuthService } from './auth.service';
-import { Observable } from 'rxjs';
+import { from, Observable, tap } from 'rxjs';
 import { apiContractorModel } from '../Models/Contractor';
 import { environment } from '../../environments/environment';
 
@@ -13,11 +13,7 @@ export class ContractorService {
   constructor(private http: HttpClient) {}
   private authService = inject(AuthService);
 
-  /**
-   * Get all contractors
-   * @returns Observable
-   */
-  getAllContractors(): Observable<apiContractorModel[]> {
+  public getAll(): Observable<apiContractorModel[]> {
     return this.http.get<apiContractorModel[]>(this.apiURL + 'getAll');
   }
 
