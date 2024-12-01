@@ -42,6 +42,19 @@
           }
         </div>
         <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
+          <label class="label ms-1" for="gender">Gender</label>
+          <select
+            class="form-select form-select-sm"
+            id="gender"
+            formControlName="gender"
+          >
+            <option disabled selected value="null">-----Select-----</option>
+            @for (item of gender(); track $index) {
+            <option [value]="item">{{ item }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
           <label class="label label-sm ms-1" for="driverdob"
             >Date of Birth</label
           >

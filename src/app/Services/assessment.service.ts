@@ -1,12 +1,17 @@
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { catchError, map, Observable, throwError } from 'rxjs';
+import { catchError, forkJoin, map, Observable, throwError } from 'rxjs';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import {
   apiAssessmentFormModel,
   apiAssessmentModel,
+  apiSessionModel,
 } from '../Models/Assessment';
+import { ContractorService } from './contractor.service';
+import { LocationService } from './location.service';
+import { ResultService } from './result.service';
+import { StageService } from './stage.service';
 
 @Injectable({
   providedIn: 'root',
@@ -14,6 +19,10 @@ import {
 export class AssessmentService {
   private readonly apiURL = `${environment.apiUrl}assessment/`;
   authService = inject(AuthService);
+  cService = inject(ContractorService);
+  locationService = inject(LocationService);
+  resultService = inject(ResultService);
+  stageService = inject(StageService);
   constructor(private http: HttpClient) {}
 
   /**
@@ -47,7 +56,7 @@ export class AssessmentService {
     locationid?: any,
     startDate?: string,
     endDate?: string
-  ): Observable<any> {
+  ): Observable<apiSessionModel[]> {
     let params = new HttpParams();
     if (nic) {
       params = params.set('nic', nic);
@@ -76,7 +85,56 @@ export class AssessmentService {
     if (endDate) {
       params = params.set('endDate', endDate);
     }
-    return this.http.get(this.apiURL + 'getbydate', { params });
+    return this.http.get<apiSessionModel[]>(this.apiURL + 'getbydate', {
+      params,
+    });
+  }
+
+  /**
+   * This method will fetch all the driver and contractor name & dl type
+   * @returns Observable
+   */
+  getSessionsWithOthersName(
+    sessionParam: Observable<apiSessionModel[]>
+  ): Observable<any[]> {
+    return forkJoin({
+      sessions: sessionParam,
+      contractors: this.cService.getAll(),
+      locations: this.locationService.getAllLocations(),
+      results: this.resultService.getAllResults(),
+      stages: this.stageService.getAllStages(),
+    }).pipe(
+      map(({ sessions, contractors, locations, results, stages }) => {
+        const contractorMap = contractors.reduce((map, contractor: any) => {
+          map[contractor.id] = contractor.name;
+          return map;
+        }, {} as Record<number, string>);
+
+        const locationMap = locations.reduce((map, item: any) => {
+          map[item.id] = item.name;
+          return map;
+        }, {} as Record<number, string>);
+
+        const resultMap = results.reduce((map, item: any) => {
+          map[item.id] = item.name;
+          return map;
+        }, {} as Record<number, string>);
+
+        const stageMap = stages.reduce((map, item: any) => {
+          map[item.id] = item.name;
+          return map;
+        }, {} as Record<number, string>);
+
+        // Map drivers to include contractorName
+        return sessions.map((session) => ({
+          ...session,
+          contractorName: contractorMap[session.contractorid] || '',
+          locationName: locationMap[session.locationid] || '',
+          resultName: resultMap[session.resultid] || '',
+          stageName: stageMap[session.stageid] || '',
+        }));
+      })
+    );
   }
 
   /**

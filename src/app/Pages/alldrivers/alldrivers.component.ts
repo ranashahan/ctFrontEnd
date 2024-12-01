@@ -18,12 +18,7 @@ import {
   FormsModule,
   ReactiveFormsModule,
 } from '@angular/forms';
-import {
-  ActivatedRoute,
-  Router,
-  RouterLink,
-  RouterOutlet,
-} from '@angular/router';
+import { RouterLink, RouterOutlet } from '@angular/router';
 import { DriverService } from '../../Services/driver.service';
 import { UtilitiesService } from '../../Services/utilities.service';
 import { ContractorService } from '../../Services/contractor.service';
@@ -41,7 +36,6 @@ import {
   DomLayoutType,
   GridApi,
   RowClassParams,
-  RowClassRules,
   RowStyle,
 } from 'ag-grid-community'; // Column Definition Type Interface
 import 'ag-grid-community/styles/ag-grid.css';
@@ -85,8 +79,6 @@ export class AlldriversComponent implements OnInit, OnDestroy {
   });
 
   constructor(
-    private router: Router,
-    private route: ActivatedRoute,
     private driverService: DriverService,
     private utils: UtilitiesService,
     private cService: ContractorService,
@@ -197,7 +189,7 @@ export class AlldriversComponent implements OnInit, OnDestroy {
    */
   getContractors() {
     this.subscriptionList.push(
-      this.cService.getAllContractors().subscribe((res: any) => {
+      this.cService.getAll().subscribe((res: any) => {
         this.contractors.set(res);
       })
     );
@@ -239,16 +231,20 @@ export class AlldriversComponent implements OnInit, OnDestroy {
 
   colDefs: ColDef[] = [
     {
-      headerName: 'Sr. #',
+      headerName: '#',
       valueGetter: 'node.rowIndex + 1', // Add 1 to make it 1-based index
       cellClass: 'serial-number-cell',
-      flex: 0.2, // Adjust column width
+      width: 50, // Set to a small but visible width in pixels
+      maxWidth: 50, // Enforce a maximum width
+      minWidth: 30, // Optionally enforce a minimum width
+      headerTooltip: 'Sr. #',
     },
     {
       headerName: 'ID',
       field: 'id',
       filter: 'agNumberColumnFilter',
       flex: 0.2,
+      headerTooltip: 'Driver ID',
     },
     {
       headerName: 'Name',
@@ -256,18 +252,21 @@ export class AlldriversComponent implements OnInit, OnDestroy {
       filter: 'agTextColumnFilter',
       cellRenderer: 'linkCellRenderer',
       flex: 1.5,
+      headerTooltip: 'Driver Name',
     },
     {
       headerName: 'Contractor',
       field: 'contractorName',
       filter: 'agTextColumnFilter',
       flex: 1.5,
+      headerTooltip: 'Contractor Name',
     },
     {
       headerName: 'N.I.C #',
       field: 'nic',
       filter: 'agTextColumnFilter',
       flex: 1.5,
+      headerTooltip: 'National Identity Card #',
     },
     {
       headerName: 'DL #',
@@ -356,11 +355,19 @@ export class AlldriversComponent implements OnInit, OnDestroy {
     this.gridApi = params.api;
   }
   public getRowStyle = (params: RowClassParams): RowStyle | undefined => {
+    const currentDate = new Date();
     const expiryDate = params.data.licenseexpiry
       ? new Date(params.data.licenseexpiry)
       : null;
-    if (expiryDate && expiryDate < new Date()) {
+    if (expiryDate && expiryDate < currentDate) {
       return { background: '#f8d7da', color: '#842029' }; // Inline styles for expired rows.
+    }
+
+    const permitExpiryDate = params.data.permitexpiry
+      ? new Date(params.data.permitexpiry)
+      : null;
+    if (permitExpiryDate && permitExpiryDate < currentDate) {
+      return { background: '#fff3cd', color: '#856404' }; // Yellow for expired permit
     }
     return undefined; // Default style for other rows.
   };

@@ -1,6 +1,7 @@
 export interface apiDriverModel {
   id: number;
   name: string;
+  gender: string;
   dob: string;
   age: number;
   nic: string;

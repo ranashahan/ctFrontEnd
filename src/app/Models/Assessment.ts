@@ -30,6 +30,7 @@ export interface apiAssessmentFormModel {
   traffic: string;
   route: string;
   quizscore: string;
+  comment: string;
   userid: number;
   driverId: number;
   trainerid: number;
@@ -66,6 +67,7 @@ export interface apiSessionModel {
   traffic: any;
   route: any;
   quizscore: any;
+  comment: any;
   active: number;
   createdby: number;
   modifiedby: number;

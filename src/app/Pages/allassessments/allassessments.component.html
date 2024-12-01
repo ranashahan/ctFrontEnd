@@ -170,11 +170,11 @@
   </div>
   <div class="form-group">
     <input
-      type="text"
+      type="search"
       class="form-control"
-      placeholder="Filter by session name......"
-      [(ngModel)]="searchTerm"
-      (input)="filterSessions()"
+      placeholder="Filter session records......"
+      id="filter-text-box"
+      (input)="onFilterTextBoxChanged()"
     />
   </div>
   <hr />
@@ -196,125 +196,19 @@
       </button>
     </div>
   </div>
-  <div class="table-responsive">
-    <table
-      class="table table-hover table-bordered fs-7"
-      id="allassessment-table"
-    >
-      <thead class="table-warning">
-        <tr>
-          <th>#</th>
-          <th>Session Name</th>
-          <th>Session Date</th>
-          <th>Driver Name</th>
-          <th>Driver NIC</th>
-          <th>Contractor</th>
-          <th>Location</th>
-          <th>Result</th>
-          <th>Stage</th>
-          <th>Score</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (item of paginatedSessions(); track $index) {
-        <tr>
-          <td>
-            <div>
-              {{ $index + 1 }}
-            </div>
-          </td>
-          <td>
-            <div>
-              <a routerLink="/allassessments/{{ item.id }}">
-                {{ item.name }}
-              </a>
-            </div>
-          </td>
-          <td>
-            <div>
-              {{ item.sessiondate | date }}
-            </div>
-          </td>
-          <td>
-            <div>
-              <a routerLink="/alldrivers/{{ item.driverid }}">
-                {{ item.drivername }}
-              </a>
-            </div>
-          </td>
-          <td>
-            <div>
-              {{ item.nic }}
-            </div>
-          </td>
-          <td>
-            <div>
-              {{ getContractorName(item.contractorid) }}
-            </div>
-          </td>
-          <td>
-            <div>
-              {{ getLocationName(item.locationid) }}
-            </div>
-          </td>
-          <td>
-            <div>
-              {{ getResultName(item.resultid) }}
-            </div>
-          </td>
-          <td>
-            <div>
-              {{ getStageName(item.stageid) }}
-            </div>
-          </td>
-          <td>
-            <div>
-              {{ item.totalscore }}
-            </div>
-          </td>
-          <td>
-            <button
-              type="button"
-              class="btn btn-outline-warning position-relative"
-              (click)="viewAssessmentDetails(item.id)"
-            >
-              <i class="fa-solid fa-circle-info"></i>
-            </button>
-            <button
-              class="btn btn-sm btn-outline-danger ms-3"
-              (click)="deleteAssessment(item.id)"
-            >
-              <i class="fa-solid fa-trash-can"></i>
-            </button>
-          </td>
-        </tr>
-        }@empty {
-        <tr>
-          <p>Please update your search criteria for items to be displayed</p>
-        </tr>
-        }
-      </tbody>
-    </table>
+  <div>
+    <ag-grid-angular
+      [class]="themeClass"
+      [rowData]="sessions()"
+      [columnDefs]="colDefs"
+      [pagination]="true"
+      [paginationPageSize]="20"
+      [paginationPageSizeSelector]="[5, 10, 20, 50, 100]"
+      [defaultColDef]="defaultColDef"
+      (gridReady)="onGridReady($event)"
+      [gridOptions]="gridOptions"
+    ></ag-grid-angular>
   </div>
-  <nav>
-    <ul class="pagination justify-content-center">
-      <li class="page-item" [class.disabled]="currentPage === 1">
-        <a class="page-link" type="button" (click)="previousPage()">Previous</a>
-      </li>
-      <li
-        class="page-item"
-        *ngFor="let page of pages"
-        [class.active]="page === currentPage"
-      >
-        <a class="page-link" type="button" (click)="goToPage(page)">{{
-          page
-        }}</a>
-      </li>
-      <li class="page-item" [class.disabled]="currentPage === totalPages">
-        <a class="page-link" type="button" (click)="nextPage()">Next</a>
-      </li>
-    </ul>
-  </nav>
+
   <app-delete-confirmation #confirmationModal></app-delete-confirmation>
 </div>

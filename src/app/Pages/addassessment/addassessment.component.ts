@@ -141,13 +141,17 @@ export class AddassessmentComponent implements OnInit, OnDestroy {
     );
   }
 
+  /**
+   * This method will fetch all the contractors
+   */
   getContractors() {
     this.subscriptionList.push(
-      this.cService.getAllContractors().subscribe((res: any) => {
+      this.cService.getAll().subscribe((res: any) => {
         this.contractors.set(res);
       })
     );
   }
+
   /**
    * This method will set blood group name against blood group ID
    * @param itemId blood group ID
@@ -239,6 +243,7 @@ export class AddassessmentComponent implements OnInit, OnDestroy {
       vehicleId: [],
       route: [],
       quizscore: [],
+      comment: [],
       traffic: [],
       weather: [],
       categories: this.fb.array(

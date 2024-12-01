@@ -12,7 +12,12 @@ import { AuthService } from '../../Services/auth.service';
 import { DriverService } from '../../Services/driver.service';
 import { Menu } from '../../Models/Menu';
 import { debounceTime, switchMap } from 'rxjs';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import {
+  Router,
+  RouterLink,
+  RouterLinkActive,
+  RouterOutlet,
+} from '@angular/router';
 import { FooterComponent } from '../footer/footer.component';
 
 @Component({
@@ -47,6 +52,7 @@ export class LayoutComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private driverService: DriverService,
+    private router: Router,
     private cdRef: ChangeDetectorRef
   ) {
     this.dropdownMenus = Menu.dropdownMenus;
@@ -88,6 +94,17 @@ export class LayoutComponent implements OnInit {
           this.searchResults.set(results);
         }
       });
+  }
+
+  /**
+   * This method to navigate programatically
+   * @param id driver ID
+   */
+  navigateToDriver(id: number): void {
+    this.router.navigate(['/alldrivers', id]).then(() => {
+      this.clearSearch();
+      this.cdRef.detectChanges();
+    });
   }
 
   /**

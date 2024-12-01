@@ -3,13 +3,13 @@ import { RouterLink } from '@angular/router';
 import { ICellRendererAngularComp } from 'ag-grid-angular';
 
 @Component({
-  selector: 'app-action-cell-renderer',
+  selector: 'app-saction-cell-renderer',
   imports: [RouterLink],
-  templateUrl: './action-cell-renderer.component.html',
-  styleUrl: './action-cell-renderer.component.css',
+  templateUrl: './saction-cell-renderer.component.html',
+  styleUrl: './saction-cell-renderer.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ActionCellRendererComponent implements ICellRendererAngularComp {
+export class SActionCellRendererComponent implements ICellRendererAngularComp {
   params: any;
 
   agInit(params: any): void {
@@ -21,7 +21,7 @@ export class ActionCellRendererComponent implements ICellRendererAngularComp {
     return true;
   }
 
-  onDeleteUser() {
+  onDeleteSession() {
     if (this.params.context.onDelete) {
       this.params.context.onDelete(this.params.data.id);
     }

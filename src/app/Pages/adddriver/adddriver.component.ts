@@ -22,7 +22,6 @@ import { BloodgroupService } from '../../Services/bloodgroup.service';
 import { DltypeService } from '../../Services/dltype.service';
 import { ContractorService } from '../../Services/contractor.service';
 import { VisualService } from '../../Services/visual.service';
-import { VerificationStatus } from '../../Models/Constants';
 
 @Component({
   selector: 'app-adddriver',
@@ -39,6 +38,7 @@ export class AdddriverComponent implements OnInit, OnDestroy {
   dltypes = signal<apiGenericModel[]>([]);
   visuals = signal<apiGenericModel[]>([]);
   licenseVerification = signal<any[]>([]);
+  gender = signal<string[]>([]);
   /**
    * Subscriptionlist so ngondestory will destory all registered subscriptions.
    */
@@ -59,6 +59,7 @@ export class AdddriverComponent implements OnInit, OnDestroy {
     this.utils.setTitle('Add Driver');
     this.formDriver = this.fb.group({
       name: ['', Validators.required],
+      gender: [null],
       dob: [null],
       nic: [
         '',
@@ -85,6 +86,7 @@ export class AdddriverComponent implements OnInit, OnDestroy {
       comment: [''],
     });
   }
+
   /**
    * This method will invoke all the methods while rendering the page
    */
@@ -94,6 +96,7 @@ export class AdddriverComponent implements OnInit, OnDestroy {
     this.getContractors();
     this.getVisuals();
     this.licenseVerification.set(this.utils.verificationStatus());
+    this.gender.set(this.utils.gender());
   }
   /**
    * This methid will get bloodgroups
@@ -131,7 +134,7 @@ export class AdddriverComponent implements OnInit, OnDestroy {
    */
   getContractors() {
     this.subscriptionList.push(
-      this.cService.getAllContractors().subscribe((res: any) => {
+      this.cService.getAll().subscribe((res: any) => {
         this.contractors.set(res);
       })
     );
@@ -141,11 +144,11 @@ export class AdddriverComponent implements OnInit, OnDestroy {
    * This method will create driver
    */
   createDriver() {
-    debugger;
     this.subscriptionList.push(
       this.dService
         .createDriver(
           this.formDriver.value.name,
+          this.formDriver.value.gender,
           this.formDriver.value.dob,
           this.formDriver.value.nic,
           this.formDriver.value.nicexpiry,
