@@ -9,7 +9,7 @@
         height="150px"
       />
     </div>
-    <div class="col-auto">
+    <div class="col-auto text-success">
       <h2>Add Driver</h2>
       <p>Please fill complete form to be insert driver data into database:</p>
     </div>
@@ -153,7 +153,6 @@
             id="lverification"
             formControlName="licenseverified"
           >
-            <option disabled value="null">-----Select-----</option>
             @for (item of licenseVerification(); track $index) {
             <option [value]="item.id">{{ item.name }}</option>
             }

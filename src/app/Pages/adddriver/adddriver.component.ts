@@ -72,7 +72,7 @@ export class AdddriverComponent implements OnInit, OnDestroy {
       licensenumber: ['', Validators.required],
       licensetypeid: [null],
       licenseexpiry: [null],
-      licenseverified: [null],
+      licenseverified: [1],
       designation: [''],
       department: [''],
       permitnumber: [''],
@@ -204,6 +204,10 @@ export class AdddriverComponent implements OnInit, OnDestroy {
    */
   resetForm(): void {
     this.formDriver.reset();
+    this.formDriver.patchValue({
+      licenseverified: 1,
+    });
+    this.formDriver.get('licenseverified')?.updateValueAndValidity();
   }
   /**
    * This method will destory all the subscriptions

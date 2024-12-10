@@ -1,0 +1,12 @@
+.action-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.btn {
+  height: 28px; /* Adjust the height */
+  line-height: 1;
+  padding: 4px 8px; /* Smaller padding */
+  font-size: 12px; /* Adjust font size */
+}

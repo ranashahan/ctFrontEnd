@@ -3,6 +3,7 @@
     type="button"
     class="btn btn-outline-success position-relative mt-2"
     [routerLink]="['/alldrivers/' + params.data.id]"
+    title="Driver Detail Page"
   >
     <i class="fa-solid fa-circle-info"></i>
     @if(params.data.ddccount>0){
@@ -14,7 +15,11 @@
     </span>
     }
   </button>
-  <button class="btn btn-sm btn-outline-danger mt-2" (click)="onDeleteUser()">
+  <button
+    class="btn btn-sm btn-outline-danger mt-2"
+    (click)="onDeleteUser()"
+    title="Delete Driver"
+  >
     <i class="fa-solid fa-trash-can"></i>
   </button>
 </div>

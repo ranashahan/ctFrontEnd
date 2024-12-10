@@ -30,13 +30,7 @@ import { ResultService } from '../../Services/result.service';
 import { AgGridAngular } from 'ag-grid-angular'; // Angular Data Grid Component
 import { AgGridModule } from 'ag-grid-angular';
 
-import {
-  ColDef,
-  DomLayoutType,
-  GridApi,
-  RowClassParams,
-  RowStyle,
-} from 'ag-grid-community'; // Column Definition Type Interface
+import { ColDef, DomLayoutType, GridApi } from 'ag-grid-community'; // Column Definition Type Interface
 import 'ag-grid-community/styles/ag-grid.css';
 /* Quartz Theme Specific CSS */
 import 'ag-grid-community/styles/ag-theme-quartz.css';
@@ -368,6 +362,13 @@ export class AllassessmentsComponent implements OnInit, OnDestroy {
     rowHeight: 40,
     domLayout: 'autoHeight' as DomLayoutType,
   };
+
+  /**
+   * Grid filter resets
+   */
+  resetFilters() {
+    this.gridApi.setFilterModel(null);
+  }
 
   executeExport() {
     this.gridApi.exportDataAsCsv();

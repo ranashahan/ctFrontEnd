@@ -7,6 +7,7 @@ import {
   apiAssessmentFormModel,
   apiAssessmentModel,
   apiSessionModel,
+  apiVSessionModel,
 } from '../Models/Assessment';
 import { ContractorService } from './contractor.service';
 import { LocationService } from './location.service';
@@ -155,6 +156,38 @@ export class AssessmentService {
     return this.http.delete(this.apiURL + id);
   }
 
+  createSessoinTraining(payload: any) {
+    return this.http.post(this.apiURL + 'createst', {
+      payload,
+    });
+  }
+
+  /**
+   * This method will fetch all the session against training id
+   * @param trainingid training id
+   * @returns Observable
+   */
+  getSessoinTraining(trainingid: number): Observable<apiVSessionModel[]> {
+    let params = new HttpParams();
+    params = params.set('trainingid', trainingid);
+    return this.http.get<apiVSessionModel[]>(this.apiURL + 'getst', {
+      params,
+    });
+  }
+
+  /**
+   * This method will delete training session relationship
+   * @param trainingid number
+   * @param sessionid session
+   * @returns Observalbe
+   */
+  deleteSessionTraining(trainingid: number, sessionid: number) {
+    return this.http.post(this.apiURL + 'deletets', {
+      trainingid,
+      sessionid,
+    });
+  }
+
   /**
    * This method will create assessment form with driver and trainer information
    * @param driverId Driver ID
@@ -277,6 +310,12 @@ export class AssessmentService {
       );
   }
 
+  /**
+   * This method for match data
+   * @param originalSessionData orignalSession Data
+   * @param updatedFormValues Form values
+   * @returns Updated values (excluded orginal session values)
+   */
   private matchData(originalSessionData: any, updatedFormValues: any) {
     const filteredUpdatedValues = {
       ...updatedFormValues,
@@ -371,6 +410,12 @@ export class AssessmentService {
     return objReturn;
   }
 
+  /**
+   * This method for covert data into json
+   * @param categories category
+   * @param sessionDate session date
+   * @returns json
+   */
   private convertCategoriesToJson(
     categories: any[],
     sessionDate: string

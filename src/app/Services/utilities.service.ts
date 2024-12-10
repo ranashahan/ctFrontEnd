@@ -145,6 +145,38 @@ export class UtilitiesService {
   }
 
   /**
+   * This method only for get category
+   * @returns array of string
+   */
+  public categories(): string[] {
+    return ['Permit', 'Assessment', 'Permit / Assessment'];
+  }
+
+  /**
+   * This method only for get category
+   * @returns array of string
+   */
+  public cources(): string[] {
+    return ['Defensive Driving', 'Defensive Lifting', 'Inspection'];
+  }
+
+  /**
+   * This method only for get category
+   * @returns array of string
+   */
+  public statuses(): string[] {
+    return ['New', 'Open', 'Plan', 'InProgress', 'Completed'];
+  }
+
+  /**
+   * This method only for get category
+   * @returns array of string
+   */
+  public sources(): string[] {
+    return ['External', 'Internal'];
+  }
+
+  /**
    * This method for static verification
    * @returns Verification
    */

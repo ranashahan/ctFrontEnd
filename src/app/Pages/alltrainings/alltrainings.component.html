@@ -1,108 +1,94 @@
 <div class="container-fluid">
+  <app-toast></app-toast>
   <hr />
   <div class="row">
     <div class="col-auto">
       <img
-        src="img/allassessment.jpg"
-        alt="AllAssessments"
+        src="img/alltrainings.jpg"
+        alt="AllTrainings"
         width="180px"
         height="150px"
       />
     </div>
     <div class="col-auto">
-      <h2>All Assessments</h2>
+      <h2>All Training</h2>
       <p>You can select it my navigating one by one and edit it (if needed):</p>
     </div>
   </div>
   <hr />
-  <app-toast></app-toast>
-  <div class="bg-warning bg-opacity-25">
+  <div class="bg-primary bg-opacity-50">
     <form
-      [formGroup]="formSession"
+      [formGroup]="formTrainingSearch"
       class="row row-cols-lg-auto g-3 align-items-end ms-1"
     >
       <div class="col-auto">
-        <label class="label ms-1 strong" for="inlineFormInputGroupNic"
-          >Driver NIC</label
+        <label class="label ms-1 strong" for="inlineFormInputGroupid"
+          >Training ID</label
         >
         <div class="input-group">
           <input
             type="text"
             class="form-control form-control-sm my-inputextend"
-            id="inlineFormInputGroupNic"
-            placeholder="xxxxx-xxxxxxx-x"
-            formControlName="nic"
-          />
-        </div>
-      </div>
-      <div class="col-auto">
-        <label class="label ms-1 strong" for="inlineFormInputGroupSessionName"
-          >Session ID</label
-        >
-        <div class="input-group">
-          <input
-            type="text"
-            class="form-control form-control-sm"
-            id="inlineFormInputGroupSessionName"
-            placeholder="UEP-LPG-2308-01-01"
+            id="inlineFormInputGroupid"
+            placeholder="Load-33/2425"
             formControlName="name"
           />
         </div>
       </div>
       <div class="col-auto">
-        <label class="label ms-1 strong" for="inlineFormInputGroupSessionDate"
-          >Road Test Date</label
+        <label class="label ms-1 strong" for="inlineFormInputGroupPlanDate"
+          >Plan Date</label
         >
         <div class="input-group">
           <input
             type="date"
             class="form-control form-control-sm"
-            id="inlineFormInputGroupSessionDate"
-            formControlName="sessiondate"
+            id="inlineFormInputGroupPlanDate"
+            formControlName="plandate"
           />
         </div>
       </div>
       <div class="col-auto">
-        <label class="label ms-1 strong" for="inlineFormSelectLocation"
-          >Location</label
+        <label class="label ms-1 strong" for="inlineFormSelectCourse"
+          >Course</label
         >
         <select
           class="form-select form-select-sm"
-          id="inlineFormSelectLocation"
-          formControlName="locationid"
+          id="inlineFormSelectCourse"
+          formControlName="cource"
         >
           <option disabled value="null">-----Select-----</option>
-          @for (item of locations(); track $index) {
-          <option [value]="item.id">{{ item.name }}</option>
+          @for (item of cources(); track $index) {
+          <option [value]="item">{{ item }}</option>
           }
         </select>
       </div>
       <div class="col-auto">
-        <label class="label ms-1 strong" for="inlineFormSelectResult"
-          >Result</label
+        <label class="label ms-1 strong" for="inlineFormSelectCategory"
+          >Category</label
         >
         <select
           class="form-select form-select-sm"
-          id="inlineFormSelectResult"
-          formControlName="resultid"
+          id="inlineFormSelectCategory"
+          formControlName="category"
         >
           <option disabled value="null">-----Select-----</option>
-          @for (item of results(); track $index) {
-          <option [value]="item.id">{{ item.name }}</option>
+          @for (item of categories(); track $index) {
+          <option [value]="item">{{ item }}</option>
           }
         </select>
       </div>
       <div class="col-auto">
-        <label class="label ms-1 strong" for="inlineFormSelectStage"
-          >Stage</label
+        <label class="label ms-1 strong" for="inlineFormSelectClient"
+          >Sponsor</label
         >
         <select
           class="form-select form-select-sm"
-          id="inlineFormSelectStage"
-          formControlName="stageid"
+          id="inlineFormSelectClient"
+          formControlName="clientid"
         >
           <option disabled value="null">-----Select-----</option>
-          @for (item of stages(); track $index) {
+          @for (item of clients(); track $index) {
           <option [value]="item.id">{{ item.name }}</option>
           }
         </select>
@@ -151,11 +137,10 @@
       <div class="col-auto">
         <button
           type="submit"
-          class="btn btn-warning btn-sm"
+          class="btn btn-primary btn-sm"
           (click)="getFillterredData()"
-          title="Search assessments' as per criteria"
         >
-          <i class="fa-solid fa-filter"></i> Search
+          <i class="fa-brands fa-searchengin me-1"></i>Search
         </button>
 
         <button
@@ -163,7 +148,7 @@
           class="btn btn-secondary btn-sm ms-1"
           (click)="formRest()"
         >
-          <i class="fa-solid fa-filter-circle-xmark me-1"></i> Reset
+          <i class="fa-solid fa-window-restore me-1"></i>Reset
         </button>
       </div>
     </form>
@@ -173,7 +158,7 @@
     <input
       type="search"
       class="form-control"
-      placeholder="Filter session records......"
+      placeholder="Filter training records......"
       id="filter-text-box"
       (input)="onFilterTextBoxChanged()"
     />
@@ -187,15 +172,23 @@
           <span class="legend-box legend-blue"></span>
           <span>Selected Row</span>
         </div>
+        <!-- <div class="legend-item fs-7">
+          <span class="legend-box legend-red"></span>
+          <span>License Expired</span>
+        </div>
+        <div class="legend-item fs-7">
+          <span class="legend-box legend-yellow"></span>
+          <span>Permit Expired</span>
+        </div> -->
         <div class="legend-item fs-7">
           <button
             type="button"
-            class="btn btn-outline-warning btn-sm"
+            class="btn btn-outline-primary btn-sm"
             style="font-size: 10px"
           >
             <i class="fa-solid fa-circle-info"></i>
           </button>
-          <span>Assessment Detail Page</span>
+          <span>Training Detail Page</span>
         </div>
       </div>
     </div>
@@ -215,19 +208,20 @@
       >
         <i class="fa-solid fa-file-excel me-1"></i>Export
       </button>
-
       <button
         class="btn btn-sm btn-outline-secondary float-end"
-        routerLink="/addassessment"
+        title="Add New training"
+        routerLink="/addtraining"
       >
-        <i class="fa-solid fa-circle-plus me-1"></i>Add new assessment
+        <i class="fa-solid fa-circle-plus me-1"></i>Add new training
       </button>
     </div>
   </div>
+
   <div>
     <ag-grid-angular
-      [class]="themeClass"
-      [rowData]="sessions()"
+      [class]="themeClass()"
+      [rowData]="trainings()"
       [columnDefs]="colDefs"
       [pagination]="true"
       [paginationPageSize]="20"
@@ -237,6 +231,6 @@
       [gridOptions]="gridOptions"
     ></ag-grid-angular>
   </div>
-
   <app-delete-confirmation #confirmationModal></app-delete-confirmation>
+  <router-outlet></router-outlet>
 </div>

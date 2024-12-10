@@ -27,6 +27,10 @@ import { VisualComponent } from './Pages/visual/visual.component';
 import { PagenotfoundComponent } from './Pages/pagenotfound/pagenotfound.component';
 import { UnauthorizedComponent } from './Pages/unauthorized/unauthorized.component';
 import { AllusersComponent } from './Pages/allusers/allusers.component';
+import { AlltrainingsComponent } from './Pages/alltrainings/alltrainings.component';
+import { TrainingdetailComponent } from './Pages/trainingdetail/trainingdetail.component';
+import { AddtrainingComponent } from './Pages/addtraining/addtraining.component';
+import { TrainingsreportComponent } from './Pages/trainingsreport/trainingsreport.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -98,6 +102,30 @@ export const routes: Routes = [
       {
         path: 'assessmentsconfigure',
         component: ConfigureassessmentComponent,
+        canActivate: [authGuard],
+        data: { roles: ['admin', 'manager'] },
+      },
+      {
+        path: 'alltrainings',
+        component: AlltrainingsComponent,
+        canActivate: [authGuard],
+        data: { roles: ['admin', 'manager'] },
+      },
+      {
+        path: 'alltrainings/:id',
+        component: TrainingdetailComponent,
+        canActivate: [authGuard],
+        data: { roles: ['admin', 'manager'] },
+      },
+      {
+        path: 'addtraining',
+        component: AddtrainingComponent,
+        canActivate: [authGuard],
+        data: { roles: ['admin', 'manager'] },
+      },
+      {
+        path: 'trainingsreport',
+        component: TrainingsreportComponent,
         canActivate: [authGuard],
         data: { roles: ['admin', 'manager'] },
       },

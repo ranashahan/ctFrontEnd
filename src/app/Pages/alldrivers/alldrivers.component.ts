@@ -354,6 +354,12 @@ export class AlldriversComponent implements OnInit, OnDestroy {
   onGridReady(params: any) {
     this.gridApi = params.api;
   }
+
+  /**
+   * This method for row styles
+   * @param params RowStyles
+   * @returns row styles
+   */
   public getRowStyle = (params: RowClassParams): RowStyle | undefined => {
     const currentDate = new Date();
     const expiryDate = params.data.licenseexpiry
@@ -372,6 +378,9 @@ export class AlldriversComponent implements OnInit, OnDestroy {
     return undefined; // Default style for other rows.
   };
 
+  /**
+   * Grid options
+   */
   gridOptions = {
     components: this.components,
     context: {
@@ -380,6 +389,13 @@ export class AlldriversComponent implements OnInit, OnDestroy {
     rowHeight: 40,
     domLayout: 'autoHeight' as DomLayoutType,
   };
+
+  /**
+   * Grid filter resets
+   */
+  resetFilters() {
+    this.gridApi.setFilterModel(null);
+  }
 
   /**
    * This method will destory all the subscriptions

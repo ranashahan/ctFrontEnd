@@ -6,7 +6,7 @@
   font-size: 0.75rem !important;
 }
 .fs-8 {
-  font-size: 0.5rem !important;
+  font-size: 0.65rem !important;
 }
 .bg-gradient1 {
   background: linear-gradient(to right, #4889de 0%, #0923cb 100%);
@@ -34,4 +34,41 @@ body {
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+.legend-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.legend-box {
+  width: 15px;
+  height: 15px;
+  display: inline-block;
+  border: 1px solid #ccc;
+}
+.legend-red {
+  background-color: #f8d7da; /* Red for License Expired */
+  border-color: #842029;
+}
+
+.legend-yellow {
+  background-color: #fff3cd; /* Yellow for Permit Expired */
+  border-color: #856404;
+}
+
+.legend-blue {
+  background-color: #85c0e4; /* Yellow for Permit Expired */
+  border-color: #856404;
+}
+
+.my-input {
+  width: 100px; /* Adjust the width as needed */
 }
