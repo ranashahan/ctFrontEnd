@@ -1,6 +1,6 @@
 .ag-theme-quartz {
-  --ag-header-background-color: #a3cfbb;
-  --ag-font-size: 14px; /* Set your desired font size */
+  --ag-header-background-color: #0d6efd7f;
+  --ag-font-size: 13px; /* Set your desired font size */
   --ag-borders: solid 1px; /* Enable borders */
   --ag-border-color: #ccc; /* Set border color */
   --ag-row-border-style: solid;
@@ -10,11 +10,20 @@
 }
 
 .ag-theme-quartz-dark {
-  --ag-font-size: 14px; /* Set your desired font size */
+  --ag-font-size: 13px; /* Set your desired font size */
   --ag-borders: solid 1px; /* Enable borders */
   --ag-border-color: #ccc; /* Set border color */
   --ag-row-border-style: solid;
   --ag-row-border-width: 1px;
   --ag-row-border-color: #ccc;
   --ag-cell-horizontal-border: solid 1px #ccc;
+}
+.bold-header {
+  font-weight: bold;
+}
+.my-input {
+  width: 110px; /* Adjust the width as needed */
+}
+.my-inputextend {
+  width: 130px; /* Adjust the width as needed */
 }

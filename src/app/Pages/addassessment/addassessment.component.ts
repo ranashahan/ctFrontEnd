@@ -181,6 +181,10 @@ export class AddassessmentComponent implements OnInit, OnDestroy {
       })
     );
   }
+
+  /**
+   * This method will fetch all the trainers
+   */
   getTrainers() {
     this.subscriptionList.push(
       this.trainerService.getAllTrainers().subscribe((res: any) => {
@@ -189,6 +193,9 @@ export class AddassessmentComponent implements OnInit, OnDestroy {
     );
   }
 
+  /**
+   * This method will fetch all the locations
+   */
   getLocations() {
     this.subscriptionList.push(
       this.locationService.getAllLocations().subscribe((res: any) => {
@@ -197,6 +204,9 @@ export class AddassessmentComponent implements OnInit, OnDestroy {
     );
   }
 
+  /**
+   * This method will fetch all the stages
+   */
   getStages() {
     this.subscriptionList.push(
       this.stageService.getAllStages().subscribe((res: any) => {
@@ -204,7 +214,9 @@ export class AddassessmentComponent implements OnInit, OnDestroy {
       })
     );
   }
-
+  /**
+   * This method will fetch all the results
+   */
   getResults() {
     this.subscriptionList.push(
       this.resultService.getAllResults().subscribe((res: any) => {
@@ -212,7 +224,9 @@ export class AddassessmentComponent implements OnInit, OnDestroy {
       })
     );
   }
-
+  /**
+   * This method will fetch all the vehicles
+   */
   getVehicles() {
     this.subscriptionList.push(
       this.vehicleService.getAllVehicles().subscribe((res: any) => {
@@ -220,7 +234,9 @@ export class AddassessmentComponent implements OnInit, OnDestroy {
       })
     );
   }
-
+  /**
+   * This method will fetch all the titles
+   */
   getTitles() {
     this.subscriptionList.push(
       this.titleService.getAllTitles().subscribe((res: any) => {
@@ -229,6 +245,9 @@ export class AddassessmentComponent implements OnInit, OnDestroy {
     );
   }
 
+  /**
+   * This method will create form for session
+   */
   createForm(): void {
     this.assessmentForm = this.fb.group({
       sessionName: ['', Validators.required],
@@ -306,13 +325,19 @@ export class AddassessmentComponent implements OnInit, OnDestroy {
     return this.assessmentForm.get('categories') as FormArray;
   }
 
+  /**
+   * This method will toggle category
+   * @param index number
+   */
   toggleCategory(index: number): void {
     const categoryControl = this.categoriesArray.at(index) as FormGroup;
     const selected = categoryControl.get('selected')?.value;
     //console.log(`Category at index ${index} selected: ${selected}`);
   }
 
-  // Open the search modal
+  /**
+   * Open Driver Search Model Popup
+   */
   openSearchModal() {
     this.bloodGroups$ = this.bgService.getAllBloodgroups().pipe(
       map((data: any) => {
@@ -335,7 +360,10 @@ export class AddassessmentComponent implements OnInit, OnDestroy {
     this.driverSearchComponent.openModal(); // Call method to show the modal
   }
 
-  // Capture the selected driver ID
+  /**
+   * This method will update driver form
+   * @param driver object
+   */
   onDriverSelected(driver: object) {
     this.formDriver.patchValue(driver);
     const clientid =

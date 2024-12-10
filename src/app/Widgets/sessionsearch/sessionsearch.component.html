@@ -1,0 +1,98 @@
+<div
+  class="modal fade modal-lg"
+  id="sessionSearchModal"
+  tabindex="-1"
+  aria-labelledby="sessionSearchModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info-subtle">
+        <h6 class="modal-title" id="sessionSearchModalLabel">
+          <i class="fa-solid fa-plus"></i> Add Session
+        </h6>
+        <app-toast></app-toast>
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <!-- Search Form -->
+        <form [formGroup]="searchForm">
+          <div class="mb-3">
+            <label for="ssname" class="form-label">Session ID</label>
+            <input
+              type="search"
+              id="ssname"
+              formControlName="name"
+              class="form-control"
+              placeholder="UEP-LPG-2308-01-01"
+            />
+          </div>
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="searchSessions()"
+            [disabled]="searchForm.invalid"
+          >
+            Search
+          </button>
+        </form>
+
+        <!-- Driver Results -->
+        @if (sessions() && sessions().length>0) {
+        <table class="table table-hover table-bordered mt-2 fs-7">
+          <thead class="table-primary">
+            <tr>
+              <th>ID</th>
+              <th>Session ID</th>
+              <th>Session Date</th>
+              <th>Driver Name</th>
+              <th>N.I.C #</th>
+              <th>Select</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of sessions(); track $index) {
+            <tr>
+              <td>{{ item.id }}</td>
+              <td>{{ item.name }}</td>
+              <td>{{ item.sessiondate | date }}</td>
+              <td>{{ item.drivername }}</td>
+              <td>{{ item.nic }}</td>
+
+              <td>
+                <input
+                  type="checkbox"
+                  [checked]="isSelected(item)"
+                  (change)="toggleSelection(item)"
+                />
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+        }@else {
+        <div>
+          <span>No record found</span>
+        </div>
+        }
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="saveSelections()"
+        >
+          Save Selections
+        </button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

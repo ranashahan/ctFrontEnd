@@ -1,0 +1,455 @@
+<div class="container-fluid">
+  <hr />
+  <div class="row">
+    <div class="col-auto">
+      <img
+        src="img/Training.jpg"
+        alt="AddTraining"
+        width="180px"
+        height="150px"
+      />
+    </div>
+    <div class="col-auto text-primary">
+      <h2>Add Training</h2>
+      <p>Please provide all necessary information in the training data form:</p>
+    </div>
+  </div>
+  <hr />
+  <app-toast></app-toast>
+  <form [formGroup]="formTraining">
+    <h6 class="text-primary"><u>Planing Section:</u></h6>
+    <div class="text-primary fw-medium fs-7">
+      <div class="mb-3 row border">
+        <label for="trainingid" class="col-sm-1 col-form-label mt-2 required"
+          >Training ID:</label
+        >
+        <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+          <input
+            id="trainingid"
+            type="text"
+            class="form-control form-control-sm"
+            formControlName="name"
+            placeholder="Load-33/2425"
+          />
+          @if (name?.invalid && (name?.dirty || name?.touched)) {
+          <div class="text-danger">
+            @if (name?.errors?.['required']) {
+            <small>Training ID is required</small>
+            }
+          </div>
+          }
+        </div>
+        <label for="courceTitle" class="col-sm-1 col-form-label mt-2"
+          >Course Title:</label
+        >
+        <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+          <select
+            class="form-select form-select-sm"
+            id="courceTitle"
+            formControlName="cource"
+          >
+            <option disabled selected value="null">-----Select-----</option>
+            @for (item of cources(); track $index) {
+            <option [value]="item">{{ item }}</option>
+            }
+          </select>
+        </div>
+        <label for="category" class="col-sm-1 col-form-label mt-2"
+          >Category:</label
+        >
+        <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+          <select
+            class="form-select form-select-sm"
+            id="category"
+            formControlName="category"
+          >
+            <option disabled selected value="null">-----Select-----</option>
+            @for (item of categories(); track $index) {
+            <option [value]="item">{{ item }}</option>
+            }
+          </select>
+        </div>
+        <label for="plandate" class="col-sm-1 col-form-label mt-2"
+          >Plan Date:</label
+        >
+        <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+          <input
+            id="plandate"
+            type="date"
+            class="form-control form-control-sm"
+            formControlName="plandate"
+            placeholder="mm/dd/yyyy"
+          />
+        </div>
+        <label for="startdate" class="col-sm-1 col-form-label mt-2"
+          >Start Date:</label
+        >
+        <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+          <input
+            id="startdate"
+            type="date"
+            class="form-control form-control-sm"
+            formControlName="startdate"
+            placeholder="mm/dd/yyyy"
+          />
+        </div>
+        <label for="enddate" class="col-sm-1 col-form-label mt-2"
+          >End Date:</label
+        >
+        <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+          <input
+            id="enddate"
+            type="date"
+            class="form-control form-control-sm"
+            formControlName="enddate"
+            placeholder="mm/dd/yyyy"
+          />
+        </div>
+        <label for="duration" class="col-sm-1 col-form-label mt-2"
+          >Duration:</label
+        >
+        <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+          <input
+            id="duration"
+            type="text"
+            class="form-control form-control-sm"
+            formControlName="duration"
+            placeholder="16 Hrs"
+          />
+        </div>
+        <label for="titleid" class="col-sm-1 col-form-label mt-2"
+          >Program:</label
+        >
+        <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+          <select
+            class="form-select form-select-sm"
+            id="titleid"
+            formControlName="titleid"
+          >
+            <option disabled selected value="null">-----Select-----</option>
+            @for (item of titles(); track $index) {
+            <option [value]="item.id">{{ item.name }}</option>
+            }
+          </select>
+        </div>
+        <label for="clientid" class="col-sm-1 col-form-label mt-2"
+          >Sponsor:</label
+        >
+        <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+          <select
+            class="form-select form-select-sm"
+            id="clientid"
+            formControlName="clientid"
+          >
+            <option disabled selected value="null">-----Select-----</option>
+            @for (item of clients(); track $index) {
+            <option [value]="item.id">{{ item.name }}</option>
+            }
+          </select>
+        </div>
+        <label for="contractorid" class="col-sm-1 col-form-label mt-2"
+          >Contractor:</label
+        >
+        <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+          <select
+            class="form-select form-select-sm"
+            id="contractorid"
+            formControlName="contractorid"
+          >
+            <option disabled selected value="null">-----Select-----</option>
+            @for (item of contractors(); track $index) {
+            <option [value]="item.id">{{ item.name }}</option>
+            }
+          </select>
+        </div>
+        <label for="texpiry" class="col-sm-1 col-form-label mt-2"
+          >Training Expiry:</label
+        >
+        <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+          <input
+            id="texpiry"
+            type="date"
+            class="form-control form-control-sm"
+            formControlName="trainingexpiry"
+            placeholder="mm/dd/yyyy"
+          />
+        </div>
+        <label
+          for="trainerid"
+          class="col-sm-1 col-form-label mt-2 mb-2 required"
+          >Trainer:</label
+        >
+        <div class="col-lg-3 col-md-5 col-sm-11 mt-2 mb-2">
+          <select
+            class="form-select form-select-sm"
+            id="trainerid"
+            formControlName="trainerid"
+          >
+            <option disabled selected value="null">-----Select-----</option>
+            @for (item of trainers(); track $index) {
+            <option [value]="item.id">{{ item.name }}</option>
+            }
+          </select>
+        </div>
+      </div>
+    </div>
+    <h6 class="text-primary"><u>Finance Section:</u></h6>
+    <div class="text-primary fw-medium fs-7">
+      <div class="mb-3 row border">
+        <label for="invoicenumber" class="col-sm-1 col-form-label mt-2"
+          >Invoice #:</label
+        >
+        <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+          <input
+            id="invoicenumber"
+            type="text"
+            class="form-control form-control-sm"
+            formControlName="invoicenumber"
+            placeholder="ZB00258"
+          />
+        </div>
+        <label for="invoicenumber" class="col-sm-1 col-form-label mt-2"
+          >Invoice Date:</label
+        >
+        <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+          <input
+            id="invoicenumber"
+            type="date"
+            class="form-control form-control-sm"
+            formControlName="invoicedate"
+          />
+        </div>
+        <label for="charges" class="col-sm-1 col-form-label mt-2"
+          >Charges:</label
+        >
+        <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+          <input
+            id="charges"
+            type="number"
+            class="form-control form-control-sm"
+            formControlName="charges"
+            placeholder="Enter charges"
+          />
+        </div>
+        <label for="transportation" class="col-sm-1 col-form-label mt-2"
+          >Tranportation:</label
+        >
+        <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+          <input
+            id="transportation"
+            type="number"
+            class="form-control form-control-sm"
+            formControlName="transportation"
+            placeholder="Enter Transportation Charges"
+          />
+        </div>
+        <label for="miscexpense" class="col-sm-1 col-form-label mt-2"
+          >Misc. Exp.:</label
+        >
+        <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+          <input
+            id="miscexpense"
+            type="number"
+            class="form-control form-control-sm"
+            formControlName="miscexpense"
+            placeholder="Enter miscellaneous Charges"
+          />
+        </div>
+        <label for="tax" class="col-sm-1 col-form-label mt-2"
+          >Applicable Tax:</label
+        >
+        <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+          <input
+            id="tax"
+            type="number"
+            class="form-control form-control-sm"
+            formControlName="tax"
+            placeholder="Tax Calculation"
+          />
+        </div>
+        <label for="total" class="col-sm-1 col-form-label mt-2"
+          >Total Amount:</label
+        >
+        <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+          <input
+            id="total"
+            type="number"
+            class="form-control form-control-sm"
+            formControlName="total"
+          />
+        </div>
+        <label for="bank" class="col-sm-1 col-form-label mt-2"
+          >Deposit Bank:</label
+        >
+        <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+          <input
+            id="bank"
+            type="text"
+            class="form-control form-control-sm"
+            formControlName="bank"
+            placeholder="Deposit Bank Name"
+          />
+        </div>
+        <label for="cheque" class="col-sm-1 col-form-label mt-2"
+          >Cheque #:</label
+        >
+        <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+          <input
+            id="cheque"
+            type="text"
+            class="form-control form-control-sm"
+            formControlName="cheque"
+            placeholder="Cheque Number"
+          />
+        </div>
+        <label for="payment" class="col-sm-1 col-form-label mt-2"
+          >Received:</label
+        >
+        <div class="col-lg-3 col-md-5 col-sm-11 mt-2 mb-2">
+          <input
+            id="payment"
+            type="number"
+            class="form-control form-control-sm"
+            formControlName="amountreceived"
+            placeholder="Payment Received"
+          />
+        </div>
+      </div>
+    </div>
+    <h6 class="text-primary"><u>Job Section:</u></h6>
+    <div class="text-primary fw-medium fs-7">
+      <div class="mb-3 row border">
+        <label for="requested" class="col-sm-1 col-form-label mt-2"
+          >Requested By:</label
+        >
+        <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+          <input
+            id="requested"
+            type="text"
+            class="form-control form-control-sm"
+            formControlName="requestedby"
+            placeholder="Mr. Muhammad Ahmed"
+          />
+        </div>
+        <label for="contactinfo" class="col-sm-1 col-form-label mt-2"
+          >Contact #:</label
+        >
+        <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+          <input
+            id="contactinfo"
+            type="text"
+            class="form-control form-control-sm"
+            formControlName="contactnumber"
+            placeholder="0300-0000000"
+          />
+        </div>
+
+        <label for="source" class="col-sm-1 col-form-label mt-2">Source:</label>
+        <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+          <select
+            class="form-select form-select-sm"
+            id="source"
+            formControlName="source"
+          >
+            <option disabled selected value="null">-----Select-----</option>
+            @for (item of sources(); track $index) {
+            <option [value]="item">{{ item }}</option>
+            }
+          </select>
+        </div>
+        <label for="venue" class="col-sm-1 col-form-label mt-2">Venue:</label>
+        <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+          <input
+            id="venue"
+            type="text"
+            class="form-control form-control-sm"
+            formControlName="venue"
+            placeholder="Training Room"
+          />
+        </div>
+        <label for="locationid" class="col-sm-1 col-form-label mt-2"
+          >Location:</label
+        >
+        <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+          <select
+            class="form-select form-select-sm"
+            id="locationid"
+            formControlName="locationid"
+          >
+            <option disabled selected value="null">-----Select-----</option>
+            @for (item of locations(); track $index) {
+            <option [value]="item.id">{{ item.name }}</option>
+            }
+          </select>
+        </div>
+        <label for="status" class="col-sm-1 col-form-label mt-2"
+          >Job Status:</label
+        >
+        <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+          <select
+            class="form-select form-select-sm"
+            id="status"
+            formControlName="status"
+          >
+            @for (item of statuses(); track $index) {
+            <option [value]="item">{{ item }}</option>
+            }
+          </select>
+        </div>
+        <label class="col-sm-1 col-form-label" for="croom">Class Room:</label>
+        <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+          <input
+            id="croom"
+            type="checkbox"
+            class="form-check-input"
+            formControlName="classroom"
+          />
+        </div>
+        <label for="assessment" class="col-sm-1 col-form-label"
+          >Assessment:</label
+        >
+        <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+          <input
+            id="assessment"
+            type="checkbox"
+            class="form-check-input"
+            formControlName="assessment"
+          />
+        </div>
+
+        <label for="commentry" class="col-sm-1 col-form-label"
+          >Commentry:</label
+        >
+        <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+          <input
+            id="commentry"
+            type="checkbox"
+            class="form-check-input"
+            formControlName="commentry"
+          />
+        </div>
+      </div>
+      <div class="row mt-4">
+        <div class="col-12 text-center">
+          <div class="btn-group" role="group" aria-label="Default button group">
+            <button
+              type="submit"
+              class="btn btn-outline-primary"
+              [disabled]="formTraining.invalid"
+              (click)="createTraining()"
+            >
+              Save
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              (click)="formRest()"
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

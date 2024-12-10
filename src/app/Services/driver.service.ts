@@ -1,4 +1,4 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { AuthService } from './auth.service';
@@ -6,15 +6,12 @@ import { catchError, forkJoin, map, Observable, tap, throwError } from 'rxjs';
 import { apiDriverModel } from '../Models/Driver';
 import { ContractorService } from './contractor.service';
 import { DltypeService } from './dltype.service';
-import { toObservable } from '@angular/core/rxjs-interop';
-import { apiContractorModel } from '../Models/Contractor';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DriverService {
   private readonly apiURL = `${environment.apiUrl}driver/`;
-  private drivers = signal<apiDriverModel[]>([]);
   constructor(private http: HttpClient) {}
   private authService = inject(AuthService);
   private cService = inject(ContractorService);
@@ -30,6 +27,7 @@ export class DriverService {
 
   /**
    * This method will fetch all the driver and contractor name & dl type
+   * @param driverParam driver observable
    * @returns Observable
    */
   getDriversWithContractorNames(

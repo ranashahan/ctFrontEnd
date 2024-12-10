@@ -106,14 +106,14 @@
           </option>
         </select>
       </div>
-
       <div class="col-auto">
         <button
           type="submit"
           class="btn btn-success btn-sm"
           (click)="getFillterredData()"
+          title="Search drivers' as per criteria"
         >
-          <i class="fa-brands fa-searchengin me-1"></i>Search
+          <i class="fa-solid fa-filter"></i> Search
         </button>
 
         <button
@@ -121,7 +121,7 @@
           class="btn btn-secondary btn-sm ms-1"
           (click)="formRest()"
         >
-          <i class="fa-solid fa-window-restore me-1"></i>Reset
+          <i class="fa-solid fa-filter-circle-xmark me-1"></i>Reset
         </button>
       </div>
     </form>
@@ -138,22 +138,9 @@
   </div>
   <hr />
   <div class="row">
-    <div class="col-12">
-      <button
-        class="btn btn-sm btn-outline-secondary ms-1 float-end"
-        (click)="executeExport()"
-        title="Export to Excel"
-      >
-        <i class="fa-solid fa-file-excel me-1"></i>Export
-      </button>
-      <button
-        class="btn btn-sm btn-outline-secondary float-end"
-        routerLink="/adddriver"
-      >
-        <i class="fa-solid fa-circle-plus me-1"></i>Add new driver
-      </button>
+    <div class="col-lg-6 col-md-6 col-sm-12">
       <div class="legend-container">
-        Legends: &#91;
+        Legends:
         <div class="legend-item fs-7">
           <span class="legend-box legend-blue"></span>
           <span>Selected Row</span>
@@ -176,8 +163,31 @@
           </button>
           <span>Driver Detail Page</span>
         </div>
-        &#93;
       </div>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-12">
+      <button
+        class="btn btn-sm btn-outline-secondary ms-1 float-end"
+        (click)="resetFilters()"
+        title="Reset All Grid Filters"
+      >
+        <i class="fa-solid fa-filter-circle-xmark"></i>
+        Reset Grid
+      </button>
+      <button
+        class="btn btn-sm btn-outline-secondary ms-1 float-end"
+        (click)="executeExport()"
+        title="Export to Excel"
+      >
+        <i class="fa-solid fa-file-excel me-1"></i>Export
+      </button>
+      <button
+        class="btn btn-sm btn-outline-secondary float-end"
+        title="Add New Driver"
+        routerLink="/adddriver"
+      >
+        <i class="fa-solid fa-circle-plus me-1"></i>Add new driver
+      </button>
     </div>
   </div>
 

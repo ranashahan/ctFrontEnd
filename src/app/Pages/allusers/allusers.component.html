@@ -29,6 +29,7 @@
       <button
         class="btn btn-sm btn-outline-secondary float-end"
         (click)="openSignUpModal()"
+        title="SignUp User"
       >
         <i class="fa-solid fa-user-plus me-1"></i>Add new employee
       </button>
@@ -146,6 +147,7 @@
                   );
                   item.isEdit = false
                 "
+                title="Update User"
               >
                 <i class="fa-regular fa-floppy-disk"></i>
               </button>
@@ -154,6 +156,7 @@
                 type="button"
                 class="btn btn-sm btn-outline-primary ms-1"
                 (click)="openModal(item.userid)"
+                title="Update Password"
               >
                 <i class="fa-solid fa-key"></i>
               </button>
@@ -161,6 +164,7 @@
               <button
                 class="btn btn-sm btn-outline-primary ms-1"
                 (click)="item.isEdit = false"
+                title="Cancel"
               >
                 <i class="fa-regular fa-rectangle-xmark"></i>
               </button>
@@ -169,12 +173,14 @@
             <button
               class="btn btn-sm btn-outline-primary"
               (click)="onEdit(item)"
+              title="Edit User"
             >
               <i class="far fa-edit"></i>
             </button>
             <button
               class="btn btn-sm btn-outline-danger ms-1"
               (click)="deleteUser(item.userid)"
+              title="Delete User"
             >
               <i class="fa-solid fa-user-slash"></i>
             </button>

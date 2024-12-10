@@ -1,15 +1,15 @@
 <div class="action-buttons">
   <button
     type="button"
-    class="btn btn-outline-warning position-relative mt-1"
-    [routerLink]="['/allassessments/' + params.data.id]"
-    title="Assessment Detail Page"
+    class="btn btn-outline-primary position-relative mt-1"
+    [routerLink]="['/alltrainings/' + params.data.id]"
+    title="Training Detail Page"
   >
     <i class="fa-solid fa-circle-info"></i>
   </button>
   <button
     class="btn btn-sm btn-outline-danger mt-1"
-    (click)="onDeleteSession()"
+    (click)="onDeleteTraining()"
   >
     <i class="fa-solid fa-trash-can"></i>
   </button>

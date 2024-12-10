@@ -67,6 +67,32 @@ export const Menu = {
       ],
     },
     {
+      name: 'Training',
+      icon: 'fa-solid fa-laptop-code fa-beat-fade me-1',
+      id: 'training',
+      roles: ['admin', 'manager'],
+      items: [
+        {
+          name: 'All Trainings',
+          path: '/alltrainings',
+          roles: ['admin', 'manager'],
+          icon: 'fa-solid fa-book-open-reader me-1',
+        },
+        {
+          name: 'Add Training',
+          path: '/addtraining',
+          roles: ['admin', 'manager'],
+          icon: 'fa-solid fa-network-wired me-1',
+        },
+        {
+          name: 'Training Report',
+          path: '/trainingsreport',
+          roles: ['admin', 'manager'],
+          icon: 'fa-solid fa-laptop-file me-1',
+        },
+      ],
+    },
+    {
       name: 'Settings',
       icon: 'fa-solid fa-cog fa-spin me-1',
       id: 'settings',

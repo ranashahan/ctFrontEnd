@@ -15,12 +15,18 @@ import {
 } from '@angular/forms';
 import { VehicleService } from '../../Services/vehicle.service';
 import { UtilitiesService } from '../../Services/utilities.service';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { ToastComponent } from '../../Widgets/toast/toast.component';
 
 @Component({
   selector: 'app-vehicle',
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, ToastComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    FormsModule,
+    ToastComponent,
+    DatePipe,
+  ],
   templateUrl: './vehicle.component.html',
   styleUrl: './vehicle.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

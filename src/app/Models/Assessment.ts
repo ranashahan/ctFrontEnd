@@ -88,3 +88,42 @@ export interface DATA {
   score: number;
   assessmentdate: string;
 }
+
+export interface apiVSessionModel {
+  id: number;
+  name: string;
+  sessiondate: string;
+  locationid: number;
+  resultid: number;
+  stageid: number;
+  titleid: number;
+  vehicleid: number;
+  totalscore: number;
+  classdate: string;
+  yarddate: string;
+  weather: string;
+  traffic: string;
+  route: string;
+  quizscore: string;
+  comment: any;
+  active: number;
+  driverid: number;
+  drivername: string;
+  nic: string;
+  licensenumber: string;
+  licensetypeid: number;
+  licenseexpiry: string;
+  licenseverified: number;
+  drivercontractorid: number;
+  permitnumber: string;
+  permitissue: string;
+  permitexpiry: string;
+  drivercode: any;
+  trainerid: number;
+  trainername: string;
+  contractorid: number;
+  contractorname: string;
+  assessments: AssessmentData[];
+  isEdit: boolean;
+  message: string;
+}
