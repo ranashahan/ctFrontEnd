@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  inject,
   OnDestroy,
   OnInit,
   signal,
@@ -26,10 +27,12 @@ import { UtilitiesService } from '../../Services/utilities.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClientComponent implements OnInit, OnDestroy {
+  private clientService = inject(ClientService);
+  private utils = inject(UtilitiesService);
   /**
    * client signal
    */
-  clients = signal<apiClientModel[]>([]);
+  clients = this.clientService.clients;
   /**
    * Form for creating new client
    */
@@ -46,32 +49,14 @@ export class ClientComponent implements OnInit, OnDestroy {
    * Subscriptionlist so ngondestory will destory all registered subscriptions.
    */
   subscriptionList: Subscription[] = [];
-  /**
-   * Constructor
-   * @param clientService client service for api calls
-   * @param utils utilities service for set page title
-   */
-  constructor(
-    private clientService: ClientService,
-    private utils: UtilitiesService
-  ) {}
+
   /**
    * This method will invoke all the methods while rendering the page
    */
   ngOnInit(): void {
     this.utils.setTitle('Clients');
-    this.getAll();
   }
-  /**
-   * This method will fetch all the records from database.
-   */
-  getAll() {
-    this.subscriptionList.push(
-      this.clientService.getAll().subscribe((res: any) => {
-        this.clients.set(res);
-      })
-    );
-  }
+
   /**
    * This method will update client against id
    * @param id
@@ -108,6 +93,7 @@ export class ClientComponent implements OnInit, OnDestroy {
         .subscribe({
           next: (res: any) => {
             this.utils.showToast('Client updated successfully.', 'success');
+            this.clientService.refreshClients();
           },
           error: (err: any) => {
             const errorMessage = err?.message || 'An unexpected error occurred';
@@ -150,7 +136,7 @@ export class ClientComponent implements OnInit, OnDestroy {
         .subscribe({
           next: (res: any) => {
             this.utils.showToast(res.message, 'success');
-            this.getAll();
+            this.clientService.refreshClients();
           },
           error: (err: any) => {
             const errorMessage = err?.message || 'An unexpected error occurred';

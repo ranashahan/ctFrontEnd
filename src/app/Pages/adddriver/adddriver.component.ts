@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  inject,
   OnDestroy,
   OnInit,
   signal,
@@ -32,11 +33,17 @@ import { VisualService } from '../../Services/visual.service';
 })
 export class AdddriverComponent implements OnInit, OnDestroy {
   formDriver: FormGroup;
+  private bgService = inject(BloodgroupService);
+  private dService = inject(DriverService);
+  private utils = inject(UtilitiesService);
+  private dltypeService = inject(DltypeService);
+  private cService = inject(ContractorService);
+  private vService = inject(VisualService);
 
-  contractors = signal<apiContractorModel[]>([]);
-  bloodgroups = signal<apiGenericModel[]>([]);
-  dltypes = signal<apiGenericModel[]>([]);
-  visuals = signal<apiGenericModel[]>([]);
+  contractors = this.cService.contractors;
+  bloodgroups = this.bgService.bloodGroups;
+  dltypes = this.dltypeService.dltypes;
+  visuals = this.vService.visuals;
   licenseVerification = signal<any[]>([]);
   gender = signal<string[]>([]);
   /**
@@ -46,16 +53,7 @@ export class AdddriverComponent implements OnInit, OnDestroy {
   /**
    * Constructor
    */
-  constructor(
-    private dService: DriverService,
-    private utils: UtilitiesService,
-    private bgService: BloodgroupService,
-    private dltypeService: DltypeService,
-    private cService: ContractorService,
-    private vService: VisualService,
-    private fb: FormBuilder,
-    private cdRef: ChangeDetectorRef
-  ) {
+  constructor(private fb: FormBuilder, private cdRef: ChangeDetectorRef) {
     this.utils.setTitle('Add Driver');
     this.formDriver = this.fb.group({
       name: ['', Validators.required],
@@ -91,53 +89,8 @@ export class AdddriverComponent implements OnInit, OnDestroy {
    * This method will invoke all the methods while rendering the page
    */
   ngOnInit(): void {
-    this.getBloodGroups();
-    this.getDLTypes();
-    this.getContractors();
-    this.getVisuals();
     this.licenseVerification.set(this.utils.verificationStatus());
     this.gender.set(this.utils.gender());
-  }
-  /**
-   * This methid will get bloodgroups
-   */
-  getBloodGroups() {
-    this.subscriptionList.push(
-      this.bgService.getAllBloodgroups().subscribe((res: any) => {
-        this.bloodgroups.set(res);
-      })
-    );
-  }
-  /**
-   * This methid will get visuals
-   */
-  getVisuals() {
-    this.subscriptionList.push(
-      this.vService.getAllVisuals().subscribe((res: any) => {
-        this.visuals.set(res);
-      })
-    );
-  }
-  /**
-   * This methid will get DLTypes
-   */
-  getDLTypes() {
-    this.subscriptionList.push(
-      this.dltypeService.getAllDLTypes().subscribe((res: any) => {
-        this.dltypes.set(res);
-      })
-    );
-  }
-
-  /**
-   * This methid will get contractors
-   */
-  getContractors() {
-    this.subscriptionList.push(
-      this.cService.getAll().subscribe((res: any) => {
-        this.contractors.set(res);
-      })
-    );
   }
 
   /**

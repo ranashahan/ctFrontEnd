@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  inject,
   OnDestroy,
   OnInit,
   signal,
@@ -26,6 +27,8 @@ import { ToastComponent } from '../../Widgets/toast/toast.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TrainersComponent implements OnInit, OnDestroy {
+  private trainerService = inject(TrainerService);
+  private utils = inject(UtilitiesService);
   /**
    * Form for creating new trainer
    */
@@ -38,38 +41,17 @@ export class TrainersComponent implements OnInit, OnDestroy {
   /**
    * trainer Signal
    */
-  trainers = signal<apiTrainerModel[]>([]);
+  trainers = this.trainerService.trainers;
   /**
    * Subscriptionlist so ngondestory will destory all registered subscriptions.
    */
   subscriptionList: Subscription[] = [];
 
   /**
-   * Constructor
-   * @param trainerService trainer service for api calls
-   * @param utils utilities service for set page title
-   */
-  constructor(
-    private utils: UtilitiesService,
-    private trainerService: TrainerService
-  ) {}
-  /**
    * This method will invoke all the methods while rendering the page
    */
   ngOnInit(): void {
     this.utils.setTitle('Trainers');
-    this.getAll();
-  }
-
-  /**
-   * This method will fetch all the records from database.
-   */
-  getAll() {
-    this.subscriptionList.push(
-      this.trainerService.getAllTrainers().subscribe((res: any) => {
-        this.trainers.set(res);
-      })
-    );
   }
 
   /**
@@ -94,6 +76,7 @@ export class TrainersComponent implements OnInit, OnDestroy {
         .subscribe({
           next: (res: any) => {
             this.utils.showToast('Trainer Update successfully', 'success');
+            this.trainerService.refreshTrainers();
           },
           error: (err: any) => {
             const errorMessage = err?.message || 'An unexpected error occurred';
@@ -122,7 +105,7 @@ export class TrainersComponent implements OnInit, OnDestroy {
         .subscribe({
           next: (res: any) => {
             this.utils.showToast(res.message, 'success');
-            this.getAll();
+            this.trainerService.refreshTrainers();
           },
           error: (err: any) => {
             const errorMessage = err?.message || 'An unexpected error occurred';

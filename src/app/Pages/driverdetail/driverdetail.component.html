@@ -37,6 +37,7 @@
               class="btn btn-outline-success btn-sm ms-1"
               type="button"
               routerLink="/adddriver"
+              title="Add Driver"
             >
               <i class="fa-solid fa-circle-plus"></i>
               Add New Driver
@@ -45,6 +46,7 @@
               class="btn btn-outline-success btn-sm ms-1"
               type="button"
               (click)="printPage()"
+              title="Print Page"
             >
               <i class="fa-solid fa-print"></i>
               Print
@@ -55,6 +57,7 @@
               class="btn btn-outline-success btn-sm ms-1"
               type="submit"
               (click)="updateDriver(); toggleEdit()"
+              title="Update Changes"
             >
               <i class="fa-regular fa-floppy-disk"></i>
               Save
@@ -64,6 +67,7 @@
               type="reset"
               class="btn btn-outline-secondary btn-sm ms-1"
               (click)="resetForm()"
+              title="Reset Form"
             >
               <i class="fa-solid fa-window-restore"></i>
               Reset
@@ -71,6 +75,7 @@
             <button
               class="btn btn-outline-success btn-sm ms-1"
               (click)="toggleEdit()"
+              title="Cancel"
             >
               <i class="fa-regular fa-rectangle-xmark"></i>
               cancel
@@ -80,6 +85,7 @@
               class="btn btn-outline-success btn-sm ms-1"
               type="button"
               (click)="toggleEdit()"
+              title="Edit"
             >
               <i class="far fa-edit"></i>
 

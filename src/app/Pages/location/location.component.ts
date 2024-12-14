@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  inject,
   OnDestroy,
   OnInit,
   signal,
@@ -26,10 +27,13 @@ import { UtilitiesService } from '../../Services/utilities.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LocationComponent implements OnInit, OnDestroy {
+  private locationService = inject(LocationService);
+  private utils = inject(UtilitiesService);
+
   /**
    * location signal
    */
-  locations = signal<apiGenericModel[]>([]);
+  locations = this.locationService.locations;
 
   /**
    * Form for creating new vehicle
@@ -45,32 +49,10 @@ export class LocationComponent implements OnInit, OnDestroy {
   subscriptionList: Subscription[] = [];
 
   /**
-   * Constructor
-   * @param locationService location service for api calls
-   * @param utils utilities service for set page title
-   */
-  constructor(
-    private locationService: LocationService,
-    private utils: UtilitiesService
-  ) {}
-
-  /**
    * This method will invoke all the methods while rendering the page
    */
   ngOnInit(): void {
     this.utils.setTitle('Locations');
-    this.getAll();
-  }
-
-  /**
-   * This method will fetch all the records from database.
-   */
-  getAll() {
-    this.subscriptionList.push(
-      this.locationService.getAllLocations().subscribe((res: any) => {
-        this.locations.set(res);
-      })
-    );
   }
 
   /**
@@ -84,6 +66,7 @@ export class LocationComponent implements OnInit, OnDestroy {
       this.locationService.updateLocation(id, name, description).subscribe({
         next: (res: any) => {
           this.utils.showToast('Location updated successfully.', 'success');
+          this.locationService.refreshLocations();
         },
         error: (err: any) => {
           const errorMessage = err?.message || 'An unexpected error occurred';
@@ -102,7 +85,7 @@ export class LocationComponent implements OnInit, OnDestroy {
       this.locationService.createLocation(name, description).subscribe({
         next: (res: any) => {
           this.utils.showToast(res.message, 'success');
-          this.getAll();
+          this.locationService.refreshLocations();
         },
         error: (err: any) => {
           const errorMessage = err?.message || 'An unexpected error occurred';

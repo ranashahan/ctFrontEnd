@@ -1,8 +1,16 @@
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable, Signal } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { AuthService } from './auth.service';
-import { catchError, forkJoin, map, Observable, tap, throwError } from 'rxjs';
+import {
+  catchError,
+  forkJoin,
+  map,
+  Observable,
+  take,
+  tap,
+  throwError,
+} from 'rxjs';
 import { apiDriverModel } from '../Models/Driver';
 import { ContractorService } from './contractor.service';
 import { DltypeService } from './dltype.service';
@@ -17,6 +25,9 @@ export class DriverService {
   private cService = inject(ContractorService);
   private dlService = inject(DltypeService);
 
+  private contractors = this.cService.contractors;
+  private dltypes = this.dlService.dltypes;
+
   /**
    * Get all drivers
    * @returns Observable
@@ -26,35 +37,32 @@ export class DriverService {
   }
 
   /**
-   * This method will fetch all the driver and contractor name & dl type
-   * @param driverParam driver observable
-   * @returns Observable
+   * This method will fetch all the drivers and contractor name & client name
+   * @param driverParam driver signal
+   * @returns drivers signal
    */
-  getDriversWithContractorNames(
-    driverParam: Observable<apiDriverModel[]>
-  ): Observable<any[]> {
-    return forkJoin({
-      drivers: driverParam,
-      contractors: this.cService.getAll(),
-      dlTypes: this.dlService.getAllDLTypes(),
-    }).pipe(
-      map(({ drivers, contractors, dlTypes }) => {
-        const contractorMap = contractors.reduce((map, contractor: any) => {
-          map[contractor.id] = contractor.name;
-          return map;
-        }, {} as Record<number, string>);
-        const dltypeMap = dlTypes.reduce((map, dltype: any) => {
-          map[dltype.id] = dltype.name;
-          return map;
-        }, {} as Record<number, string>);
-        // Map drivers to include contractorName
-        return drivers.map((driver) => ({
-          ...driver,
-          contractorName: contractorMap[driver.contractorid] || '',
-          licensetypeName: dltypeMap[driver.licensetypeid] || '',
-        }));
-      })
-    );
+  getDriversWithNames(driverParam: Signal<apiDriverModel[]>) {
+    return computed(() => {
+      const drivers = driverParam();
+      const contractorsValue = this.contractors();
+      const dlTypesValue = this.dltypes();
+
+      const contractorMap = contractorsValue.reduce((map, contractor: any) => {
+        map[contractor.id] = contractor.name;
+        return map;
+      }, {} as Record<number, string>);
+
+      const dlTypesMap = dlTypesValue.reduce((map, dlType: any) => {
+        map[dlType.id] = dlType.name;
+        return map;
+      }, {} as Record<number, string>);
+
+      return drivers.map((driver) => ({
+        ...driver,
+        contractorName: contractorMap[driver.contractorid] || '',
+        licensetypeName: dlTypesMap[driver.licensetypeid] || '',
+      }));
+    });
   }
 
   /**
@@ -170,7 +178,7 @@ export class DriverService {
     }
     // console.log('what are my params: ' + params);
     // Make GET request with query parameters
-    return this.http.get<apiDriverModel[]>(`${this.apiURL}/search`, { params });
+    return this.http.get<apiDriverModel[]>(`${this.apiURL}search`, { params });
   }
 
   /**

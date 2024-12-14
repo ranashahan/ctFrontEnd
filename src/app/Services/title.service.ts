@@ -1,24 +1,37 @@
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from './auth.service';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { apiGenericModel } from '../Models/Generic';
+import { rxResource } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TitleService {
-  private readonly apiURL = `${environment.apiUrl}title/`;
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
   private authService = inject(AuthService);
+  private readonly apiURL = `${environment.apiUrl}title/`;
+  /**
+   * Title API call
+   */
+  private titleResponse = rxResource({
+    loader: () => this.http.get<apiGenericModel[]>(this.apiURL + 'getAll'),
+  });
 
   /**
-   * Get all Titles
-   * @returns Observable
+   * Readonly Computed titles
    */
-  getAllTitles(): Observable<apiGenericModel[]> {
-    return this.http.get<apiGenericModel[]>(this.apiURL + 'getAll');
+  public titles = computed(
+    () => this.titleResponse.value() ?? ([] as apiGenericModel[])
+  );
+
+  /**
+   * Refresh title API call
+   */
+  public refreshTitles() {
+    this.titleResponse.reload();
   }
 
   /**

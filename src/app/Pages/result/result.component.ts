@@ -2,6 +2,8 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  Inject,
+  inject,
   OnDestroy,
   OnInit,
   signal,
@@ -26,10 +28,12 @@ import { ResultService } from '../../Services/result.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResultComponent implements OnInit, OnDestroy {
+  private resultService = inject(ResultService);
+  private utils = inject(UtilitiesService);
   /**
    * result signal
    */
-  results = signal<apiGenericModel[]>([]);
+  results = this.resultService.results;
 
   /**
    * Form for creating new vehicle
@@ -45,32 +49,10 @@ export class ResultComponent implements OnInit, OnDestroy {
   subscriptionList: Subscription[] = [];
 
   /**
-   * Constructor
-   * @param resultService result service for api calls
-   * @param utils utilities service for set page title
-   */
-  constructor(
-    private resultService: ResultService,
-    private utils: UtilitiesService
-  ) {}
-
-  /**
    * This method will invoke all the methods while rendering the page
    */
   ngOnInit(): void {
     this.utils.setTitle('Results');
-    this.getAll();
-  }
-
-  /**
-   * This method will fetch all the records from database.
-   */
-  getAll() {
-    this.subscriptionList.push(
-      this.resultService.getAllResults().subscribe((res: any) => {
-        this.results.set(res);
-      })
-    );
   }
 
   /**
@@ -84,6 +66,7 @@ export class ResultComponent implements OnInit, OnDestroy {
       this.resultService.updateResult(id, name, description).subscribe({
         next: (res: any) => {
           this.utils.showToast('Result updated successfully.', 'success');
+          this.resultService.refreshResults();
         },
         error: (err: any) => {
           const errorMessage = err?.message || 'An unexpected error occurred';
@@ -103,7 +86,7 @@ export class ResultComponent implements OnInit, OnDestroy {
       this.resultService.createResult(name, description).subscribe({
         next: (res: any) => {
           this.utils.showToast(res.message, 'success');
-          this.getAll();
+          this.resultService.refreshResults();
         },
         error: (err: any) => {
           const errorMessage = err?.message || 'An unexpected error occurred';

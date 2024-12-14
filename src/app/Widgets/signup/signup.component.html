@@ -185,6 +185,7 @@
           type="button"
           class="btn btn-outline-secondary"
           data-bs-dismiss="modal"
+          title="Close without saving"
         >
           Close
         </button>
@@ -193,6 +194,7 @@
           class="btn btn-outline-secondary"
           [disabled]="formSignUp.invalid"
           (click)="onSignUp()"
+          title="Save Form"
         >
           Save changes
         </button>

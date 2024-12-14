@@ -1,8 +1,8 @@
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable, Signal } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { AuthService } from './auth.service';
-import { forkJoin, map, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { apiTrainingModel } from '../Models/Training';
 import { ClientService } from './client.service';
 import { ContractorService } from './contractor.service';
@@ -15,6 +15,10 @@ export class TrainingService {
    * API URL
    */
   private readonly apiURL = `${environment.apiUrl}training/`;
+  /**
+   * HttpClient
+   */
+  private http = inject(HttpClient);
 
   /**
    * Auth service
@@ -29,11 +33,8 @@ export class TrainingService {
    */
   private cService = inject(ContractorService);
 
-  /**
-   * Constructor
-   * @param http httpclient
-   */
-  constructor(private http: HttpClient) {}
+  clients = this.clientService.clients;
+  contractors = this.cService.contractors;
 
   /**
    * This method will fetch all the active trainings
@@ -45,34 +46,31 @@ export class TrainingService {
 
   /**
    * This method will fetch all the trainings and contractor name & client name
-   * @param trainingParam training observable
-   * @returns Observable
+   * @param trainingParam training signal
+   * @returns training signal
    */
-  getTrainingsWithContractorNames(
-    trainingParam: Observable<apiTrainingModel[]>
-  ): Observable<any[]> {
-    return forkJoin({
-      trainings: trainingParam,
-      contractors: this.cService.getAll(),
-      clients: this.clientService.getAll(),
-    }).pipe(
-      map(({ trainings, contractors, clients }) => {
-        const contractorMap = contractors.reduce((map, contractor: any) => {
-          map[contractor.id] = contractor.name;
-          return map;
-        }, {} as Record<number, string>);
-        const clientMap = clients.reduce((map, client: any) => {
-          map[client.id] = client.name;
-          return map;
-        }, {} as Record<number, string>);
-        // Map drivers to include contractorName
-        return trainings.map((training) => ({
-          ...training,
-          contractorName: contractorMap[training.contractorid] || '',
-          clientName: clientMap[training.clientid] || '',
-        }));
-      })
-    );
+  getTrainingsWithContractorNames(trainingParam: Signal<apiTrainingModel[]>) {
+    return computed(() => {
+      const trainings: apiTrainingModel[] = trainingParam();
+      const contractorsValue = this.contractors();
+      const clientsValue = this.clients();
+
+      const contractorMap = contractorsValue.reduce((map, contractor: any) => {
+        map[contractor.id] = contractor.name;
+        return map;
+      }, {} as Record<number, string>);
+
+      const clientsMap = clientsValue.reduce((map, client: any) => {
+        map[client.id] = client.name;
+        return map;
+      }, {} as Record<number, string>);
+
+      return trainings.map((training) => ({
+        ...training,
+        contractorName: contractorMap[training.contractorid] || '',
+        clientName: clientsMap[training.clientid] || '',
+      }));
+    });
   }
 
   /**

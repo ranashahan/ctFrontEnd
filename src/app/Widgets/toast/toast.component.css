@@ -25,7 +25,8 @@
 }
 
 .toast-container.warning {
-  background-color: rgba(255, 193, 7, 0.886);
+  /* background-color: rgba(255, 193, 7, 0.886); */
+  background-color: orange;
 }
 
 .toast-container.error {

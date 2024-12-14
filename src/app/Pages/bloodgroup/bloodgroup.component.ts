@@ -1,9 +1,9 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  inject,
   OnDestroy,
   OnInit,
-  signal,
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { apiGenericModel } from '../../Models/Generic';
@@ -26,10 +26,13 @@ import { ToastComponent } from '../../Widgets/toast/toast.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BloodgroupComponent implements OnInit, OnDestroy {
+  private bgService = inject(BloodgroupService);
+  private utils = inject(UtilitiesService);
+
   /**
    * blood group signal
    */
-  bloodgroups = signal<apiGenericModel[]>([]);
+  bloodgroups = this.bgService.bloodGroups;
   /**
    * Form for creating new blood group
    */
@@ -43,33 +46,12 @@ export class BloodgroupComponent implements OnInit, OnDestroy {
   subscriptionList: Subscription[] = [];
 
   /**
-   * Constructor
-   * @param bgService blood group service for api calls
-   * @param utils utilities service for set page title
-   */
-  constructor(
-    private bgService: BloodgroupService,
-    private utils: UtilitiesService
-  ) {}
-
-  /**
    * This method will invoke all the methods while rendering the page
    */
   ngOnInit(): void {
     this.utils.setTitle('Blood Groups');
+  }
 
-    this.getAll();
-  }
-  /**
-   * This method will fetch all the records from database.
-   */
-  getAll() {
-    this.subscriptionList.push(
-      this.bgService.getAllBloodgroups().subscribe((res: any) => {
-        this.bloodgroups.set(res);
-      })
-    );
-  }
   /**
    * This method will update blood group against id
    * @param id {number} blood group id
@@ -81,6 +63,7 @@ export class BloodgroupComponent implements OnInit, OnDestroy {
       this.bgService.updateBloodGroup(id, name, description).subscribe({
         next: (res: any) => {
           this.utils.showToast('Blood group updated successfully.', 'success');
+          this.bgService.refreshBloodGroups();
         },
         error: (err: any) => {
           const errorMessage = err?.message || 'An unexpected error occurred';
@@ -99,7 +82,7 @@ export class BloodgroupComponent implements OnInit, OnDestroy {
       this.bgService.createBloodGroup(name, description).subscribe({
         next: (res: any) => {
           this.utils.showToast(res.message, 'success');
-          this.getAll();
+          this.bgService.refreshBloodGroups();
         },
         error: (err: any) => {
           const errorMessage = err?.message || 'An unexpected error occurred';

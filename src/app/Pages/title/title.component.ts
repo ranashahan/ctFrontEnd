@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  inject,
   OnDestroy,
   OnInit,
   signal,
@@ -26,6 +27,8 @@ import { TitleService } from '../../Services/title.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TitleComponent implements OnInit, OnDestroy {
+  private titleService = inject(TitleService);
+  private utils = inject(UtilitiesService);
   /**
    * title Signal
    */
@@ -45,32 +48,10 @@ export class TitleComponent implements OnInit, OnDestroy {
   subscriptionList: Subscription[] = [];
 
   /**
-   * Constructor
-   * @param titleService title service for api calls
-   * @param utils utilities service for set page title
-   */
-  constructor(
-    private titleService: TitleService,
-    private utils: UtilitiesService
-  ) {}
-
-  /**
    * This method will invoke all the methods while rendering the page
    */
   ngOnInit(): void {
     this.utils.setTitle('Titles');
-    this.getAll();
-  }
-
-  /**
-   * This method will fetch all the records from database.
-   */
-  getAll() {
-    this.subscriptionList.push(
-      this.titleService.getAllTitles().subscribe((res: any) => {
-        this.titles.set(res);
-      })
-    );
   }
 
   /**
@@ -84,6 +65,7 @@ export class TitleComponent implements OnInit, OnDestroy {
       this.titleService.updateTitle(id, name, description).subscribe({
         next: (res: any) => {
           this.utils.showToast('Title updated successfully.', 'success');
+          this.titleService.refreshTitles();
         },
         error: (err: any) => {
           const errorMessage = err?.message || 'An unexpected error occurred';
@@ -103,7 +85,7 @@ export class TitleComponent implements OnInit, OnDestroy {
       this.titleService.createTitle(name, description).subscribe({
         next: (res: any) => {
           this.utils.showToast(res.message, 'success');
-          this.getAll();
+          this.titleService.refreshTitles();
         },
         error: (err: any) => {
           const errorMessage = err?.message || 'An unexpected error occurred';

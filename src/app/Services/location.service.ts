@@ -1,24 +1,37 @@
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from './auth.service';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { apiGenericModel } from '../Models/Generic';
+import { rxResource } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
 })
 export class LocationService {
-  private readonly apiURL = `${environment.apiUrl}location/`;
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
   private authService = inject(AuthService);
+  private readonly apiURL = `${environment.apiUrl}location/`;
+  /**
+   * Location API call
+   */
+  private locationResponse = rxResource({
+    loader: () => this.http.get<apiGenericModel[]>(this.apiURL + 'getAll'),
+  });
 
   /**
-   * Get all Locations
-   * @returns Observable
+   * Readonly Computed locations
    */
-  getAllLocations(): Observable<apiGenericModel[]> {
-    return this.http.get<apiGenericModel[]>(this.apiURL + 'getAll');
+  public locations = computed(
+    () => this.locationResponse.value() ?? ([] as apiGenericModel[])
+  );
+
+  /**
+   * Refresh Location API call
+   */
+  public refreshLocations() {
+    this.locationResponse.reload();
   }
   /**
    * Get all Locations count

@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  inject,
   OnDestroy,
   OnInit,
   signal,
@@ -62,11 +63,19 @@ import 'ag-grid-community/styles/ag-theme-quartz.css';
 export class AlldriversComponent implements OnInit, OnDestroy {
   @ViewChild(DeleteConfirmationComponent)
   deleteConfirmation!: DeleteConfirmationComponent;
+
+  private driverService = inject(DriverService);
+  private utils = inject(UtilitiesService);
+  private cService = inject(ContractorService);
+  private dltypeService = inject(DltypeService);
+  private authService = inject(AuthService);
+
   gridApi!: GridApi;
   drivers = signal<apiDriverModel[]>([]);
   initialValues: apiDriverModel[] = [];
-  contractors = signal<apiContractorModel[]>([]);
-  dltypes = signal<apiGenericModel[]>([]);
+  contractors = this.cService.contractors;
+  dltypes = this.dltypeService.dltypes;
+  driversWithName = this.driverService.getDriversWithNames(this.drivers);
   subscriptionList: Subscription[] = [];
 
   formSaveDrivers = new FormGroup({
@@ -78,15 +87,7 @@ export class AlldriversComponent implements OnInit, OnDestroy {
     contractorid: new FormControl(),
   });
 
-  constructor(
-    private driverService: DriverService,
-    private utils: UtilitiesService,
-    private cService: ContractorService,
-    private dltypeService: DltypeService,
-    private authService: AuthService,
-    private datePipe: DatePipe,
-    private cdRef: ChangeDetectorRef
-  ) {}
+  constructor(private datePipe: DatePipe, private cdRef: ChangeDetectorRef) {}
 
   /**
    * This method will invoke all the methods while rendering the page
@@ -95,8 +96,6 @@ export class AlldriversComponent implements OnInit, OnDestroy {
     this.utils.setTitle('All Drivers');
     this.updatetheme();
     this.getAll();
-    this.getContractors();
-    this.getDLTypes();
   }
 
   /**
@@ -105,19 +104,21 @@ export class AlldriversComponent implements OnInit, OnDestroy {
   getFillterredData() {
     this.subscriptionList.push(
       this.driverService
-        .getDriversWithContractorNames(
-          this.driverService.searchDrivers(
-            this.formSaveDrivers.value.nic,
-            this.formSaveDrivers.value.licensenumber,
-            this.formSaveDrivers.value.name,
-            this.formSaveDrivers.value.contractorid,
-            this.formSaveDrivers.value.permitexpiry,
-            this.formSaveDrivers.value.permitnumber
-          )
+        .searchDrivers(
+          this.formSaveDrivers.value.nic,
+          this.formSaveDrivers.value.licensenumber,
+          this.formSaveDrivers.value.name,
+          this.formSaveDrivers.value.contractorid,
+          this.formSaveDrivers.value.permitexpiry,
+          this.formSaveDrivers.value.permitnumber
         )
         .subscribe({
           next: (res) => {
-            this.drivers.set(res);
+            if (res) {
+              this.drivers.set(res);
+            } else {
+              this.utils.showToast('No content found', 'warning');
+            }
           },
           error: (err) => {
             this.utils.showToast(
@@ -134,12 +135,10 @@ export class AlldriversComponent implements OnInit, OnDestroy {
    */
   getAll() {
     this.subscriptionList.push(
-      this.driverService
-        .getDriversWithContractorNames(this.driverService.getAllDrivers())
-        .subscribe((res: any) => {
-          this.drivers.set(res);
-          this.initialValues = res;
-        })
+      this.driverService.getAllDrivers().subscribe((res: any) => {
+        this.drivers.set(res);
+        this.initialValues = res;
+      })
     );
   }
 
@@ -183,18 +182,6 @@ export class AlldriversComponent implements OnInit, OnDestroy {
     this.formSaveDrivers.reset();
     this.drivers.set(this.initialValues);
   }
-
-  /**
-   * This method will get all the contractor names
-   */
-  getContractors() {
-    this.subscriptionList.push(
-      this.cService.getAll().subscribe((res: any) => {
-        this.contractors.set(res);
-      })
-    );
-  }
-
   /**
    * This method will convert id into name
    * @param contractorId number contractor id
@@ -202,17 +189,6 @@ export class AlldriversComponent implements OnInit, OnDestroy {
    */
   getContractorName(contractorId: number): string {
     return this.utils.getGenericName(this.contractors(), contractorId);
-  }
-
-  /**
-   * This method will get all the driver license types
-   */
-  getDLTypes() {
-    this.subscriptionList.push(
-      this.dltypeService.getAllDLTypes().subscribe((res: any) => {
-        this.dltypes.set(res);
-      })
-    );
   }
 
   /**

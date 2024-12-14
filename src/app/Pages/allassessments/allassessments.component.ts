@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  inject,
   OnDestroy,
   OnInit,
   signal,
@@ -58,13 +59,24 @@ import { SActionCellRendererComponent } from '../../Components/saction-cell-rend
 export class AllassessmentsComponent implements OnInit, OnDestroy {
   @ViewChild(DeleteConfirmationComponent)
   deleteConfirmation!: DeleteConfirmationComponent;
+
+  private authService = inject(AuthService);
+
+  private utils = inject(UtilitiesService);
+  private cService = inject(ContractorService);
+  private locationService = inject(LocationService);
+  private resultService = inject(ResultService);
+  private stageService = inject(StageService);
+  private assessmentService = inject(AssessmentService);
+
   sessions = signal<apiSessionModel[]>([]);
   subscriptionList: Subscription[] = [];
   initialValues: apiSessionModel[] = [];
-  contractors = signal<apiContractorModel[]>([]);
-  locations = signal<apiGenericModel[]>([]);
-  results = signal<apiGenericModel[]>([]);
-  stages = signal<apiGenericModel[]>([]);
+  contractors = this.cService.contractors;
+  locations = this.locationService.locations;
+  results = this.resultService.results;
+  stages = this.stageService.stages;
+  sessionsWithName = this.assessmentService.getSessionsWithNames(this.sessions);
 
   gridApi!: GridApi;
 
@@ -83,17 +95,12 @@ export class AllassessmentsComponent implements OnInit, OnDestroy {
   formSession: FormGroup;
 
   constructor(
-    private utils: UtilitiesService,
-    private assessmentService: AssessmentService,
     private fb: FormBuilder,
-    private cService: ContractorService,
-    private lService: LocationService,
-    private sService: StageService,
-    private rService: ResultService,
+
     private router: Router,
     private route: ActivatedRoute,
     private datePipe: DatePipe,
-    private authService: AuthService,
+
     private cdRef: ChangeDetectorRef
   ) {
     this.utils.setTitle('All Assessments');
@@ -114,66 +121,29 @@ export class AllassessmentsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.getAllSessionsByDate();
-    this.getContractors();
-    this.getLocations();
-    this.getResults();
-    this.getStages();
     this.updatetheme();
   }
 
   getAllSessionsByDate() {
     this.subscriptionList.push(
       this.assessmentService
-        .getSessionsWithOthersName(
-          this.assessmentService.getSessionbydate(
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            this.formSession.value.startDate,
-            this.formSession.value.endDate
-          )
+        .getSessionbydate(
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          this.formSession.value.startDate,
+          this.formSession.value.endDate
         )
+
         .subscribe((res: any) => {
           this.sessions.set(res);
           //console.log(this.sessions());
           this.initialValues = res;
         })
-    );
-  }
-
-  /**
-   * This method will fetch contractors
-   */
-  getContractors() {
-    this.subscriptionList.push(
-      this.cService.getAll().subscribe((res: any) => {
-        this.contractors.set(res);
-      })
-    );
-  }
-  getLocations() {
-    this.subscriptionList.push(
-      this.lService.getAllLocations().subscribe((res: any) => {
-        this.locations.set(res);
-      })
-    );
-  }
-  getStages() {
-    this.subscriptionList.push(
-      this.sService.getAllStages().subscribe((res: any) => {
-        this.stages.set(res);
-      })
-    );
-  }
-  getResults() {
-    this.subscriptionList.push(
-      this.rService.getAllResults().subscribe((res: any) => {
-        this.results.set(res);
-      })
     );
   }
 
@@ -219,22 +189,25 @@ export class AllassessmentsComponent implements OnInit, OnDestroy {
   getFillterredData() {
     this.subscriptionList.push(
       this.assessmentService
-        .getSessionsWithOthersName(
-          this.assessmentService.getSessionbydate(
-            this.formSession.value.nic,
-            this.formSession.value.name,
-            this.formSession.value.sessiondate,
-            this.formSession.value.contractorid,
-            this.formSession.value.resultid,
-            this.formSession.value.stageid,
-            this.formSession.value.locationid,
-            this.formSession.value.startDate,
-            this.formSession.value.endDate
-          )
+        .getSessionbydate(
+          this.formSession.value.nic,
+          this.formSession.value.name,
+          this.formSession.value.sessiondate,
+          this.formSession.value.contractorid,
+          this.formSession.value.resultid,
+          this.formSession.value.stageid,
+          this.formSession.value.locationid,
+          this.formSession.value.startDate,
+          this.formSession.value.endDate
         )
+
         .subscribe({
           next: (res: any) => {
-            this.sessions.set(res);
+            if (res) {
+              this.sessions.set(res);
+            } else {
+              this.utils.showToast('No contact found', 'warning');
+            }
           },
           error: (err) => {
             this.utils.showToast(

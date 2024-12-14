@@ -37,6 +37,7 @@
             class="btn btn-success"
             (click)="searchDrivers()"
             [disabled]="searchForm.invalid"
+            title="Search Driver"
           >
             Search
           </button>
@@ -64,6 +65,7 @@
                 type="submit"
                 (click)="selectDriver(item)"
                 data-bs-dismiss="modal"
+                title="Select Driver"
               >
                 <i class="fa-regular fa-square-check"></i>
                 select

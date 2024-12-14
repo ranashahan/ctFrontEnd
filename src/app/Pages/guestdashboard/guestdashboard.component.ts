@@ -2,6 +2,7 @@ import { DatePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  inject,
   OnDestroy,
   OnInit,
   signal,
@@ -14,8 +15,6 @@ import {
 } from '@angular/forms';
 import { apiSessionModel } from '../../Models/Assessment';
 import { Subscription } from 'rxjs';
-import { apiContractorModel } from '../../Models/Contractor';
-import { apiGenericModel } from '../../Models/Generic';
 import { UtilitiesService } from '../../Services/utilities.service';
 import { AssessmentService } from '../../Services/assessment.service';
 import { ContractorService } from '../../Services/contractor.service';
@@ -31,24 +30,23 @@ import { ToastComponent } from '../../Widgets/toast/toast.component';
   styleUrl: './guestdashboard.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GuestdashboardComponent implements OnInit, OnDestroy {
+export class GuestdashboardComponent implements OnDestroy {
+  private utils = inject(UtilitiesService);
+  private assessmentService = inject(AssessmentService);
+  private cService = inject(ContractorService);
+  private locationService = inject(LocationService);
+  private stageService = inject(StageService);
+  private resultService = inject(ResultService);
+
   sessions = signal<apiSessionModel[]>([]);
   subscriptionList: Subscription[] = [];
   initialValues: apiSessionModel[] = [];
-  contractors = signal<apiContractorModel[]>([]);
-  locations = signal<apiGenericModel[]>([]);
-  results = signal<apiGenericModel[]>([]);
-  stages = signal<apiGenericModel[]>([]);
+  contractors = this.cService.contractors;
+  locations = this.locationService.locations;
+  results = this.resultService.results;
+  stages = this.stageService.stages;
   formSession: FormGroup;
-  constructor(
-    private utils: UtilitiesService,
-    private assessmentService: AssessmentService,
-    private fb: FormBuilder,
-    private cService: ContractorService,
-    private lService: LocationService,
-    private sService: StageService,
-    private rService: ResultService
-  ) {
+  constructor(private fb: FormBuilder) {
     this.utils.setTitle('Dashboard');
 
     this.formSession = this.fb.group({
@@ -59,42 +57,6 @@ export class GuestdashboardComponent implements OnInit, OnDestroy {
       resultid: [null],
       stageid: [null],
     });
-  }
-
-  ngOnInit(): void {
-    this.getContractors();
-    this.getLocations();
-    this.getResults();
-    this.getStages();
-  }
-
-  getContractors() {
-    this.subscriptionList.push(
-      this.cService.getAll().subscribe((res: any) => {
-        this.contractors.set(res);
-      })
-    );
-  }
-  getLocations() {
-    this.subscriptionList.push(
-      this.lService.getAllLocations().subscribe((res: any) => {
-        this.locations.set(res);
-      })
-    );
-  }
-  getStages() {
-    this.subscriptionList.push(
-      this.sService.getAllStages().subscribe((res: any) => {
-        this.stages.set(res);
-      })
-    );
-  }
-  getResults() {
-    this.subscriptionList.push(
-      this.rService.getAllResults().subscribe((res: any) => {
-        this.results.set(res);
-      })
-    );
   }
 
   getStageName(itemId: number): string {

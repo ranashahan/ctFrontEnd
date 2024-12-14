@@ -1,29 +1,37 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, effect, inject, Injectable, signal } from '@angular/core';
 import { AuthService } from './auth.service';
-import { from, Observable, tap } from 'rxjs';
+import { BehaviorSubject, from, Observable, tap } from 'rxjs';
 import { apiContractorModel } from '../Models/Contractor';
 import { environment } from '../../environments/environment';
+import { rxResource } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ContractorService {
-  private readonly apiURL = `${environment.apiUrl}contractor/`;
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
   private authService = inject(AuthService);
-
-  public getAll(): Observable<apiContractorModel[]> {
-    return this.http.get<apiContractorModel[]>(this.apiURL + 'getAll');
-  }
+  private readonly apiURL = `${environment.apiUrl}contractor/`;
+  /**
+   * Contractor API call
+   */
+  private contractorResponse = rxResource({
+    loader: () => this.http.get<apiContractorModel[]>(this.apiURL + 'getAll'),
+  });
 
   /**
-   * This method for get assigned client
-   * @param id number client id
-   * @returns Observable
+   * Readonly Computed contractors
    */
-  getAssignedClients(id: number): Observable<any> {
-    return this.http.get(environment.apiUrl + 'cc/' + id);
+  public contractors = computed(
+    () => this.contractorResponse.value() ?? ([] as apiContractorModel[])
+  );
+
+  /**
+   * Refresh Contractor API call
+   */
+  public refreshContractors() {
+    this.contractorResponse.reload();
   }
 
   /**

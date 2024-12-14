@@ -111,7 +111,7 @@
           type="submit"
           class="btn btn-success btn-sm"
           (click)="getFillterredData()"
-          title="Search drivers' as per criteria"
+          title="Search drivers"
         >
           <i class="fa-solid fa-filter"></i> Search
         </button>
@@ -120,6 +120,7 @@
           type="button"
           class="btn btn-secondary btn-sm ms-1"
           (click)="formRest()"
+          title="Reset Searched Form"
         >
           <i class="fa-solid fa-filter-circle-xmark me-1"></i>Reset
         </button>
@@ -194,7 +195,7 @@
   <div>
     <ag-grid-angular
       [class]="themeClass"
-      [rowData]="drivers()"
+      [rowData]="driversWithName()"
       [columnDefs]="colDefs"
       [getRowStyle]="getRowStyle"
       [pagination]="true"

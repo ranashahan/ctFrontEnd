@@ -153,7 +153,7 @@
           type="submit"
           class="btn btn-warning btn-sm"
           (click)="getFillterredData()"
-          title="Search assessments' as per criteria"
+          title="Search assessments"
         >
           <i class="fa-solid fa-filter"></i> Search
         </button>
@@ -162,6 +162,7 @@
           type="button"
           class="btn btn-secondary btn-sm ms-1"
           (click)="formRest()"
+          title="Reset Searched Form"
         >
           <i class="fa-solid fa-filter-circle-xmark me-1"></i> Reset
         </button>
@@ -219,6 +220,7 @@
       <button
         class="btn btn-sm btn-outline-secondary float-end"
         routerLink="/addassessment"
+        title="Add Assessment"
       >
         <i class="fa-solid fa-circle-plus me-1"></i>Add new assessment
       </button>
@@ -227,7 +229,7 @@
   <div>
     <ag-grid-angular
       [class]="themeClass"
-      [rowData]="sessions()"
+      [rowData]="sessionsWithName()"
       [columnDefs]="colDefs"
       [pagination]="true"
       [paginationPageSize]="20"

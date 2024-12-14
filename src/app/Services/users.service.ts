@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { apiUserModel } from '../Models/User';
 import { environment } from '../../environments/environment';
 import { AuthService } from './auth.service';
@@ -9,25 +9,83 @@ import { AuthService } from './auth.service';
   providedIn: 'root',
 })
 export class UsersService {
-  private readonly apiURL = `${environment.apiUrl}users/`;
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
   private authService = inject(AuthService);
+  private readonly apiURL = `${environment.apiUrl}users/`;
+  private usersLoaded = false;
+  private usersBS: BehaviorSubject<apiUserModel[]> = new BehaviorSubject<
+    apiUserModel[]
+  >([]);
+  public users$: Observable<apiUserModel[]> = this.usersBS.asObservable();
+  private userBS: BehaviorSubject<apiUserModel[]> = new BehaviorSubject<
+    apiUserModel[]
+  >([]);
+  public user$: Observable<apiUserModel[]> = this.userBS.asObservable();
 
   /**
    * This method will fetch all the active users
-   * @returns Observable
    */
-  getAllUsers(): Observable<apiUserModel[]> {
-    return this.http.get<apiUserModel[]>(this.apiURL + 'getusers');
+  getAllUsers(): void {
+    if (!this.usersLoaded) {
+      this.http
+        .get<apiUserModel[]>(this.apiURL + 'getusers')
+        .pipe(
+          tap((data) => {
+            this.usersBS.next(data);
+            this.usersLoaded = true;
+          })
+        )
+        .subscribe();
+    } else {
+      console.log('i am in else block', false);
+    }
+  }
+  /**
+   * This method will fetch all the active users
+   */
+  getUsersMust(): void {
+    this.http
+      .get<apiUserModel[]>(this.apiURL + 'getusers')
+      .pipe(
+        tap((data) => {
+          this.usersBS.next(data);
+          this.usersLoaded = true;
+        })
+      )
+      .subscribe();
   }
 
   /**
    * This method will fetch the user detail against user id
    * @param id number userid
-   * @returns Observable
    */
-  getUserByID(id: string): Observable<apiUserModel> {
-    return this.http.get<apiUserModel>(this.apiURL + `${id}`);
+  getUserByID(id: string): void {
+    if (this.userBS.value.length < 1) {
+      this.http
+        .get<apiUserModel[]>(this.apiURL + `${id}`)
+        .pipe(
+          tap((data) => {
+            this.userBS.next(data);
+          })
+        )
+        .subscribe();
+    } else {
+      console.log('i am in else block');
+    }
+  }
+  /**
+   * This method will fetch the user detail against user id
+   * @param id number userid
+   */
+  getUserByIDMust(id: string): void {
+    this.http
+      .get<apiUserModel[]>(this.apiURL + `${id}`)
+      .pipe(
+        tap((data) => {
+          this.userBS.next(data);
+        })
+      )
+      .subscribe();
   }
 
   /**

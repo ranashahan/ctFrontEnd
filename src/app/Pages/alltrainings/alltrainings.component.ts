@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  inject,
   OnDestroy,
   OnInit,
   signal,
@@ -18,8 +19,6 @@ import { TrainerService } from '../../Services/trainer.service';
 import { apiTrainingModel } from '../../Models/Training';
 import { Subscription } from 'rxjs';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { apiContractorModel } from '../../Models/Contractor';
-import { apiClientModel } from '../../Models/Client';
 import { apiGenericModel } from '../../Models/Generic';
 import { apiTrainerModel } from '../../Models/Trainer';
 import { AuthService } from '../../Services/auth.service';
@@ -60,13 +59,22 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
    */
   subscriptionList: Subscription[] = [];
 
+  private clientService = inject(ClientService);
+  private cService = inject(ContractorService);
+  private titleService = inject(TitleService);
+  private locationService = inject(LocationService);
+  private trainerService = inject(TrainerService);
+  private trainingService = inject(TrainingService);
+
   trainings = signal<apiTrainingModel[]>([]);
+  public trainingsWithNames =
+    this.trainingService.getTrainingsWithContractorNames(this.trainings);
   initialValues: apiTrainingModel[] = [];
-  contractors = signal<apiContractorModel[]>([]);
-  clients = signal<apiClientModel[]>([]);
-  titles = signal<apiGenericModel[]>([]);
-  locations = signal<apiGenericModel[]>([]);
-  trainers = signal<apiTrainerModel[]>([]);
+  contractors = this.cService.contractors;
+  clients = this.clientService.clients;
+  titles = this.titleService.titles;
+  locations = this.locationService.locations;
+  trainers = this.trainerService.trainers;
   categories = signal<string[]>([]);
   cources = signal<string[]>([]);
   statuses = signal<string[]>([]);
@@ -90,17 +98,12 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
 
   constructor(
     private utils: UtilitiesService,
-    private clientService: ClientService,
-    private cService: ContractorService,
-    private titleService: TitleService,
-    private locationService: LocationService,
-    private trainerService: TrainerService,
-    private trainingService: TrainingService,
     private fb: FormBuilder,
     private authService: AuthService,
     private datePipe: DatePipe,
     private cdRef: ChangeDetectorRef
   ) {
+    this.utils.setTitle('All Trainings');
     this.formTrainingSearch = this.fb.group({
       name: [],
       plandate: [],
@@ -123,68 +126,8 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
     this.cources.set(this.utils.cources());
     this.statuses.set(this.utils.statuses());
     this.sources.set(this.utils.sources());
-    this.getContractors();
-    this.getClients();
-    this.getLocations();
-    this.getTrainers();
-    this.getTitles();
     this.updatetheme();
     this.getAllTrainings();
-  }
-
-  /**
-   * This method will fetch all the contractors
-   */
-  getContractors() {
-    this.subscriptionList.push(
-      this.cService.getAll().subscribe((res: any) => {
-        this.contractors.set(res);
-      })
-    );
-  }
-
-  /**
-   * This method will fetch all the records from database.
-   */
-  getClients() {
-    this.subscriptionList.push(
-      this.clientService.getAll().subscribe((res: any) => {
-        this.clients.set(res);
-      })
-    );
-  }
-
-  /**
-   * This method will fetch all the trainers
-   */
-  getTrainers() {
-    this.subscriptionList.push(
-      this.trainerService.getAllTrainers().subscribe((res: any) => {
-        this.trainers.set(res);
-      })
-    );
-  }
-
-  /**
-   * This method will fetch all the locations
-   */
-  getLocations() {
-    this.subscriptionList.push(
-      this.locationService.getAllLocations().subscribe((res: any) => {
-        this.locations.set(res);
-      })
-    );
-  }
-
-  /**
-   * This method will fetch all the titles
-   */
-  getTitles() {
-    this.subscriptionList.push(
-      this.titleService.getAllTitles().subscribe((res: any) => {
-        this.titles.set(res);
-      })
-    );
   }
 
   /**
@@ -193,18 +136,17 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
   getFillterredData() {
     this.subscriptionList.push(
       this.trainingService
-        .getTrainingsWithContractorNames(
-          this.trainingService.getSessionbydate(
-            this.formTrainingSearch.value.name,
-            this.formTrainingSearch.value.plandate,
-            this.formTrainingSearch.value.cource,
-            this.formTrainingSearch.value.category,
-            this.formTrainingSearch.value.clientid,
-            this.formTrainingSearch.value.contractorid,
-            this.formTrainingSearch.value.startDate,
-            this.formTrainingSearch.value.endDate
-          )
+        .getSessionbydate(
+          this.formTrainingSearch.value.name,
+          this.formTrainingSearch.value.plandate,
+          this.formTrainingSearch.value.cource,
+          this.formTrainingSearch.value.category,
+          this.formTrainingSearch.value.clientid,
+          this.formTrainingSearch.value.contractorid,
+          this.formTrainingSearch.value.startDate,
+          this.formTrainingSearch.value.endDate
         )
+
         .subscribe({
           next: (res: any) => {
             this.trainings.set(res);
@@ -224,13 +166,11 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
    */
   getAllTrainings() {
     this.subscriptionList.push(
-      this.trainingService
-        .getTrainingsWithContractorNames(this.trainingService.getAllTraining())
-        .subscribe((res: any) => {
-          this.trainings.set(res);
-          console.log(this.trainings());
-          this.initialValues = res;
-        })
+      this.trainingService.getAllTraining().subscribe((res: any) => {
+        this.trainings.set(res);
+        // console.log(this.trainings());
+        this.initialValues = res;
+      })
     );
   }
 

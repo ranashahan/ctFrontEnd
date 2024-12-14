@@ -30,10 +30,16 @@
           class="btn btn-secondary"
           data-bs-dismiss="modal"
           (click)="cancelDelete()"
+          title="Cancel"
         >
           Cancel
         </button>
-        <button type="button" class="btn btn-danger" (click)="confirmDelete()">
+        <button
+          type="button"
+          class="btn btn-danger"
+          (click)="confirmDelete()"
+          title="Delete Confirmation"
+        >
           Delete
         </button>
       </div>

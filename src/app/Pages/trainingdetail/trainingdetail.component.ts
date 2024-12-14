@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  inject,
   OnDestroy,
   OnInit,
   signal,
@@ -65,17 +66,28 @@ export class TrainingdetailComponent implements OnInit, OnDestroy {
    */
   subscriptionList: Subscription[] = [];
 
+  private trainingService = inject(TrainingService);
+  private clientService = inject(ClientService);
+  private utils = inject(UtilitiesService);
+  private cService = inject(ContractorService);
+  private trainerService = inject(TrainerService);
+  private locationService = inject(LocationService);
+  private resultService = inject(ResultService);
+  private titleService = inject(TitleService);
+  private vehicleService = inject(VehicleService);
+  private assessmentService = inject(AssessmentService);
+
   categories = signal<string[]>([]);
   cources = signal<string[]>([]);
   statuses = signal<string[]>([]);
   sources = signal<string[]>([]);
-  contractors = signal<apiContractorModel[]>([]);
-  clients = signal<apiClientModel[]>([]);
-  trainers = signal<apiTrainerModel[]>([]);
-  titles = signal<apiGenericModel[]>([]);
-  results = signal<apiGenericModel[]>([]);
-  vehicles = signal<apiGenericModel[]>([]);
-  locations = signal<apiGenericModel[]>([]);
+  contractors = this.cService.contractors;
+  clients = this.clientService.clients;
+  trainers = this.trainerService.trainers;
+  titles = this.titleService.titles;
+  results = this.resultService.results;
+  vehicles = this.vehicleService.vehicles;
+  locations = this.locationService.locations;
   previousTax = signal<number>(0);
   sessions = signal<apiVSessionModel[]>([]);
   verificationStatus = signal<any[]>([]);
@@ -97,18 +109,9 @@ export class TrainingdetailComponent implements OnInit, OnDestroy {
    * @param cdRef change detection
    */
   constructor(
-    private utils: UtilitiesService,
     private fb: FormBuilder,
-    private clientService: ClientService,
-    private cService: ContractorService,
-    private titleService: TitleService,
-    private vehicleService: VehicleService,
-    private resultService: ResultService,
-    private locationService: LocationService,
-    private trainerService: TrainerService,
-    private trainingService: TrainingService,
     private route: ActivatedRoute,
-    private assessmentService: AssessmentService,
+
     private cdRef: ChangeDetectorRef
   ) {
     this.utils.setTitle('Training Detail');
@@ -167,88 +170,6 @@ export class TrainingdetailComponent implements OnInit, OnDestroy {
     this.statuses.set(this.utils.statuses());
     this.sources.set(this.utils.sources());
     this.verificationStatus.set(this.utils.verificationStatus());
-    this.getContractors();
-    this.getClients();
-    this.getLocations();
-    this.getTrainers();
-    this.getTitles();
-    this.getVehicles();
-    this.getResults();
-  }
-
-  /**
-   * This method will fetch all the contractors
-   */
-  getContractors() {
-    this.subscriptionList.push(
-      this.cService.getAll().subscribe((res: any) => {
-        this.contractors.set(res);
-      })
-    );
-  }
-
-  /**
-   * This method will fetch all the Clients from database.
-   */
-  getClients() {
-    this.subscriptionList.push(
-      this.clientService.getAll().subscribe((res: any) => {
-        this.clients.set(res);
-      })
-    );
-  }
-
-  /**
-   * This method will fetch all the trainers
-   */
-  getTrainers() {
-    this.subscriptionList.push(
-      this.trainerService.getAllTrainers().subscribe((res: any) => {
-        this.trainers.set(res);
-      })
-    );
-  }
-
-  /**
-   * This method will fetch all the locations
-   */
-  getLocations() {
-    this.subscriptionList.push(
-      this.locationService.getAllLocations().subscribe((res: any) => {
-        this.locations.set(res);
-      })
-    );
-  }
-
-  /**
-   * This method will fetch all the titles
-   */
-  getTitles() {
-    this.subscriptionList.push(
-      this.titleService.getAllTitles().subscribe((res: any) => {
-        this.titles.set(res);
-      })
-    );
-  }
-  /**
-   * This method will fetch all the Vehicles
-   */
-  getVehicles() {
-    this.subscriptionList.push(
-      this.vehicleService.getAllVehicles().subscribe((res: any) => {
-        this.vehicles.set(res);
-      })
-    );
-  }
-  /**
-   * This method will fetch all the Results
-   */
-  getResults() {
-    this.subscriptionList.push(
-      this.resultService.getAllResults().subscribe((res: any) => {
-        this.results.set(res);
-      })
-    );
   }
 
   /**

@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  inject,
   OnDestroy,
   OnInit,
   signal,
@@ -29,14 +30,18 @@ import { ClientService } from '../../Services/client.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContractorComponent implements OnInit, OnDestroy {
+  private cService = inject(ContractorService);
+  private clientService = inject(ClientService);
+  private utils = inject(UtilitiesService);
+
   /**
    * contractor signal
    */
-  contractors = signal<apiContractorModel[]>([]);
+  contractors = this.cService.contractors;
   /**
    * client signal
    */
-  clients = signal<apiClientModel[]>([]);
+  clients = this.clientService.clients;
   /**
    * paginated contractors signal
    */
@@ -92,25 +97,10 @@ export class ContractorComponent implements OnInit, OnDestroy {
   });
 
   /**
-   * Constructor
-   * @param utils utilities service for set page title
-   * @param contractorService contractor service for api calls
-   * @param clientService client service for api calls
-   * @param cdRef Change detector Reference
-   */
-  constructor(
-    private utils: UtilitiesService,
-    private contractorService: ContractorService,
-    private clientService: ClientService,
-    private cdRef: ChangeDetectorRef
-  ) {}
-  /**
    * This method will invoke all the methods while rendering the page
    */
   ngOnInit(): void {
     this.utils.setTitle('Contractor');
-    this.getAll();
-    this.getClients();
   }
 
   /**
@@ -120,26 +110,6 @@ export class ContractorComponent implements OnInit, OnDestroy {
    */
   getClientName(itemId: number): string {
     return this.utils.getGenericName(this.clients(), itemId);
-  }
-  /**
-   * This method will fetch all the records from database.
-   */
-  getAll() {
-    this.contractorService.getAll().subscribe((res: any) => {
-      this.contractors.set(res);
-      this.filterContractors();
-    });
-  }
-
-  /**
-   * This method will fetch all the records from database.
-   */
-  getClients() {
-    this.subscriptionList.push(
-      this.clientService.getAll().subscribe((res: any) => {
-        this.clients.set(res);
-      })
-    );
   }
 
   /**
@@ -174,7 +144,7 @@ export class ContractorComponent implements OnInit, OnDestroy {
       );
     } else {
       this.subscriptionList.push(
-        this.contractorService
+        this.cService
           .updateContractor(
             id,
             name,
@@ -193,6 +163,7 @@ export class ContractorComponent implements OnInit, OnDestroy {
                 'Contractor updated successfully.',
                 'success'
               );
+              this.cService.refreshContractors();
             },
             error: (err: any) => {
               const errorMessage =
@@ -210,10 +181,10 @@ export class ContractorComponent implements OnInit, OnDestroy {
    */
   createContractor(obj: any) {
     this.subscriptionList.push(
-      this.contractorService.createContractor(obj).subscribe({
+      this.cService.createContractor(obj).subscribe({
         next: (res: any) => {
           this.utils.showToast(res.message, 'success');
-          this.getAll();
+          this.cService.refreshContractors();
         },
         error: (err: any) => {
           const errorMessage = err?.message || 'An unexpected error occurred';

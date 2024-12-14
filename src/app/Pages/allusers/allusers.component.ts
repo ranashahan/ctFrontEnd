@@ -95,8 +95,9 @@ export class AllusersComponent implements OnInit, OnDestroy {
    * This method will fetch all the records from database.
    */
   getAll() {
+    this.userService.getAllUsers();
     this.subscriptionList.push(
-      this.userService.getAllUsers().subscribe((res: any) => {
+      this.userService.users$.subscribe((res: any) => {
         this.employees.set(res);
       })
     );

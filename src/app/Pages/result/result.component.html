@@ -88,6 +88,7 @@
                 update(result.id, result.name, result.description);
                 result.isEdit = false
               "
+              title="Update Changes"
             >
               <i class="fa-regular fa-floppy-disk"></i>
               save
@@ -95,6 +96,7 @@
             <button
               class="btn btn-sm btn-outline-primary ms-1"
               (click)="result.isEdit = false"
+              title="Cancel"
             >
               <i class="fa-regular fa-rectangle-xmark"></i>
               cancel
@@ -104,6 +106,7 @@
             <button
               class="btn btn-sm btn-outline-primary"
               (click)="onEdit(result)"
+              title="Edit"
             >
               <i class="far fa-edit"></i>
               edit
@@ -172,6 +175,7 @@
             type="button"
             class="btn btn-secondary"
             data-bs-dismiss="modal"
+            title="Close without saving"
           >
             Close
           </button>
@@ -184,6 +188,7 @@
                 formSaveResult.value.description
               )
             "
+            title="Save Form"
             [disabled]="formSaveResult.invalid"
             data-bs-dismiss="modal"
           >
