@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  inject,
   OnDestroy,
   OnInit,
   signal,
@@ -26,10 +27,12 @@ import { UtilitiesService } from '../../Services/utilities.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DltypeComponent implements OnInit, OnDestroy {
+  private dltypeService = inject(DltypeService);
+  private utils = inject(UtilitiesService);
   /**
    * dltype signal
    */
-  dltypes = signal<apiGenericModel[]>([]);
+  dltypes = this.dltypeService.dltypes;
   /**
    * Form for creating new visual
    */
@@ -41,32 +44,14 @@ export class DltypeComponent implements OnInit, OnDestroy {
    * Subscriptionlist so ngondestory will destory all registered subscriptions.
    */
   subscriptionList: Subscription[] = [];
-  /**
-   * Constructor
-   * @param dltypeService dltype service for api calls
-   * @param utils utilities service for set page title
-   */
-  constructor(
-    private dltypeService: DltypeService,
-    private utils: UtilitiesService
-  ) {}
+
   /**
    * This method will invoke all the methods while rendering the page
    */
   ngOnInit(): void {
     this.utils.setTitle('Driver License Type');
-    this.getAll();
   }
-  /**
-   * This method will fetch all the records from database.
-   */
-  getAll() {
-    this.subscriptionList.push(
-      this.dltypeService.getAllDLTypes().subscribe((res: any) => {
-        this.dltypes.set(res);
-      })
-    );
-  }
+
   /**
    * This method will update dltype against id
    * @param id {number} dltype id
@@ -81,6 +66,7 @@ export class DltypeComponent implements OnInit, OnDestroy {
             'Driver license type updated successfully.',
             'success'
           );
+          this.dltypeService.refreshDltypes();
         },
         error: (err: any) => {
           const errorMessage = err?.message || 'An unexpected error occurred';
@@ -99,7 +85,7 @@ export class DltypeComponent implements OnInit, OnDestroy {
       this.dltypeService.createDLTypes(name, description).subscribe({
         next: (res: any) => {
           this.utils.showToast(res.message, 'success');
-          this.getAll();
+          this.dltypeService.refreshDltypes();
         },
         error: (err: any) => {
           const errorMessage = err?.message || 'An unexpected error occurred';

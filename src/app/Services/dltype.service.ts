@@ -1,24 +1,37 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { apiGenericModel } from '../Models/Generic';
+import { rxResource } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DltypeService {
-  private readonly apiURL = `${environment.apiUrl}dltype/`;
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
   private authService = inject(AuthService);
+  private readonly apiURL = `${environment.apiUrl}dltype/`;
+  /**
+   * DLtype API call
+   */
+  private dltypeResponse = rxResource({
+    loader: () => this.http.get<apiGenericModel[]>(this.apiURL + 'getAll'),
+  });
 
   /**
-   * Get all Driver license types
-   * @returns Observable
+   * Readonly Computed dltypes
    */
-  getAllDLTypes(): Observable<apiGenericModel[]> {
-    return this.http.get<apiGenericModel[]>(this.apiURL + 'getAll');
+  public dltypes = computed(
+    () => this.dltypeResponse.value() ?? ([] as apiGenericModel[])
+  );
+
+  /**
+   * Refresh DLtype API call
+   */
+  public refreshDltypes() {
+    this.dltypeResponse.reload();
   }
 
   /**

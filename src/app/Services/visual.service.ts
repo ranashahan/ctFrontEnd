@@ -1,24 +1,37 @@
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from './auth.service';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { apiGenericModel } from '../Models/Generic';
+import { rxResource } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
 })
 export class VisualService {
-  private readonly apiURL = `${environment.apiUrl}visual/`;
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
   private authService = inject(AuthService);
+  private readonly apiURL = `${environment.apiUrl}visual/`;
+  /**
+   * Visual API call
+   */
+  private visualResponse = rxResource({
+    loader: () => this.http.get<apiGenericModel[]>(this.apiURL + 'getAll'),
+  });
 
   /**
-   * Get all Visuals
-   * @returns Observable
+   * Readonly Computed visuals
    */
-  getAllVisuals(): Observable<apiGenericModel[]> {
-    return this.http.get<apiGenericModel[]>(this.apiURL + 'getAll');
+  public visuals = computed(
+    () => this.visualResponse.value() ?? ([] as apiGenericModel[])
+  );
+
+  /**
+   * Refresh visual API call
+   */
+  public refreshVisuals() {
+    this.visualResponse.reload();
   }
 
   /**

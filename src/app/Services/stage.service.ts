@@ -1,25 +1,42 @@
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { apiGenericModel } from '../Models/Generic';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { rxResource } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
 })
 export class StageService {
-  private readonly apiURL = `${environment.apiUrl}stage/`;
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
   private authService = inject(AuthService);
+  private readonly apiURL = `${environment.apiUrl}stage/`;
+  /**
+   * Stage API call
+   */
+  private stageResponse = rxResource({
+    loader: () => this.http.get<apiGenericModel[]>(this.apiURL + 'getAll'),
+  });
 
   /**
-   * Get all Stages
-   * @returns Observable
+   * Readonly Computed stages
    */
-  getAllStages(): Observable<apiGenericModel[]> {
-    return this.http.get<apiGenericModel[]>(this.apiURL + 'getAll');
+  public stages = computed(
+    () => this.stageResponse.value() ?? ([] as apiGenericModel[])
+  );
+
+  /**
+   * Refresh stage API call
+   */
+  public refreshStages() {
+    this.stageResponse.reload();
   }
+
+  // getStages(): Observable<apiGenericModel[]> {
+  //   return this.http.get<apiGenericModel[]>(this.apiURL + 'getAll');
+  // }
 
   /**
    * This method for update Stage

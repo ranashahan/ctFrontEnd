@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  inject,
   OnDestroy,
   OnInit,
   signal,
@@ -37,6 +38,9 @@ import { VehicleService } from '../../Services/vehicle.service';
 import { DriverService } from '../../Services/driver.service';
 import { apiClientModel } from '../../Models/Client';
 import { ClientService } from '../../Services/client.service';
+import { DltypeService } from '../../Services/dltype.service';
+import { BloodgroupService } from '../../Services/bloodgroup.service';
+import { VisualService } from '../../Services/visual.service';
 
 @Component({
   selector: 'app-assessmentdetail',
@@ -56,21 +60,42 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
   sessionDetail = signal<apiSessionModel | null>(null);
   assessmentForm: FormGroup;
   formDriver: FormGroup;
-  contractors = signal<apiContractorModel[]>([]);
-  clients = signal<apiClientModel[]>([]);
-  trainers = signal<apiTrainerModel[]>([]);
+
+  private driverService = inject(DriverService);
+  private clientService = inject(ClientService);
+  private utils = inject(UtilitiesService);
+  private cService = inject(ContractorService);
+  private assessmentService = inject(AssessmentService);
+  private trainerService = inject(TrainerService);
+  private locationService = inject(LocationService);
+  private resultService = inject(ResultService);
+  private titleService = inject(TitleService);
+  private stageService = inject(StageService);
+  private vehicleService = inject(VehicleService);
+  private dltypeService = inject(DltypeService);
+  private bgService = inject(BloodgroupService);
+  private visualService = inject(VisualService);
+
+  contractors = this.cService.contractors;
+  clients = this.clientService.clients;
+  trainers = this.trainerService.trainers;
   selectedTrainerIds = new FormControl({ value: [''], disabled: true });
-  titles = signal<apiGenericModel[]>([]);
-  locations = signal<apiGenericModel[]>([]);
-  stages = signal<apiGenericModel[]>([]);
-  results = signal<apiGenericModel[]>([]);
-  vehicles = signal<apiGenericModel[]>([]);
+  titles = this.titleService.titles;
+  locations = this.locationService.locations;
+  stages = this.stageService.stages;
+  results = this.resultService.results;
+  vehicles = this.vehicleService.vehicles;
+  dltypes = this.dltypeService.dltypes;
+  bloodgroups = this.bgService.bloodGroups;
+  visuals = this.visualService.visuals;
+
   isLoading = true;
   isAPICallInProgress = signal<boolean>(false);
   initialFormData: any;
   initialSessionData: any;
   categories = signal<apiCategoryModel[]>([]);
   isEdit = false;
+
   /**
    * Subscriptionlist so ngondestory will destory all registered subscriptions.
    */
@@ -79,34 +104,14 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
   /**
    * Constructor
    * @param fb form builder
-   * @param utils utility
-   * @param cService contractor service
-   * @param assessmentService assessment service
-   * @param trainerService trainer service
-   * @param locationService location service
-   * @param resultService results service
-   * @param titleService title service
-   * @param stageService stage service
-   * @param vehicleService vehicle service
    * @param cdRef Change detector Reference
    * @param route route reference
-   * @param driverService driver service
+
    */
   constructor(
     private fb: FormBuilder,
-    private utils: UtilitiesService,
-    private cService: ContractorService,
-    private assessmentService: AssessmentService,
-    private trainerService: TrainerService,
-    private locationService: LocationService,
-    private resultService: ResultService,
-    private titleService: TitleService,
-    private stageService: StageService,
-    private vehicleService: VehicleService,
     private cdRef: ChangeDetectorRef,
-    private route: ActivatedRoute,
-    private driverService: DriverService,
-    private clientService: ClientService
+    private route: ActivatedRoute
   ) {
     this.sessionID = parseInt(this.route.snapshot.paramMap.get('id') ?? '0');
     this.utils.setTitle('Assessment Details');
@@ -121,9 +126,12 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
       permitnumber: [{ value: '', disabled: true }, Validators.required],
       permitexpiry: [{ value: '', disabled: true }, Validators.required],
       licensenumber: [{ value: '', disabled: true }, Validators.required],
+      licensetypeid: [{ value: '', disabled: true }, Validators.required],
       licenseexpiry: [{ value: '', disabled: true }, Validators.required],
+      bloodgroupid: [{ value: '', disabled: true }, Validators.required],
       contractorid: [{ value: '', disabled: true }, Validators.required],
       clientName: [{ value: '', disabled: true }, Validators.required],
+      visualid: [{ value: '', disabled: true }, Validators.required],
     });
   }
 
@@ -131,13 +139,6 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
    * This method will invoke all the methods while rendering the page
    */
   ngOnInit(): void {
-    this.getContractors();
-    this.getLocations();
-    this.getVehicles();
-    this.getTrainers();
-    this.getResults();
-    this.getStages();
-    this.getTitles();
     this.getAllAssessments();
   }
 
@@ -151,7 +152,6 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
         .subscribe((res: any) => {
           this.sessionDetail.set(res[0]);
           this.initialSessionData = this.sessionDetail();
-          this.getClients();
           this.getDriver(res[0].driverid);
           const data = this.updatedCategories();
           this.categories.set(data);
@@ -233,33 +233,11 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
   /**
    * This method for fetch contractors
    */
-  getContractors() {
-    this.subscriptionList.push(
-      this.cService.getAll().subscribe((res: any) => {
-        this.contractors.set(res);
-      })
-    );
-  }
-
-  /**
-   * This method for fetch contractors
-   */
   getClientID(itemID: number) {
     const contractor = this.contractors().find(
       (c: apiContractorModel) => c.id === itemID
     );
     return contractor?.clientid;
-  }
-
-  /**
-   * This method will fetch all the records from database.
-   */
-  getClients() {
-    this.subscriptionList.push(
-      this.clientService.getAll().subscribe((res: any) => {
-        this.clients.set(res);
-      })
-    );
   }
 
   /**
@@ -269,72 +247,6 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
    */
   getClientName(itemId: number): string {
     return this.utils.getGenericName(this.clients(), itemId);
-  }
-
-  /**
-   * This method for fetch trainers
-   */
-  getTrainers() {
-    this.subscriptionList.push(
-      this.trainerService.getAllTrainers().subscribe((res: any) => {
-        this.trainers.set(res);
-      })
-    );
-  }
-
-  /**
-   * This method for fetch locations
-   */
-  getLocations() {
-    this.subscriptionList.push(
-      this.locationService.getAllLocations().subscribe((res: any) => {
-        this.locations.set(res);
-      })
-    );
-  }
-
-  /**
-   * This method for fetch stages
-   */
-  getStages() {
-    this.subscriptionList.push(
-      this.stageService.getAllStages().subscribe((res: any) => {
-        this.stages.set(res);
-      })
-    );
-  }
-
-  /**
-   * This method for fetch results
-   */
-  getResults() {
-    this.subscriptionList.push(
-      this.resultService.getAllResults().subscribe((res: any) => {
-        this.results.set(res);
-      })
-    );
-  }
-
-  /**
-   * This method for fetch vehicles
-   */
-  getVehicles() {
-    this.subscriptionList.push(
-      this.vehicleService.getAllVehicles().subscribe((res: any) => {
-        this.vehicles.set(res);
-      })
-    );
-  }
-
-  /**
-   * This method for fetch titles
-   */
-  getTitles() {
-    this.subscriptionList.push(
-      this.titleService.getAllTitles().subscribe((res: any) => {
-        this.titles.set(res);
-      })
-    );
   }
 
   /**

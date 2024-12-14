@@ -1,34 +1,46 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { apiTrainerModel } from '../Models/Trainer';
 import { environment } from '../../environments/environment';
+import { rxResource } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TrainerService {
   /**
-   * API URL
+   * HttpClient
    */
-  private readonly apiURL = `${environment.apiUrl}trainer/`;
-  /**
-   * Constructor
-   * @param http httpclient
-   */
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
   /**
    * Auth service
    */
   private authService = inject(AuthService);
+  /**
+   * API URL
+   */
+  private readonly apiURL = `${environment.apiUrl}trainer/`;
+  /**
+   * Trainer API call
+   */
+  private trainerResponse = rxResource({
+    loader: () => this.http.get<apiTrainerModel[]>(this.apiURL + 'getAll'),
+  });
 
   /**
-   * This method will fetch all the active trainers
-   * @returns Observable
+   * Readonly Computed trainers
    */
-  getAllTrainers(): Observable<apiTrainerModel[]> {
-    return this.http.get<apiTrainerModel[]>(this.apiURL + 'getAll');
+  public trainers = computed(
+    () => this.trainerResponse.value() ?? ([] as apiTrainerModel[])
+  );
+
+  /**
+   * Refresh trainer API call
+   */
+  public refreshTrainers() {
+    this.trainerResponse.reload();
   }
 
   /**

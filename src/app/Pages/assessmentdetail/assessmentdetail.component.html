@@ -117,6 +117,24 @@
           </div>
         </div>
         <div class="col-auto">
+          <label class="label ms-1" for="inlineFormInputGroupdltype"
+            >License Type</label
+          >
+          <div class="input-group">
+            <select
+              class="form-select form-select-sm"
+              id="inlineFormInputGroupdltype"
+              formControlName="licensetypeid"
+            >
+              @for (item of dltypes(); track $index) {
+              <option [value]="item.id">
+                {{ item.name }}
+              </option>
+              }
+            </select>
+          </div>
+        </div>
+        <div class="col-auto">
           <label class="label ms-1" for="inlineFormInputGroupLicenseExpiry"
             >License Expiry</label
           >
@@ -159,6 +177,24 @@
           </div>
         </div>
         <div class="col-auto">
+          <label class="label ms-1" for="inlineFormInputGroupBlood"
+            >BloodGroup</label
+          >
+          <div class="input-group">
+            <select
+              class="form-select form-select-sm"
+              id="inlineFormInputGroupBlood"
+              formControlName="bloodgroupid"
+            >
+              @for (item of bloodgroups(); track $index) {
+              <option [value]="item.id">
+                {{ item.name }}
+              </option>
+              }
+            </select>
+          </div>
+        </div>
+        <div class="col-auto">
           <label class="label ms-1" for="inlineFormInputGroupClient"
             >Clients</label
           >
@@ -183,6 +219,24 @@
               formControlName="contractorid"
             >
               @for (item of contractors(); track $index) {
+              <option [value]="item.id">
+                {{ item.name }}
+              </option>
+              }
+            </select>
+          </div>
+        </div>
+        <div class="col-auto">
+          <label class="label ms-1" for="inlineFormInputGroupvisual"
+            >Visual</label
+          >
+          <div class="input-group">
+            <select
+              class="form-select form-select-sm"
+              id="inlineFormInputGroupvisual"
+              formControlName="visualid"
+            >
+              @for (item of visuals(); track $index) {
               <option [value]="item.id">
                 {{ item.name }}
               </option>
@@ -550,14 +604,16 @@
             class="btn btn-outline-warning btn-sm ms-1"
             type="button"
             routerLink="/addassessment"
+            title="Add Assessment"
           >
             <i class="fa-solid fa-circle-plus"></i>
-            Add Assessment
+            Add New Assessment
           </button>
           <button
             class="btn btn-outline-warning btn-sm ms-1"
             type="button"
             (click)="printPage()"
+            title="Print page"
           >
             <i class="fa-solid fa-print"></i>
             Print
@@ -569,6 +625,7 @@
             type="submit"
             [disabled]="assessmentForm.invalid"
             (click)="updateAssessmentForm(); toggleEdit()"
+            title="Save Updated Form"
           >
             <i class="fa-regular fa-floppy-disk"></i>
             @if (isAPICallInProgress()) {
@@ -584,6 +641,7 @@
             type="reset"
             class="btn btn-outline-warning btn-sm ms-1"
             (click)="resetForm()"
+            title="Reset changes"
           >
             <i class="fa-solid fa-window-restore"></i>
             Reset
@@ -591,6 +649,7 @@
           <button
             class="btn btn-outline-warning btn-sm ms-1"
             (click)="toggleEdit()"
+            title="Cancel"
           >
             <i class="fa-regular fa-rectangle-xmark"></i>
             cancel
@@ -600,6 +659,7 @@
             class="btn btn-outline-warning btn-sm ms-1"
             type="button"
             (click)="toggleEdit()"
+            title="Edit Assessment"
           >
             <i class="far fa-edit"></i>
 

@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  inject,
   OnDestroy,
   OnInit,
   signal,
@@ -32,10 +33,12 @@ import { ToastComponent } from '../../Widgets/toast/toast.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VehicleComponent implements OnInit, OnDestroy {
+  private vehicleService = inject(VehicleService);
+  private utils = inject(UtilitiesService);
   /**
    * vehicle signal
    */
-  vehicles = signal<apiGenericModel[]>([]);
+  vehicles = this.vehicleService.vehicles;
   /**
    * Form for creating new vehicle
    */
@@ -47,33 +50,12 @@ export class VehicleComponent implements OnInit, OnDestroy {
    * Subscriptionlist so ngondestory will destory all registered subscriptions.
    */
   subscriptionList: Subscription[] = [];
-  /**
-   * Constructor
-   * @param vehicleService vehicle service for api calls
-   * @param utils utilities service for set page title
-   */
-  constructor(
-    private vehicleService: VehicleService,
-    private utils: UtilitiesService
-  ) {}
 
   /**
    * This method will invoke all the methods while rendering the page
    */
   ngOnInit(): void {
     this.utils.setTitle('Vehicles');
-    this.getAll();
-  }
-
-  /**
-   * This method will fetch all the records from database.
-   */
-  getAll() {
-    this.subscriptionList.push(
-      this.vehicleService.getAllVehicles().subscribe((res: any) => {
-        this.vehicles.set(res);
-      })
-    );
   }
 
   /**
@@ -87,6 +69,7 @@ export class VehicleComponent implements OnInit, OnDestroy {
       this.vehicleService.updateVehicle(id, name, description).subscribe({
         next: (res: any) => {
           this.utils.showToast('Vehicle updated successfully.', 'success');
+          this.vehicleService.refreshVehicles();
         },
         error: (err: any) => {
           const errorMessage = err?.message || 'An unexpected error occurred';
@@ -106,7 +89,7 @@ export class VehicleComponent implements OnInit, OnDestroy {
       this.vehicleService.createVehicle(name, description).subscribe({
         next: (res: any) => {
           this.utils.showToast(res.message, 'success');
-          this.getAll();
+          this.vehicleService.refreshVehicles();
         },
         error: (err: any) => {
           const errorMessage = err?.message || 'An unexpected error occurred';

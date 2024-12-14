@@ -1,24 +1,37 @@
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from './auth.service';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { apiGenericModel } from '../Models/Generic';
+import { rxResource } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
 })
 export class VehicleService {
-  private readonly apiURL = `${environment.apiUrl}vehicle/`;
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
   private authService = inject(AuthService);
+  private readonly apiURL = `${environment.apiUrl}vehicle/`;
+  /**
+   * Vehicle API call
+   */
+  private vehicleResponse = rxResource({
+    loader: () => this.http.get<apiGenericModel[]>(this.apiURL + 'getAll'),
+  });
 
   /**
-   * Get all Vehicles
-   * @returns Observable
+   * Readonly Computed vehicles
    */
-  getAllVehicles(): Observable<apiGenericModel[]> {
-    return this.http.get<apiGenericModel[]>(this.apiURL + 'getAll');
+  public vehicles = computed(
+    () => this.vehicleResponse.value() ?? ([] as apiGenericModel[])
+  );
+
+  /**
+   * Refresh vehicle API call
+   */
+  public refreshVehicles() {
+    this.vehicleResponse.reload();
   }
 
   /**

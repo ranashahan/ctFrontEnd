@@ -107,18 +107,23 @@ export class ProfileComponent implements OnDestroy {
    * This method to get the user profile info from database
    */
   getLoggedinUser(): void {
+    this.userService.getUserByID(this.userid().toString());
     this.subscriptionList.push(
-      this.userService
-        .getUserByID(this.userid().toString())
-        .subscribe((res: any) => {
-          this.formUser.patchValue(res[0]);
-          // this.username = res[0].username;
-          // this.userid = res[0].userid;
-          if (res[0].role == ROLES.ADMIN || res[0].role == ROLES.MANAGER) {
-            this.formUser.get('role')?.enable();
+      this.userService.user$.subscribe({
+        next: (res: any) => {
+          if (res.length !== 0) {
+            this.formUser.patchValue(res[0]);
+            // this.username = res[0].username;
+            // this.userid = res[0].userid;
+            if (res[0].role == ROLES.ADMIN || res[0].role == ROLES.MANAGER) {
+              this.formUser.get('role')?.enable();
+            }
           }
-          this.cdRef.detectChanges();
-        })
+        },
+        error: (err: any) => {
+          console.log(err.message);
+        },
+      })
     );
   }
 
@@ -140,7 +145,7 @@ export class ProfileComponent implements OnDestroy {
         .subscribe({
           next: (data) => {
             this.utils.showToast('User saved successfully', 'success');
-            this.formReset();
+            this.userService.getUserByIDMust(this.userid().toString());
           },
           error: (err) => {
             this.utils.showToast(err.message, 'error');

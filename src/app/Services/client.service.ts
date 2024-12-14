@@ -1,36 +1,37 @@
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from './auth.service';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { apiClientModel } from '../Models/Client';
+import { rxResource } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ClientService {
-  private readonly apiURL = `${environment.apiUrl}client/`;
-  private readonly apiURLCC = `${environment.apiUrl}cc/`;
-
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
   private authService = inject(AuthService);
+  private readonly apiURL = `${environment.apiUrl}client/`;
+  /**
+   * Client API call
+   */
+  private clientResponse = rxResource({
+    loader: () => this.http.get<apiClientModel[]>(this.apiURL + 'getAll'),
+  });
 
   /**
-   * This method for fetch all the clients
-   * @returns Observable
+   * Readonly Computed clients
    */
-  getAll(): Observable<apiClientModel[]> {
-    return this.http.get<apiClientModel[]>(this.apiURL + 'getAll');
-  }
+  public clients = computed(
+    () => this.clientResponse.value() ?? ([] as apiClientModel[])
+  );
 
   /**
-   * This method for fetch client by contractor id
-   * @param id number client id
-   * @returns Observable
+   * Refresh Client API call
    */
-  getByContractorID(id: number): Observable<any> {
-    const url = `${this.apiURLCC}contractorid/${id}`;
-    return this.http.get(url);
+  public refreshClients() {
+    this.clientResponse.reload();
   }
 
   /**

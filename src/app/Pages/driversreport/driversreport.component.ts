@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  inject,
   OnDestroy,
   OnInit,
   signal,
@@ -29,8 +30,13 @@ import { ToastComponent } from '../../Widgets/toast/toast.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DriversreportComponent implements OnInit, OnDestroy {
+  private reportService = inject(ReportService);
+  private utils = inject(UtilitiesService);
+  private driverService = inject(DriverService);
+  private cService = inject(ContractorService);
+
   drivers = signal<apiDriverModel[]>([]);
-  contractors = signal<apiContractorModel[]>([]);
+  contractors = this.cService.contractors;
   formSelectContractor: FormGroup;
 
   /**
@@ -38,14 +44,7 @@ export class DriversreportComponent implements OnInit, OnDestroy {
    */
   subscriptionList: Subscription[] = [];
 
-  constructor(
-    private reportService: ReportService,
-    private utils: UtilitiesService,
-    private driverService: DriverService,
-    private cService: ContractorService,
-    private fb: FormBuilder,
-    private cdRef: ChangeDetectorRef
-  ) {
+  constructor(private fb: FormBuilder, private cdRef: ChangeDetectorRef) {
     this.formSelectContractor = this.fb.group({
       contractorid: [null, Validators.required],
     });
@@ -61,18 +60,6 @@ export class DriversreportComponent implements OnInit, OnDestroy {
    */
   ngOnInit(): void {
     this.utils.setTitle('Driver Reports');
-    this.getContractors();
-  }
-
-  /**
-   * This methid will get contractors
-   */
-  getContractors() {
-    this.subscriptionList.push(
-      this.cService.getAll().subscribe((res: any) => {
-        this.contractors.set(res);
-      })
-    );
   }
 
   /**

@@ -12,9 +12,6 @@
     <div>
       <app-toast></app-toast>
     </div>
-    <!-- Button to Trigger Modal -->
-
-    <!-- Driver Search Modal Component -->
     <app-driversearch
       #driverSearchModal
       (driverSelected)="onDriverSelected($event)"
@@ -135,7 +132,7 @@
               id="inlineFormInputGroupdltype"
               formControlName="licensetypeid"
             >
-              @for (item of dltypes$|async; track $index) {
+              @for (item of dltypes(); track $index) {
               <option [value]="item.id">
                 {{ item.name }}
               </option>
@@ -196,7 +193,7 @@
               id="inlineFormInputGroupBlood"
               formControlName="bloodgroupid"
             >
-              @for (item of bloodGroups$|async; track $index) {
+              @for (item of bloodGroups(); track $index) {
               <option [value]="item.id">
                 {{ item.name }}
               </option>
@@ -218,7 +215,7 @@
             />
           </div>
         </div>
-        <div class="col-auto">
+        <div class="col-auto required">
           <label class="label ms-1" for="inlineFormInputGroupContractor"
             >Contractor</label
           >
@@ -227,6 +224,7 @@
               class="form-select form-select-sm"
               id="inlineFormInputGroupContractor"
               formControlName="contractorid"
+              [ngClass]="{ 'border-danger border-2': isContractorExist() }"
             >
               @for (item of contractors(); track $index) {
               <option [value]="item.id">
@@ -247,7 +245,7 @@
               id="inlineFormInputGroupvisual"
               formControlName="visualid"
             >
-              @for (item of visuals$|async; track $index) {
+              @for (item of visuals(); track $index) {
               <option [value]="item.id">
                 {{ item.name }}
               </option>
@@ -260,6 +258,7 @@
             type="submit"
             class="btn btn-warning btn-sm"
             (click)="openSearchModal()"
+            title="Driver Search Modal"
           >
             <i class="fa-regular fa-circle-user me-1"></i>Select Driver
           </button>
@@ -623,6 +622,7 @@
               class="btn btn-outline-warning"
               [disabled]="assessmentForm.invalid"
               (click)="insertAssessment()"
+              title="Save Assessment"
             >
               @if (isAPICallInProgress()) {
               <span
@@ -636,6 +636,7 @@
               type="button"
               class="btn btn-outline-secondary"
               (click)="resetForm()"
+              title="Reset Assessment Form"
             >
               Reset
             </button>

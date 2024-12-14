@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  inject,
   OnDestroy,
   OnInit,
   signal,
@@ -39,15 +40,22 @@ export class AddtrainingComponent implements OnInit, OnDestroy {
    */
   subscriptionList: Subscription[] = [];
 
+  private clientService = inject(ClientService);
+  private cService = inject(ContractorService);
+  private titleService = inject(TitleService);
+  private locationService = inject(LocationService);
+  private trainerService = inject(TrainerService);
+  private trainingService = inject(TrainingService);
+
   categories = signal<string[]>([]);
   cources = signal<string[]>([]);
   statuses = signal<string[]>([]);
   sources = signal<string[]>([]);
-  contractors = signal<apiContractorModel[]>([]);
-  clients = signal<apiClientModel[]>([]);
-  trainers = signal<apiTrainerModel[]>([]);
-  titles = signal<apiGenericModel[]>([]);
-  locations = signal<apiGenericModel[]>([]);
+  contractors = this.cService.contractors;
+  clients = this.clientService.clients;
+  trainers = this.trainerService.trainers;
+  titles = this.titleService.titles;
+  locations = this.locationService.locations;
   previousTax = signal<number>(0);
 
   formTraining: FormGroup;
@@ -55,12 +63,7 @@ export class AddtrainingComponent implements OnInit, OnDestroy {
   constructor(
     private utils: UtilitiesService,
     private fb: FormBuilder,
-    private clientService: ClientService,
-    private cService: ContractorService,
-    private titleService: TitleService,
-    private locationService: LocationService,
-    private trainerService: TrainerService,
-    private trainingService: TrainingService,
+
     private cdRef: ChangeDetectorRef
   ) {
     this.utils.setTitle('Add Training');
@@ -110,66 +113,6 @@ export class AddtrainingComponent implements OnInit, OnDestroy {
     this.cources.set(this.utils.cources());
     this.statuses.set(this.utils.statuses());
     this.sources.set(this.utils.sources());
-    this.getContractors();
-    this.getClients();
-    this.getLocations();
-    this.getTrainers();
-    this.getTitles();
-  }
-
-  /**
-   * This method will fetch all the contractors
-   */
-  getContractors() {
-    this.subscriptionList.push(
-      this.cService.getAll().subscribe((res: any) => {
-        this.contractors.set(res);
-      })
-    );
-  }
-
-  /**
-   * This method will fetch all the records from database.
-   */
-  getClients() {
-    this.subscriptionList.push(
-      this.clientService.getAll().subscribe((res: any) => {
-        this.clients.set(res);
-      })
-    );
-  }
-
-  /**
-   * This method will fetch all the trainers
-   */
-  getTrainers() {
-    this.subscriptionList.push(
-      this.trainerService.getAllTrainers().subscribe((res: any) => {
-        this.trainers.set(res);
-      })
-    );
-  }
-
-  /**
-   * This method will fetch all the locations
-   */
-  getLocations() {
-    this.subscriptionList.push(
-      this.locationService.getAllLocations().subscribe((res: any) => {
-        this.locations.set(res);
-      })
-    );
-  }
-
-  /**
-   * This method will fetch all the titles
-   */
-  getTitles() {
-    this.subscriptionList.push(
-      this.titleService.getAllTitles().subscribe((res: any) => {
-        this.titles.set(res);
-      })
-    );
   }
 
   /**

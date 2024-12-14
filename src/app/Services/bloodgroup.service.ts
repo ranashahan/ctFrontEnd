@@ -1,24 +1,38 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 import { environment } from '../../environments/environment';
 import { apiGenericModel } from '../Models/Generic';
+import { rxResource } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BloodgroupService {
-  private readonly apiURL = `${environment.apiUrl}bloodgroup/`;
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
   private authService = inject(AuthService);
+  private readonly apiURL = `${environment.apiUrl}bloodgroup/`;
 
   /**
-   * This method for fetch all the blood groups
-   * @returns Observable
+   * BloodGroup API call
    */
-  getAllBloodgroups(): Observable<apiGenericModel[]> {
-    return this.http.get<apiGenericModel[]>(this.apiURL + 'getAll');
+  private bgResponse = rxResource({
+    loader: () => this.http.get<apiGenericModel[]>(this.apiURL + 'getAll'),
+  });
+
+  /**
+   * Readonly Computed bloodgroups
+   */
+  public bloodGroups = computed(
+    () => this.bgResponse.value() ?? ([] as apiGenericModel[])
+  );
+
+  /**
+   * Refresh BlooGroup API call
+   */
+  public refreshBloodGroups() {
+    this.bgResponse.reload();
   }
 
   /**

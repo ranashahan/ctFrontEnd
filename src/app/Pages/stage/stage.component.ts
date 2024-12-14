@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  inject,
   OnDestroy,
   OnInit,
   signal,
@@ -26,10 +27,12 @@ import { UtilitiesService } from '../../Services/utilities.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StageComponent implements OnInit, OnDestroy {
+  private stageService = inject(StageService);
+  private utils = inject(UtilitiesService);
   /**
    * stage Signal
    */
-  stages = signal<apiGenericModel[]>([]);
+  stages = this.stageService.stages;
   /**
    * Form for creating new stage
    */
@@ -44,32 +47,10 @@ export class StageComponent implements OnInit, OnDestroy {
   subscriptionList: Subscription[] = [];
 
   /**
-   * Constructor
-   * @param stageService stage service for api calls
-   * @param utils utilities service for set page title
-   */
-  constructor(
-    private stageService: StageService,
-    private utils: UtilitiesService
-  ) {}
-
-  /**
    * This method will invoke all the methods while rendering the page
    */
   ngOnInit(): void {
     this.utils.setTitle('Stages');
-    this.getAll();
-  }
-
-  /**
-   * This method will fetch all the records from database.
-   */
-  getAll() {
-    this.subscriptionList.push(
-      this.stageService.getAllStages().subscribe((res: any) => {
-        this.stages.set(res);
-      })
-    );
   }
 
   /**
@@ -83,7 +64,7 @@ export class StageComponent implements OnInit, OnDestroy {
       this.stageService.updateStage(id, name, description).subscribe({
         next: (res: any) => {
           this.utils.showToast('Stage updated successfully.', 'success');
-          this.getAll();
+          this.stageService.refreshStages();
         },
         error: (err: any) => {
           const errorMessage = err?.message || 'An unexpected error occurred';
@@ -103,7 +84,7 @@ export class StageComponent implements OnInit, OnDestroy {
       this.stageService.createStage(name, description).subscribe({
         next: (res: any) => {
           this.utils.showToast(res.message, 'success');
-          this.getAll();
+          this.stageService.refreshStages();
         },
         error: (err: any) => {
           const errorMessage = err?.message || 'An unexpected error occurred';

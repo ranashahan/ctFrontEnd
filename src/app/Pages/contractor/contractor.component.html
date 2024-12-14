@@ -197,6 +197,7 @@
                 );
                 contractor.isEdit = false
               "
+              title="Update Changes"
             >
               <i class="fa-regular fa-floppy-disk"></i>
               save
@@ -204,6 +205,7 @@
             <button
               class="btn btn-sm btn-outline-primary ms-1"
               (click)="contractor.isEdit = false"
+              title="Cancel"
             >
               <i class="fa-regular fa-rectangle-xmark"></i>
               cancel
@@ -213,6 +215,7 @@
             <button
               class="btn btn-sm btn-outline-primary"
               (click)="onEdit(contractor)"
+              title="Edit"
             >
               <i class="far fa-edit"></i>
               edit
@@ -230,7 +233,13 @@
   <nav>
     <ul class="pagination justify-content-center">
       <li class="page-item" [class.disabled]="currentPage === 1">
-        <a class="page-link" type="button" (click)="previousPage()">Previous</a>
+        <a
+          class="page-link"
+          type="button"
+          (click)="previousPage()"
+          title="Previous Page"
+          >Previous</a
+        >
       </li>
       <li
         class="page-item"
@@ -242,7 +251,13 @@
         }}</a>
       </li>
       <li class="page-item" [class.disabled]="currentPage === totalPages">
-        <a class="page-link" type="button" (click)="nextPage()">Next</a>
+        <a
+          class="page-link"
+          type="button"
+          (click)="nextPage()"
+          title="Next Page"
+          >Next</a
+        >
       </li>
     </ul>
   </nav>
@@ -407,6 +422,7 @@
             type="button"
             class="btn btn-secondary"
             data-bs-dismiss="modal"
+            title="Close without saving"
           >
             Close
           </button>
@@ -416,6 +432,7 @@
             (click)="createContractor(formSaveContractor.value)"
             [disabled]="formSaveContractor.invalid"
             data-bs-dismiss="modal"
+            title="Save Form"
           >
             Save changes
           </button>

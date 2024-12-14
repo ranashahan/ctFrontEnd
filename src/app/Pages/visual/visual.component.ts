@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  inject,
   OnDestroy,
   OnInit,
   signal,
@@ -26,10 +27,12 @@ import { ToastComponent } from '../../Widgets/toast/toast.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VisualComponent implements OnInit, OnDestroy {
+  private visualService = inject(VisualService);
+  private utils = inject(UtilitiesService);
   /**
    * Visual signal
    */
-  visuals = signal<apiGenericModel[]>([]);
+  visuals = this.visualService.visuals;
   /**
    * Subscriptionlist so ngondestory will destory all registered subscriptions.
    */
@@ -44,32 +47,10 @@ export class VisualComponent implements OnInit, OnDestroy {
   });
 
   /**
-   * Constructor
-   * @param visualService visual service for api calls
-   * @param utils utilities service for set page title
-   */
-  constructor(
-    private visualService: VisualService,
-    private utils: UtilitiesService
-  ) {}
-
-  /**
    * This method will invoke all the methods while rendering the page
    */
   ngOnInit(): void {
     this.utils.setTitle('Visuals');
-    this.getAll();
-  }
-
-  /**
-   * This method will fetch all the records from database.
-   */
-  getAll() {
-    this.subscriptionList.push(
-      this.visualService.getAllVisuals().subscribe((res: any) => {
-        this.visuals.set(res);
-      })
-    );
   }
 
   /**
@@ -83,6 +64,7 @@ export class VisualComponent implements OnInit, OnDestroy {
       this.visualService.updateVisual(id, name, description).subscribe({
         next: (res: any) => {
           this.utils.showToast('Visual updated successfully.', 'success');
+          this.visualService.refreshVisuals();
         },
         error: (err: any) => {
           const errorMessage = err?.message || 'An unexpected error occurred';
@@ -102,7 +84,7 @@ export class VisualComponent implements OnInit, OnDestroy {
       this.visualService.createVisual(name, description).subscribe({
         next: (res: any) => {
           this.utils.showToast(res.message, 'success');
-          this.getAll();
+          this.visualService.refreshVisuals();
         },
         error: (err: any) => {
           const errorMessage = err?.message || 'An unexpected error occurred';

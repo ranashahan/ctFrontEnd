@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  inject,
   OnDestroy,
   OnInit,
   signal,
@@ -44,7 +45,6 @@ import { ToastComponent } from '../../Widgets/toast/toast.component';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    AsyncPipe,
     ToastComponent,
     DriversearchComponent,
   ],
@@ -55,21 +55,32 @@ import { ToastComponent } from '../../Widgets/toast/toast.component';
 export class AddassessmentComponent implements OnInit, OnDestroy {
   assessmentForm: FormGroup;
   formDriver: FormGroup;
-  bloodGroups$: Observable<apiGenericModel[]> = new Observable<
-    apiGenericModel[]
-  >();
-  visuals$: Observable<apiGenericModel[]> = new Observable<apiGenericModel[]>();
-  dltypes$: Observable<apiGenericModel[]> = new Observable<apiGenericModel[]>();
+  private bgService = inject(BloodgroupService);
+  private dltypeService = inject(DltypeService);
+  private cService = inject(ContractorService);
+  private visualService = inject(VisualService);
+  private assessmentService = inject(AssessmentService);
+  private trainerService = inject(TrainerService);
+  private locationService = inject(LocationService);
+  private resultService = inject(ResultService);
+  private titleService = inject(TitleService);
+  private stageService = inject(StageService);
+  private vehicleService = inject(VehicleService);
+  private clientService = inject(ClientService);
+  bloodGroups = this.bgService.bloodGroups;
+  visuals = this.visualService.visuals;
+  dltypes = this.dltypeService.dltypes;
 
-  contractors = signal<apiContractorModel[]>([]);
-  clients = signal<apiClientModel[]>([]);
-  trainers = signal<apiTrainerModel[]>([]);
-  titles = signal<apiGenericModel[]>([]);
-  locations = signal<apiGenericModel[]>([]);
-  stages = signal<apiGenericModel[]>([]);
-  results = signal<apiGenericModel[]>([]);
-  vehicles = signal<apiGenericModel[]>([]);
+  contractors = this.cService.contractors;
+  clients = this.clientService.clients;
+  trainers = this.trainerService.trainers;
+  titles = this.titleService.titles;
+  locations = this.locationService.locations;
+  stages = this.stageService.stages;
+  results = this.resultService.results;
+  vehicles = this.vehicleService.vehicles;
   isLicenseExpired = signal<boolean>(false);
+  isContractorExist = signal<boolean>(false);
   isLoading = true;
   isAPICallInProgress = signal<boolean>(false);
   subscriptionList: Subscription[] = [];
@@ -82,18 +93,7 @@ export class AddassessmentComponent implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private utils: UtilitiesService,
-    private bgService: BloodgroupService,
-    private dltypeService: DltypeService,
-    private cService: ContractorService,
-    private visualService: VisualService,
-    private assessmentService: AssessmentService,
-    private trainerService: TrainerService,
-    private locationService: LocationService,
-    private resultService: ResultService,
-    private titleService: TitleService,
-    private stageService: StageService,
-    private vehicleService: VehicleService,
-    private clientService: ClientService,
+
     private cdRef: ChangeDetectorRef
   ) {
     this.utils.setTitle('Add Assessment');
@@ -118,16 +118,6 @@ export class AddassessmentComponent implements OnInit, OnDestroy {
     });
   }
   ngOnInit(): void {
-    // this.getBloodGroups();
-    // this.getDLTypes();
-    this.getContractors();
-    this.getClients();
-    this.getLocations();
-    this.getVehicles();
-    this.getTrainers();
-    this.getResults();
-    this.getStages();
-    this.getTitles();
     this.getAllAssessments();
   }
 
@@ -137,17 +127,6 @@ export class AddassessmentComponent implements OnInit, OnDestroy {
         this.categories.set(res);
         this.createForm();
         this.initialFormData = this.assessmentForm.value;
-      })
-    );
-  }
-
-  /**
-   * This method will fetch all the contractors
-   */
-  getContractors() {
-    this.subscriptionList.push(
-      this.cService.getAll().subscribe((res: any) => {
-        this.contractors.set(res);
       })
     );
   }
@@ -169,80 +148,6 @@ export class AddassessmentComponent implements OnInit, OnDestroy {
       (c: apiContractorModel) => c.id === itemID
     );
     return contractor?.clientid;
-  }
-
-  /**
-   * This method will fetch all the records from database.
-   */
-  getClients() {
-    this.subscriptionList.push(
-      this.clientService.getAll().subscribe((res: any) => {
-        this.clients.set(res);
-      })
-    );
-  }
-
-  /**
-   * This method will fetch all the trainers
-   */
-  getTrainers() {
-    this.subscriptionList.push(
-      this.trainerService.getAllTrainers().subscribe((res: any) => {
-        this.trainers.set(res);
-      })
-    );
-  }
-
-  /**
-   * This method will fetch all the locations
-   */
-  getLocations() {
-    this.subscriptionList.push(
-      this.locationService.getAllLocations().subscribe((res: any) => {
-        this.locations.set(res);
-      })
-    );
-  }
-
-  /**
-   * This method will fetch all the stages
-   */
-  getStages() {
-    this.subscriptionList.push(
-      this.stageService.getAllStages().subscribe((res: any) => {
-        this.stages.set(res);
-      })
-    );
-  }
-  /**
-   * This method will fetch all the results
-   */
-  getResults() {
-    this.subscriptionList.push(
-      this.resultService.getAllResults().subscribe((res: any) => {
-        this.results.set(res);
-      })
-    );
-  }
-  /**
-   * This method will fetch all the vehicles
-   */
-  getVehicles() {
-    this.subscriptionList.push(
-      this.vehicleService.getAllVehicles().subscribe((res: any) => {
-        this.vehicles.set(res);
-      })
-    );
-  }
-  /**
-   * This method will fetch all the titles
-   */
-  getTitles() {
-    this.subscriptionList.push(
-      this.titleService.getAllTitles().subscribe((res: any) => {
-        this.titles.set(res);
-      })
-    );
   }
 
   /**
@@ -339,24 +244,6 @@ export class AddassessmentComponent implements OnInit, OnDestroy {
    * Open Driver Search Model Popup
    */
   openSearchModal() {
-    this.bloodGroups$ = this.bgService.getAllBloodgroups().pipe(
-      map((data: any) => {
-        return data;
-      })
-    );
-
-    this.visuals$ = this.visualService.getAllVisuals().pipe(
-      map((data: any) => {
-        return data;
-      })
-    );
-
-    this.dltypes$ = this.dltypeService.getAllDLTypes().pipe(
-      map((data: any) => {
-        return data;
-      })
-    );
-
     this.driverSearchComponent.openModal(); // Call method to show the modal
   }
 
@@ -370,6 +257,17 @@ export class AddassessmentComponent implements OnInit, OnDestroy {
       this.getClientID(this.formDriver.get('contractorid')?.value) || 0;
     this.formDriver.get('clientname')?.setValue(this.getClientName(clientid));
     this.checkLicenseExpiry(this.formDriver.get('licenseexpiry')?.value);
+    this.validateDriverHasContractor(
+      this.formDriver.get('contractorid')?.value
+    );
+  }
+
+  validateDriverHasContractor(value: number) {
+    if (!value) {
+      this.isContractorExist.set(true);
+    } else {
+      this.isContractorExist.set(false);
+    }
   }
 
   checkLicenseExpiry(expiryDate: string) {

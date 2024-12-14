@@ -139,6 +139,7 @@
           type="submit"
           class="btn btn-primary btn-sm"
           (click)="getFillterredData()"
+          title="Search trainings"
         >
           <i class="fa-brands fa-searchengin me-1"></i>Search
         </button>
@@ -147,6 +148,7 @@
           type="button"
           class="btn btn-secondary btn-sm ms-1"
           (click)="formRest()"
+          title="Reset Searched Form"
         >
           <i class="fa-solid fa-window-restore me-1"></i>Reset
         </button>
@@ -221,7 +223,7 @@
   <div>
     <ag-grid-angular
       [class]="themeClass()"
-      [rowData]="trainings()"
+      [rowData]="trainingsWithNames()"
       [columnDefs]="colDefs"
       [pagination]="true"
       [paginationPageSize]="20"

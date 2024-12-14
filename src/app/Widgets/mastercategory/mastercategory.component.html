@@ -82,6 +82,7 @@
             (click)="
               update(item.id, item.name, item.description); item.isEdit = false
             "
+            title="Update Changes"
           >
             <i class="fa-regular fa-floppy-disk"></i>
             save
@@ -89,6 +90,7 @@
           <button
             class="btn btn-sm btn-outline-danger ms-1"
             (click)="delete(item.id); item.isEdit = false"
+            title="Delete Cateogory"
           >
             <i class="fa-solid fa-trash-can"></i>
             delete
@@ -96,12 +98,17 @@
           <button
             class="btn btn-sm btn-outline-primary ms-1"
             (click)="item.isEdit = false"
+            title="Cancel"
           >
             <i class="fa-regular fa-rectangle-xmark"></i>
             cancel
           </button>
           }@else {
-          <button class="btn btn-sm btn-outline-primary" (click)="onEdit(item)">
+          <button
+            class="btn btn-sm btn-outline-primary"
+            (click)="onEdit(item)"
+            title="Edit"
+          >
             <i class="far fa-edit"></i>
             edit
           </button>
@@ -166,7 +173,12 @@
         </form>
       </div>
       <div class="modal-footer bg-info-subtle">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+          title="Close without saving"
+        >
           Close
         </button>
         <button
@@ -180,6 +192,7 @@
           "
           [disabled]="formPrimaryCategory.invalid"
           data-bs-dismiss="modal"
+          title="Save Form"
         >
           Save changes
         </button>

@@ -16,14 +16,8 @@ export class ActivityService {
   private readonly apiURL = `${environment.apiUrl}activity/`;
   private readonly apiMasterURL = `${environment.apiUrl}activity/master/`;
   private readonly apiSlaveURL = `${environment.apiUrl}activity/slave/`;
-
-  private selectedCategoryId: BehaviorSubject<number> =
-    new BehaviorSubject<number>(0);
-  selectedCategoryId$: Observable<number> =
-    this.selectedCategoryId.asObservable();
-
-  constructor(private http: HttpClient) {}
-  authService = inject(AuthService);
+  private http = inject(HttpClient);
+  private authService = inject(AuthService);
 
   /**
    * Get all activities

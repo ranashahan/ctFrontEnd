@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  inject,
   OnDestroy,
   OnInit,
   signal,
@@ -35,10 +36,17 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
   driverId = signal<number>(0);
   isEdit = false;
   driverForm: FormGroup;
-  bloodgroups = signal<apiGenericModel[]>([]);
-  dltypes = signal<apiGenericModel[]>([]);
-  visuals = signal<apiGenericModel[]>([]);
-  contractors = signal<apiContractorModel[]>([]);
+  private bgService = inject(BloodgroupService);
+  private driverService = inject(DriverService);
+  private cService = inject(ContractorService);
+  private dltypeService = inject(DltypeService);
+  private utils = inject(UtilitiesService);
+  private vService = inject(VisualService);
+
+  bloodgroups = this.bgService.bloodGroups;
+  dltypes = this.dltypeService.dltypes;
+  visuals = this.vService.visuals;
+  contractors = this.cService.contractors;
   licenseVerification = signal<any[]>([]);
   gender = signal<string[]>([]);
   initialFormData: any;
@@ -62,12 +70,6 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
-    private driverService: DriverService,
-    private bgService: BloodgroupService,
-    private cService: ContractorService,
-    private dltypeService: DltypeService,
-    private utils: UtilitiesService,
-    private vService: VisualService,
     private cdRef: ChangeDetectorRef
   ) {
     this.utils.setTitle('Driver details');
@@ -117,57 +119,10 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
       this.getDriver(this.driverId());
     });
 
-    this.getBloodGroups();
-    this.getDLTypes();
-    this.getContractors();
-    this.getVisuals();
     this.licenseVerification.set(this.utils.verificationStatus());
     this.gender.set(this.utils.gender());
   }
 
-  /**
-   * This method will get all the blood groups
-   */
-  getBloodGroups() {
-    this.subscriptionList.push(
-      this.bgService.getAllBloodgroups().subscribe((res: any) => {
-        this.bloodgroups.set(res);
-      })
-    );
-  }
-
-  /**
-   * This method will get all the driving license types
-   */
-  getDLTypes() {
-    this.subscriptionList.push(
-      this.dltypeService.getAllDLTypes().subscribe((res: any) => {
-        this.dltypes.set(res);
-      })
-    );
-  }
-
-  /**
-   * This method will get all the visuals
-   */
-  getVisuals() {
-    this.subscriptionList.push(
-      this.vService.getAllVisuals().subscribe((res: any) => {
-        this.visuals.set(res);
-      })
-    );
-  }
-
-  /**
-   * This method will get all the contractors
-   */
-  getContractors() {
-    this.subscriptionList.push(
-      this.cService.getAll().subscribe((res: any) => {
-        this.contractors.set(res);
-      })
-    );
-  }
   /**
    * This method will set blood group name against blood group ID
    * @param itemId blood group ID

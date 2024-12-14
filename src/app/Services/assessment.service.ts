@@ -1,6 +1,6 @@
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable, Signal } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { catchError, forkJoin, map, Observable, throwError } from 'rxjs';
+import { catchError, forkJoin, map, Observable, take, throwError } from 'rxjs';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import {
@@ -13,18 +13,25 @@ import { ContractorService } from './contractor.service';
 import { LocationService } from './location.service';
 import { ResultService } from './result.service';
 import { StageService } from './stage.service';
+import { apiContractorModel } from '../Models/Contractor';
+import { apiGenericModel } from '../Models/Generic';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AssessmentService {
   private readonly apiURL = `${environment.apiUrl}assessment/`;
-  authService = inject(AuthService);
-  cService = inject(ContractorService);
-  locationService = inject(LocationService);
-  resultService = inject(ResultService);
-  stageService = inject(StageService);
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
+  private authService = inject(AuthService);
+  private cService = inject(ContractorService);
+  private locationService = inject(LocationService);
+  private resultService = inject(ResultService);
+  private stageService = inject(StageService);
+
+  contractors = this.cService.contractors;
+  locations = this.locationService.locations;
+  results = this.resultService.results;
+  stages = this.stageService.stages;
 
   /**
    * Get all assessments
@@ -92,50 +99,51 @@ export class AssessmentService {
   }
 
   /**
-   * This method will fetch all the driver and contractor name & dl type
-   * @returns Observable
+   * This method will fetch all the sessions with contractor,location,result,stages names
+   * @returns Session Signal
    */
-  getSessionsWithOthersName(
-    sessionParam: Observable<apiSessionModel[]>
-  ): Observable<any[]> {
-    return forkJoin({
-      sessions: sessionParam,
-      contractors: this.cService.getAll(),
-      locations: this.locationService.getAllLocations(),
-      results: this.resultService.getAllResults(),
-      stages: this.stageService.getAllStages(),
-    }).pipe(
-      map(({ sessions, contractors, locations, results, stages }) => {
-        const contractorMap = contractors.reduce((map, contractor: any) => {
+  getSessionsWithNames(sessionParam: Signal<apiSessionModel[]>) {
+    return computed(() => {
+      const sessions = sessionParam();
+      const contractorsValue = this.contractors();
+      const locationsValue = this.locations();
+      const resultsValue = this.results();
+      const stagesValue = this.stages();
+
+      const contractorMap = contractorsValue.reduce(
+        (map, contractor: apiContractorModel) => {
           map[contractor.id] = contractor.name;
           return map;
-        }, {} as Record<number, string>);
+        },
+        {} as Record<number, string>
+      );
 
-        const locationMap = locations.reduce((map, item: any) => {
-          map[item.id] = item.name;
+      const locationMap = locationsValue.reduce(
+        (map, location: apiGenericModel) => {
+          map[location.id] = location.name;
           return map;
-        }, {} as Record<number, string>);
+        },
+        {} as Record<number, string>
+      );
 
-        const resultMap = results.reduce((map, item: any) => {
-          map[item.id] = item.name;
-          return map;
-        }, {} as Record<number, string>);
+      const resultMap = resultsValue.reduce((map, result: apiGenericModel) => {
+        map[result.id] = result.name;
+        return map;
+      }, {} as Record<number, string>);
 
-        const stageMap = stages.reduce((map, item: any) => {
-          map[item.id] = item.name;
-          return map;
-        }, {} as Record<number, string>);
+      const stageMap = stagesValue.reduce((map, stage: apiGenericModel) => {
+        map[stage.id] = stage.name;
+        return map;
+      }, {} as Record<number, string>);
 
-        // Map drivers to include contractorName
-        return sessions.map((session) => ({
-          ...session,
-          contractorName: contractorMap[session.contractorid] || '',
-          locationName: locationMap[session.locationid] || '',
-          resultName: resultMap[session.resultid] || '',
-          stageName: stageMap[session.stageid] || '',
-        }));
-      })
-    );
+      return sessions.map((session) => ({
+        ...session,
+        contractorName: contractorMap[session.contractorid] || '',
+        locationName: locationMap[session.locationid] || '',
+        resultName: resultMap[session.resultid] || '',
+        stageName: stageMap[session.stageid] || '',
+      }));
+    });
   }
 
   /**
