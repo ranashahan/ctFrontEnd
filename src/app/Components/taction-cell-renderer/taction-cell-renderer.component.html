@@ -1,14 +1,23 @@
 <div class="action-buttons">
   <button
     type="button"
-    class="btn btn-outline-primary position-relative mt-1"
+    class="btn btn-outline-primary position-relative mt-2"
     [routerLink]="['/alltrainings/' + params.data.id]"
     title="Training Detail Page"
   >
     <i class="fa-solid fa-circle-info"></i>
+    @if(params.data.sessioncount>0){
+    <span
+      class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success"
+      title="Sessions Count"
+    >
+      {{ params.data.sessioncount }}
+      <span class="visually-hidden">unread messages</span>
+    </span>
+    }
   </button>
   <button
-    class="btn btn-sm btn-outline-danger mt-1"
+    class="btn btn-sm btn-outline-danger mt-2"
     (click)="onDeleteTraining()"
   >
     <i class="fa-solid fa-trash-can"></i>

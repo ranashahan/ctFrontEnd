@@ -31,6 +31,9 @@ import { AlltrainingsComponent } from './Pages/alltrainings/alltrainings.compone
 import { TrainingdetailComponent } from './Pages/trainingdetail/trainingdetail.component';
 import { AddtrainingComponent } from './Pages/addtraining/addtraining.component';
 import { TrainingsreportComponent } from './Pages/trainingsreport/trainingsreport.component';
+import { AddassessmentEXPComponent } from './Pages/addassessment-exp/addassessment-exp.component';
+import { CategoryComponent } from './Pages/category/category.component';
+import { CourseComponent } from './Pages/course/course.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -67,13 +70,13 @@ export const routes: Routes = [
         path: 'adddriver',
         component: AdddriverComponent,
         canActivate: [authGuard],
-        data: { roles: ['admin', 'manager', 'staff'] },
+        data: { roles: ['admin', 'manager', 'staff', 'member'] },
       },
       {
         path: 'driversreport',
         component: DriversreportComponent,
         canActivate: [authGuard],
-        data: { roles: ['admin', 'manager'] },
+        data: { roles: ['admin', 'manager', 'staff'] },
       },
       {
         path: 'allassessments',
@@ -91,13 +94,19 @@ export const routes: Routes = [
         path: 'addassessment',
         component: AddassessmentComponent,
         canActivate: [authGuard],
-        data: { roles: ['admin', 'manager', 'staff'] },
+        data: { roles: ['admin', 'manager', 'staff', 'member'] },
+      },
+      {
+        path: 'addassessmentEXP',
+        component: AddassessmentEXPComponent,
+        canActivate: [authGuard],
+        data: { roles: ['admin'] },
       },
       {
         path: 'assessmentsreport',
         component: AssessmentsreportComponent,
         canActivate: [authGuard],
-        data: { roles: ['admin', 'manager'] },
+        data: { roles: ['admin', 'manager', 'staff'] },
       },
       {
         path: 'assessmentsconfigure',
@@ -142,6 +151,12 @@ export const routes: Routes = [
         data: { roles: ['admin', 'manager'] },
       },
       {
+        path: 'category',
+        component: CategoryComponent,
+        canActivate: [authGuard],
+        data: { roles: ['admin'] },
+      },
+      {
         path: 'client',
         component: ClientComponent,
         canActivate: [authGuard],
@@ -152,6 +167,12 @@ export const routes: Routes = [
         component: ContractorComponent,
         canActivate: [authGuard],
         data: { roles: ['admin', 'manager'] },
+      },
+      {
+        path: 'course',
+        component: CourseComponent,
+        canActivate: [authGuard],
+        data: { roles: ['admin'] },
       },
       {
         path: 'dltype',
@@ -199,7 +220,7 @@ export const routes: Routes = [
         path: 'allusers',
         component: AllusersComponent,
         canActivate: [authGuard],
-        data: { roles: ['admin', 'manager'] },
+        data: { roles: ['admin'] },
       },
     ],
   },

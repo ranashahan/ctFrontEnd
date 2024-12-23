@@ -35,6 +35,9 @@ import { DatePipe } from '@angular/common';
 import { VehicleService } from '../../Services/vehicle.service';
 import { ResultService } from '../../Services/result.service';
 import { DeleteConfirmationComponent } from '../../Widgets/delete-confirmation/delete-confirmation.component';
+import { CourseService } from '../../Services/course.service';
+import { CategoryService } from '../../Services/category.service';
+import { DltypeService } from '../../Services/dltype.service';
 
 @Component({
   selector: 'app-trainingdetail',
@@ -71,14 +74,17 @@ export class TrainingdetailComponent implements OnInit, OnDestroy {
   private utils = inject(UtilitiesService);
   private cService = inject(ContractorService);
   private trainerService = inject(TrainerService);
+  private dltypeService = inject(DltypeService);
   private locationService = inject(LocationService);
   private resultService = inject(ResultService);
   private titleService = inject(TitleService);
   private vehicleService = inject(VehicleService);
   private assessmentService = inject(AssessmentService);
+  private courseService = inject(CourseService);
+  private categoryService = inject(CategoryService);
 
-  categories = signal<string[]>([]);
-  cources = signal<string[]>([]);
+  categories = this.categoryService.categories;
+  courses = this.courseService.courses;
   statuses = signal<string[]>([]);
   sources = signal<string[]>([]);
   contractors = this.cService.contractors;
@@ -88,6 +94,7 @@ export class TrainingdetailComponent implements OnInit, OnDestroy {
   results = this.resultService.results;
   vehicles = this.vehicleService.vehicles;
   locations = this.locationService.locations;
+  dltypes = this.dltypeService.dltypes;
   previousTax = signal<number>(0);
   sessions = signal<apiVSessionModel[]>([]);
   verificationStatus = signal<any[]>([]);
@@ -123,8 +130,8 @@ export class TrainingdetailComponent implements OnInit, OnDestroy {
       startdate: [{ value: null, disabled: !this.isEdit }],
       enddate: [{ value: null, disabled: !this.isEdit }],
       duration: [{ value: null, disabled: !this.isEdit }],
-      cource: [{ value: null, disabled: !this.isEdit }],
-      category: [{ value: null, disabled: !this.isEdit }],
+      courseid: [{ value: null, disabled: !this.isEdit }],
+      categoryid: [{ value: null, disabled: !this.isEdit }],
       clientid: [{ value: null, disabled: !this.isEdit }],
       contractorid: [{ value: null, disabled: !this.isEdit }],
       titleid: [{ value: null, disabled: !this.isEdit }],
@@ -164,9 +171,6 @@ export class TrainingdetailComponent implements OnInit, OnDestroy {
       this.trainingId.set(trainingid);
       this.getTraining(this.trainingId());
     });
-
-    this.categories.set(this.utils.categories());
-    this.cources.set(this.utils.cources());
     this.statuses.set(this.utils.statuses());
     this.sources.set(this.utils.sources());
     this.verificationStatus.set(this.utils.verificationStatus());
@@ -187,6 +191,14 @@ export class TrainingdetailComponent implements OnInit, OnDestroy {
    */
   getTitleName(itemId: number): string {
     return this.utils.getGenericName(this.titles(), itemId);
+  }
+  /**
+   * This method will set Title name against Title ID
+   * @param itemId Title ID
+   * @returns string Title name
+   */
+  getDLTypeName(itemId: number): string {
+    return this.utils.getGenericName(this.dltypes(), itemId);
   }
   /**
    * This method will set Vehicle name against Vehicle ID
@@ -384,8 +396,8 @@ export class TrainingdetailComponent implements OnInit, OnDestroy {
         .updateTraining(
           training.id,
           training.name,
-          training.cource,
-          training.category,
+          training.courseid,
+          training.categoryid,
           training.plandate,
           training.startdate,
           training.enddate,

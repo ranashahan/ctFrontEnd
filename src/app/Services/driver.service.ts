@@ -1,16 +1,8 @@
 import { computed, inject, Injectable, Signal } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { AuthService } from './auth.service';
-import {
-  catchError,
-  forkJoin,
-  map,
-  Observable,
-  take,
-  tap,
-  throwError,
-} from 'rxjs';
+import { Observable } from 'rxjs';
 import { apiDriverModel } from '../Models/Driver';
 import { ContractorService } from './contractor.service';
 import { DltypeService } from './dltype.service';
@@ -20,12 +12,17 @@ import { DltypeService } from './dltype.service';
 })
 export class DriverService {
   private readonly apiURL = `${environment.apiUrl}driver/`;
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
   private authService = inject(AuthService);
   private cService = inject(ContractorService);
   private dlService = inject(DltypeService);
-
+  /**
+   * Contractor signal
+   */
   private contractors = this.cService.contractors;
+  /**
+   * Driver License Types signal
+   */
   private dltypes = this.dlService.dltypes;
 
   /**
@@ -99,33 +96,7 @@ export class DriverService {
    * @returns Observable
    */
   deleteDriverByID(id: number) {
-    return this.http
-      .delete<apiDriverModel>(this.apiURL + id, { observe: 'response' })
-      .pipe(
-        map((response: HttpResponse<any>) => {
-          // console.log(`Status: ${response.status}`); // Access status code
-          return response.body; // Return response body
-        }),
-        catchError((error) => {
-          // console.log('Full error response:', error); // Log the full error object
-
-          // Extract the message from the error object.
-          let errorMessage = 'An unknown error occurred'; // Fallback message
-
-          // Check if the error has a response body with a message.
-          if (error.error && typeof error.error === 'object') {
-            if (error.error.message) {
-              errorMessage = error.error.message; // Check if error message exists in the error object
-            } else if (error.message) {
-              errorMessage = error.message; // Use general error message if available
-            }
-          } else if (error.message) {
-            errorMessage = error.message; // Use the top-level error message if no nested error object
-          }
-
-          return throwError(() => new Error(errorMessage)); // Pass the correct error message
-        })
-      );
+    return this.http.delete<apiDriverModel>(this.apiURL + id);
   }
 
   /**
@@ -176,9 +147,14 @@ export class DriverService {
     if (permitnumber) {
       params = params.set('permitnumber', permitnumber);
     }
-    // console.log('what are my params: ' + params);
-    // Make GET request with query parameters
     return this.http.get<apiDriverModel[]>(`${this.apiURL}search`, { params });
+  }
+
+  expiryReport(param: string) {
+    let params = new HttpParams();
+    params = params.set('param', param);
+
+    return this.http.get(`${this.apiURL}expiry`, { params });
   }
 
   /**
@@ -203,9 +179,9 @@ export class DriverService {
    * @param licenseexpiry expiry
    * @param designation designation
    * @param department department
-   * @param permitnumber permit number
    * @param permitissue permit issue date
    * @param permitexpiry permit expiry date
+   * @param medicalexpiry medical expiry date
    * @param bloodgroupid blood group id
    * @param contractorid contractor id
    * @param visualid visual id
@@ -228,9 +204,9 @@ export class DriverService {
     licenseverified: number,
     designation: string,
     department: string,
-    permitnumber: string,
     permitissue: Date,
     permitexpiry: Date,
+    medicalexpiry: Date,
     bloodgroupid: number,
     contractorid: number,
     visualid: number,
@@ -251,9 +227,9 @@ export class DriverService {
       licenseverified,
       designation,
       department,
-      permitnumber,
       permitissue,
       permitexpiry,
+      medicalexpiry,
       bloodgroupid,
       contractorid,
       visualid,
@@ -277,15 +253,14 @@ export class DriverService {
    * @param licenseexpiry expiry
    * @param designation designation
    * @param department department
-   * @param permitnumber permit number
-   * @param permitissue permit issue date
-   * @param permitexpiry permit expiry date
+   * @param licenseverified licenseVerified
+   * @param medicalexpiry medical expiry date
    * @param bloodgroupid blood group id
-   * @param contractorid contractor
-   * @param visualid visual
-   * @param ddccount ddc count number
-   * @param experience existing driver experience
-   * @param code existing driver code
+   * @param contractorid contractor id
+   * @param visualid visual id
+   * @param ddccount ddc count
+   * @param experience experience
+   * @param code code
    * @param comment comment
    * @returns Observable
    */
@@ -301,8 +276,7 @@ export class DriverService {
     licenseverified: number,
     designation: string,
     department: string,
-    permitnumber: string,
-    permitissue: Date,
+    medicalexpiry: Date,
     bloodgroupid: number,
     contractorid: number,
     visualid: number,
@@ -311,58 +285,27 @@ export class DriverService {
     code: string,
     comment: string
   ): Observable<apiDriverModel> {
-    return this.http
-      .post<apiDriverModel>(
-        this.apiURL + 'create',
-        {
-          name,
-          gender,
-          dob,
-          nic,
-          nicexpiry,
-          licensenumber,
-          licensetypeid,
-          licenseexpiry,
-          licenseverified,
-          designation,
-          department,
-          permitnumber,
-          permitissue,
-          bloodgroupid,
-          contractorid,
-          visualid,
-          ddccount,
-          experience,
-          code,
-          comment,
-          userid: this.authService.getUserID(),
-        },
-        { observe: 'response' }
-      )
-      .pipe(
-        map((response: HttpResponse<any>) => {
-          // console.log(`Status: ${response.status}`); // Access status code
-          return response.body; // Return response body
-        }),
-        catchError((error) => {
-          // console.log('Full error response:', error); // Log the full error object
-
-          // Extract the message from the error object.
-          let errorMessage = 'An unknown error occurred'; // Fallback message
-
-          // Check if the error has a response body with a message.
-          if (error.error && typeof error.error === 'object') {
-            if (error.error.message) {
-              errorMessage = error.error.message; // Check if error message exists in the error object
-            } else if (error.message) {
-              errorMessage = error.message; // Use general error message if available
-            }
-          } else if (error.message) {
-            errorMessage = error.message; // Use the top-level error message if no nested error object
-          }
-
-          return throwError(() => new Error(errorMessage)); // Pass the correct error message
-        })
-      );
+    return this.http.post<apiDriverModel>(this.apiURL + 'create', {
+      name,
+      gender,
+      dob,
+      nic,
+      nicexpiry,
+      licensenumber,
+      licensetypeid,
+      licenseexpiry,
+      licenseverified,
+      designation,
+      department,
+      medicalexpiry,
+      bloodgroupid,
+      contractorid,
+      visualid,
+      ddccount,
+      experience,
+      code,
+      comment,
+      userid: this.authService.getUserID(),
+    });
   }
 }

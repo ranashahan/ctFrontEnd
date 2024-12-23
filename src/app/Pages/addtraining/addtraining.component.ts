@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  computed,
   inject,
   OnDestroy,
   OnInit,
@@ -26,6 +27,8 @@ import { apiGenericModel } from '../../Models/Generic';
 import { LocationService } from '../../Services/location.service';
 import { TrainerService } from '../../Services/trainer.service';
 import { TrainingService } from '../../Services/training.service';
+import { CourseService } from '../../Services/course.service';
+import { CategoryService } from '../../Services/category.service';
 
 @Component({
   selector: 'app-addtraining',
@@ -46,9 +49,11 @@ export class AddtrainingComponent implements OnInit, OnDestroy {
   private locationService = inject(LocationService);
   private trainerService = inject(TrainerService);
   private trainingService = inject(TrainingService);
+  private courseService = inject(CourseService);
+  private categoryService = inject(CategoryService);
 
-  categories = signal<string[]>([]);
-  cources = signal<string[]>([]);
+  categories = this.categoryService.categories;
+  courses = this.courseService.courses;
   statuses = signal<string[]>([]);
   sources = signal<string[]>([]);
   contractors = this.cService.contractors;
@@ -57,6 +62,17 @@ export class AddtrainingComponent implements OnInit, OnDestroy {
   titles = this.titleService.titles;
   locations = this.locationService.locations;
   previousTax = signal<number>(0);
+
+  selectedClient = signal<number | null>(null);
+
+  filteredContractors = computed(() => {
+    const clientid = this.selectedClient();
+    return clientid
+      ? this.contractors().filter(
+          (c) => Number(c.clientid) === Number(clientid)
+        )
+      : this.contractors();
+  });
 
   formTraining: FormGroup;
 
@@ -74,8 +90,8 @@ export class AddtrainingComponent implements OnInit, OnDestroy {
       startdate: [],
       enddate: [],
       duration: [],
-      cource: [null],
-      category: [null],
+      courseid: [null, Validators.required],
+      categoryid: [null],
       clientid: [],
       contractorid: [],
       titleid: [],
@@ -101,7 +117,9 @@ export class AddtrainingComponent implements OnInit, OnDestroy {
       assessment: [],
       commentry: [],
     });
-
+    this.formTraining.get('clientid')?.valueChanges.subscribe((clientid) => {
+      this.selectedClient.set(clientid);
+    });
     this.setupTotalCalculation();
   }
 
@@ -109,10 +127,18 @@ export class AddtrainingComponent implements OnInit, OnDestroy {
    * This method will invoke all the methods while rendering the page
    */
   ngOnInit(): void {
-    this.categories.set(this.utils.categories());
-    this.cources.set(this.utils.cources());
     this.statuses.set(this.utils.statuses());
     this.sources.set(this.utils.sources());
+    this.generateKey();
+  }
+
+  /**
+   * This method will set generated key
+   */
+  generateKey() {
+    const generatedKey = this.trainingService.generateKey();
+    console.log('this is my key', generatedKey);
+    this.formTraining.get('name')?.setValue(generatedKey);
   }
 
   /**
@@ -182,7 +208,7 @@ export class AddtrainingComponent implements OnInit, OnDestroy {
 
   createTraining() {
     const formValues = this.formTraining.getRawValue();
-    console.log(formValues);
+    //console.log(formValues);
     let classroom = 1;
     if (formValues.classroom) {
       classroom = 2;
@@ -200,8 +226,8 @@ export class AddtrainingComponent implements OnInit, OnDestroy {
       this.trainingService
         .createTraining(
           formValues.name,
-          formValues.cource,
-          formValues.category,
+          formValues.courseid,
+          formValues.categoryid,
           formValues.plandate,
           formValues.startdate,
           formValues.enddate,
@@ -249,6 +275,7 @@ export class AddtrainingComponent implements OnInit, OnDestroy {
    */
   formRest() {
     this.formTraining.reset();
+    this.generateKey();
     this.formTraining.patchValue({
       status: 'New',
     });

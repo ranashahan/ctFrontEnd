@@ -129,6 +129,36 @@ export class UtilitiesService {
   }
 
   /**
+   * This method will return prior date
+   * @param param set prior month by parameter
+   * @returns Date
+   */
+  public monthAgo(param: number): Date {
+    const today = new Date();
+    const dateAgo = new Date(
+      today.getFullYear(),
+      today.getMonth() - param,
+      today.getDate()
+    );
+    return dateAgo;
+  }
+
+  /**
+   * This method will return ahead date
+   * @param param set ahead date by parameter
+   * @returns Date
+   */
+  public daysAhead(param: number): Date {
+    const today = new Date();
+    const dayAhead = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate() + param
+    );
+    return dayAhead;
+  }
+
+  /**
    * This method only for get roles
    * @returns array of string
    */
@@ -142,22 +172,6 @@ export class UtilitiesService {
    */
   public gender(): string[] {
     return ['Male', 'Female', 'Not Specified'];
-  }
-
-  /**
-   * This method only for get category
-   * @returns array of string
-   */
-  public categories(): string[] {
-    return ['Permit', 'Assessment', 'Permit / Assessment'];
-  }
-
-  /**
-   * This method only for get category
-   * @returns array of string
-   */
-  public cources(): string[] {
-    return ['Defensive Driving', 'Defensive Lifting', 'Inspection'];
   }
 
   /**

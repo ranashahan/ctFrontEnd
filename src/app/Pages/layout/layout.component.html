@@ -168,9 +168,9 @@
               <hr class="dropdown-divider" />
             </li>
             <li>
-              @if (userRoles[0]==='admin'||userRoles[0]==='manager') {<a
-                class="dropdown-item text-primary small"
-                routerLink="/allusers"
+              <!-- @if (userRoles[0]==='admin'||userRoles[0]==='manager') { -->
+              @if (userRoles[0]==='admin') {
+              <a class="dropdown-item text-primary small" routerLink="/allusers"
                 ><i class="fa-solid fa-user-group me-1"></i>Employees
               </a>
               <hr class="dropdown-divider" />

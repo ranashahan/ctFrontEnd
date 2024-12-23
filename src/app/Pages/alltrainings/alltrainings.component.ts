@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  computed,
   inject,
   OnDestroy,
   OnInit,
@@ -34,6 +35,8 @@ import { RouterLink, RouterOutlet } from '@angular/router';
 import { TlinkCellRendererComponent } from '../../Components/tlink-cell-renderer/tlink-cell-renderer.component';
 import { TActionCellRendererComponent } from '../../Components/taction-cell-renderer/taction-cell-renderer.component';
 import { DeleteConfirmationComponent } from '../../Widgets/delete-confirmation/delete-confirmation.component';
+import { CourseService } from '../../Services/course.service';
+import { CategoryService } from '../../Services/category.service';
 
 @Component({
   selector: 'app-alltrainings',
@@ -65,6 +68,8 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
   private locationService = inject(LocationService);
   private trainerService = inject(TrainerService);
   private trainingService = inject(TrainingService);
+  private courseService = inject(CourseService);
+  private categoryService = inject(CategoryService);
 
   trainings = signal<apiTrainingModel[]>([]);
   public trainingsWithNames =
@@ -75,10 +80,21 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
   titles = this.titleService.titles;
   locations = this.locationService.locations;
   trainers = this.trainerService.trainers;
-  categories = signal<string[]>([]);
-  cources = signal<string[]>([]);
+  categories = this.categoryService.categories;
+  courses = this.courseService.courses;
   statuses = signal<string[]>([]);
   sources = signal<string[]>([]);
+  selectedClient = signal<number | null>(null);
+
+  filteredContractors = computed(() => {
+    const clientid = this.selectedClient();
+    return clientid
+      ? this.contractors().filter(
+          (c) => Number(c.clientid) === Number(clientid)
+        )
+      : this.contractors();
+  });
+
   themeClass = signal<string>('ag-theme-quartz');
   gridApi!: GridApi;
 
@@ -111,19 +127,22 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
       clientid: [],
       locationid: [],
       contractorid: [],
-      cource: [],
-      category: [],
+      courseid: [],
+      categoryid: [],
       startDate: [this.oneMonthAgo.toISOString().substring(0, 10)],
       endDate: [this.oneMonthAhead.toISOString().substring(0, 10)],
     });
+    this.formTrainingSearch
+      .get('clientid')
+      ?.valueChanges.subscribe((clientid) => {
+        this.selectedClient.set(clientid);
+      });
   }
 
   /**
    * This method will invoke all the methods while rendering the page
    */
   ngOnInit(): void {
-    this.categories.set(this.utils.categories());
-    this.cources.set(this.utils.cources());
     this.statuses.set(this.utils.statuses());
     this.sources.set(this.utils.sources());
     this.updatetheme();
@@ -139,8 +158,8 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
         .getSessionbydate(
           this.formTrainingSearch.value.name,
           this.formTrainingSearch.value.plandate,
-          this.formTrainingSearch.value.cource,
-          this.formTrainingSearch.value.category,
+          this.formTrainingSearch.value.courseid,
+          this.formTrainingSearch.value.categoryid,
           this.formTrainingSearch.value.clientid,
           this.formTrainingSearch.value.contractorid,
           this.formTrainingSearch.value.startDate,
@@ -231,13 +250,13 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
     },
     {
       headerName: 'Course Title',
-      field: 'cource',
+      field: 'courseName',
       filter: 'agTextColumnFilter',
       flex: 1.5,
     },
     {
       headerName: 'Category',
-      field: 'category',
+      field: 'categoryName',
       filter: 'agTextColumnFilter',
     },
     {

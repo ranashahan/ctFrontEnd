@@ -115,7 +115,8 @@ export class ProfileComponent implements OnDestroy {
             this.formUser.patchValue(res[0]);
             // this.username = res[0].username;
             // this.userid = res[0].userid;
-            if (res[0].role == ROLES.ADMIN || res[0].role == ROLES.MANAGER) {
+            // if (res[0].role == ROLES.ADMIN || res[0].role == ROLES.MANAGER) {
+            if (res[0].role == ROLES.ADMIN) {
               this.formUser.get('role')?.enable();
             }
           }

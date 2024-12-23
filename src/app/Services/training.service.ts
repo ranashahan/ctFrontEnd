@@ -6,6 +6,8 @@ import { Observable } from 'rxjs';
 import { apiTrainingModel } from '../Models/Training';
 import { ClientService } from './client.service';
 import { ContractorService } from './contractor.service';
+import { CourseService } from './course.service';
+import { CategoryService } from './category.service';
 
 @Injectable({
   providedIn: 'root',
@@ -32,9 +34,38 @@ export class TrainingService {
    * Contractor Service
    */
   private cService = inject(ContractorService);
-
-  clients = this.clientService.clients;
-  contractors = this.cService.contractors;
+  /**
+   * Course Service
+   */
+  private courseService = inject(CourseService);
+  /**
+   * Category Service
+   */
+  private categoryService = inject(CategoryService);
+  /**
+   * Course signal
+   */
+  private courses = this.courseService.courses;
+  /**
+   * Categories signal
+   */
+  private categories = this.categoryService.categories;
+  /**
+   * Client signal
+   */
+  private clients = this.clientService.clients;
+  /**
+   * Contractor signal
+   */
+  private contractors = this.cService.contractors;
+  /**
+   * Counter
+   */
+  private counter: number = 1;
+  /**
+   * Key
+   */
+  private keys: Set<string> = new Set();
 
   /**
    * This method will fetch all the active trainings
@@ -54,6 +85,8 @@ export class TrainingService {
       const trainings: apiTrainingModel[] = trainingParam();
       const contractorsValue = this.contractors();
       const clientsValue = this.clients();
+      const coursesValue = this.courses();
+      const categoriesValue = this.categories();
 
       const contractorMap = contractorsValue.reduce((map, contractor: any) => {
         map[contractor.id] = contractor.name;
@@ -65,10 +98,22 @@ export class TrainingService {
         return map;
       }, {} as Record<number, string>);
 
+      const coursesMap = coursesValue.reduce((map, course: any) => {
+        map[course.id] = course.name;
+        return map;
+      }, {} as Record<number, string>);
+
+      const categoriesMap = categoriesValue.reduce((map, category: any) => {
+        map[category.id] = category.name;
+        return map;
+      }, {} as Record<number, string>);
+
       return trainings.map((training) => ({
         ...training,
         contractorName: contractorMap[training.contractorid] || '',
         clientName: clientsMap[training.clientid] || '',
+        courseName: coursesMap[training.courseid] || '',
+        categoryName: categoriesMap[training.categoryid] || '',
       }));
     });
   }
@@ -88,8 +133,8 @@ export class TrainingService {
   getSessionbydate(
     name?: string,
     plandate?: string,
-    cource?: string,
-    category?: string,
+    courseid?: string,
+    categoryid?: string,
     clientid?: number,
     contractorid?: number,
     startDate?: string,
@@ -102,11 +147,11 @@ export class TrainingService {
     if (plandate) {
       params = params.set('plandate', plandate);
     }
-    if (cource) {
-      params = params.set('cource', cource);
+    if (courseid) {
+      params = params.set('courseid', courseid);
     }
-    if (category) {
-      params = params.set('category', category);
+    if (categoryid) {
+      params = params.set('categoryid', categoryid);
     }
     if (clientid) {
       params = params.set('clientid', clientid);
@@ -171,8 +216,8 @@ export class TrainingService {
    */
   createTraining(
     name: string,
-    cource: string,
-    category: string,
+    courseid: number,
+    categoryid: number,
     plandate: Date,
     startdate: Date,
     enddate: Date,
@@ -204,8 +249,8 @@ export class TrainingService {
   ): Observable<apiTrainingModel> {
     return this.http.post<apiTrainingModel>(this.apiURL + 'create', {
       name,
-      cource,
-      category,
+      courseid,
+      categoryid,
       plandate,
       startdate,
       enddate,
@@ -238,11 +283,47 @@ export class TrainingService {
     });
   }
 
+  /**
+   * This method will update training
+   * @param id {number} training id
+   * @param name {string} training name
+   * @param courseid {number} course id
+   * @param categoryid {number} category id
+   * @param plandate {date} training date
+   * @param startdate {date} training start date
+   * @param enddate {date} training end date
+   * @param duration {string} training duration
+   * @param titleid {number} title id
+   * @param clientid {number} client id
+   * @param contractorid {number} contractor id
+   * @param trainerid {number} trainer id
+   * @param trainingexpiry {date} training expiry
+   * @param invoicenumber {string} invoice number
+   * @param invoicedate {date} invoice date
+   * @param charges {number} invoice charges
+   * @param transportation {number} transportation charges
+   * @param miscexpense {number} misc expenses
+   * @param tax {number} tax
+   * @param total {number} auto calculated
+   * @param bank {string} bank name
+   * @param cheque {string} cheque
+   * @param amountreceived {number}
+   * @param requestedby {string} requested person name
+   * @param contactnumber {string} requested person contact
+   * @param source {string} source
+   * @param venue {string} venue
+   * @param locationid {number} location id
+   * @param status {string} job status
+   * @param classroom {number} classroom (yes or no)
+   * @param assessment {number} assessment (yes or no)
+   * @param commentry {number} commentry (yes or no)
+   * @returns
+   */
   updateTraining(
     id: number,
     name: string,
-    cource: string,
-    category: string,
+    courseid: number,
+    categoryid: number,
     plandate: Date,
     startdate: Date,
     enddate: Date,
@@ -274,8 +355,8 @@ export class TrainingService {
   ): Observable<apiTrainingModel> {
     return this.http.put<apiTrainingModel>(this.apiURL + id, {
       name,
-      cource,
-      category,
+      courseid,
+      categoryid,
       plandate,
       startdate,
       enddate,
@@ -315,5 +396,25 @@ export class TrainingService {
    */
   deleteTrainingByID(id: number) {
     return this.http.delete(this.apiURL + id);
+  }
+
+  /**
+   * This method will generate key for auto increasement
+   * @returns string generetedKey
+   */
+  generateKey(): string {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = ('0' + (date.getMonth() + 1)).slice(-2);
+    const day = ('0' + date.getDate()).slice(-2);
+    let key = `CNTT-${year}${month}${day}-${this.counter}`;
+
+    while (this.keys.has(key)) {
+      this.counter++;
+      key = `CNTT-${year}${month}${day}-${this.counter}`;
+    }
+
+    this.keys.add(key);
+    return key;
   }
 }

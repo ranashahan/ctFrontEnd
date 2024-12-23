@@ -55,11 +55,11 @@
         <select
           class="form-select form-select-sm"
           id="inlineFormSelectCourse"
-          formControlName="cource"
+          formControlName="courseid"
         >
           <option disabled value="null">-----Select-----</option>
-          @for (item of cources(); track $index) {
-          <option [value]="item">{{ item }}</option>
+          @for (item of courses(); track $index) {
+          <option [value]="item.id">{{ item.name }}</option>
           }
         </select>
       </div>
@@ -70,11 +70,11 @@
         <select
           class="form-select form-select-sm"
           id="inlineFormSelectCategory"
-          formControlName="category"
+          formControlName="categoryid"
         >
           <option disabled value="null">-----Select-----</option>
           @for (item of categories(); track $index) {
-          <option [value]="item">{{ item }}</option>
+          <option [value]="item.id">{{ item.name }}</option>
           }
         </select>
       </div>
@@ -103,7 +103,7 @@
           formControlName="contractorid"
         >
           <option disabled value="null">-----Select-----</option>
-          @for (item of contractors(); track $index) {
+          @for (item of filteredContractors(); track $index) {
           <option [value]="item.id">{{ item.name }}</option>
           }
         </select>

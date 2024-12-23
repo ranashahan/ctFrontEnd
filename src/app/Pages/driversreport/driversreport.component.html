@@ -11,60 +11,130 @@
     </div>
     <div class="col-auto">
       <h2>Driver Reports</h2>
-      <p>You can select it my navigating one by one and edit it (if needed):</p>
+      <p>You can download report by selection:</p>
     </div>
   </div>
   <hr />
   <app-toast />
-  <div class="row gap-3">
-    <div class="bg-success bg-opacity-50 col-lg-3 col-md-5 col-sm-11">
-      <h6>Contractor Reports</h6>
-      <div class="row">
-        <form [formGroup]="formSelectContractor">
-          <div class="col-auto">
-            <label class="label" for="contractor">Contractors</label>
-            <select
-              class="form-select form-select-sm"
-              id="contractor"
-              formControlName="contractorid"
-              required
-            >
-              <option disabled value="null">-----Select-----</option>
-              @for (item of contractors(); track $index) {
-              <option [value]="item.id">{{ item.name }}</option>
-              }
-            </select>
-          </div>
-
-          <div class="col-auto">
-            <button
-              id="driverReport1"
-              class="btn btn-success"
-              type="submit"
-              [disabled]="formSelectContractor.invalid"
-              (click)="downloadDriverReport(drivers())"
-              title="Download PDF"
-            >
-              <i class="fa-solid fa-file-pdf me-1"></i>Driver Report
-            </button>
-          </div>
-        </form>
+  <div class="row">
+    <div class="col-lg-3 col-md-6 col-sm-12">
+      <div class="card mb-4">
+        <div class="card-body bg-success bg-opacity-75 text-white">
+          <h5 class="card-title">Driver Expiry Report</h5>
+          <form [formGroup]="formExpiry">
+            <p class="card-text">
+              <select
+                class="form-select form-select-sm"
+                id="driverexpiry1"
+                formControlName="expiry"
+              >
+                <option disabled value="null">-----Select-----</option>
+                <option value="licenseexpiry">License</option>
+                <option value="medicalexpiry">Medical</option>
+                <option value="nicexpiry">NIC</option>
+                <option value="permitexpiry">Permit</option>
+              </select>
+            </p>
+            <p class="card-text">
+              <button
+                class="btn btn-success"
+                [disabled]="formExpiry.invalid"
+                title="Export Expiry Drivers Report"
+                (click)="getDriversExpiry()"
+              >
+                <i class="fa-solid fa-file-excel"></i> Export
+              </button>
+              <button
+                class="btn btn-secondary ms-1"
+                title="Reset Filter"
+                (click)="resetExpiryForm()"
+              >
+                <i class="fa-solid fa-broom"></i> Reset
+              </button>
+            </p>
+          </form>
+        </div>
       </div>
     </div>
-
-    <div class="bg-success bg-opacity-50 col-lg-3 col-md-5 col-sm-11">
-      <h6>Permit Reports</h6>
-      <label for="driverReport1" class="label">Driver Report</label>
-      <div class="col-auto">
-        <button
-          id="driverReport1"
-          class="btn btn-success"
-          type="button"
-          (click)="downloadDriverReport(drivers())"
-          title="Download PDF"
-        >
-          <i class="fa-solid fa-file-pdf me-1"></i>Driver Report
-        </button>
+    <div class="col-lg-3 col-md-6 col-sm-12">
+      <div class="card mb-4">
+        <div class="card-body bg-success bg-opacity-75 text-white">
+          <h5 class="card-title">Driver's Contractors</h5>
+          <form [formGroup]="formSelectContractor">
+            <p class="card-text">
+              <select
+                class="form-select form-select-sm"
+                id="contractor"
+                formControlName="contractorid"
+                required
+              >
+                <option disabled value="null">-----Select-----</option>
+                @for (item of contractors(); track $index) {
+                <option [value]="item.id">{{ item.name }}</option>
+                }
+              </select>
+            </p>
+            <p class="card-text">
+              <button
+                id="driverReport1"
+                class="btn btn-success"
+                type="submit"
+                [disabled]="formSelectContractor.invalid"
+                (click)="downloadDriverReport(drivers())"
+                title="Download PDF"
+              >
+                <i class="fa-solid fa-file-pdf me-1"></i>Driver Report
+              </button>
+              <button
+                class="btn btn-secondary ms-1"
+                (click)="resetSelectorForm()"
+              >
+                <i class="fa-solid fa-broom"></i> Reset
+              </button>
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-12">
+      <div class="card mb-4">
+        <div class="card-body bg-success bg-opacity-75 text-white">
+          <h5 class="card-title">Driver Report</h5>
+          <p class="card-text">
+            <select class="form-select form-select-sm" id="driverexpiry3">
+              <option selected>-----Select-----</option>
+            </select>
+          </p>
+          <p class="card-text">
+            <button class="btn btn-success" title="Export">
+              <i class="fa-solid fa-file-excel"></i> Export
+            </button>
+            <button class="btn btn-secondary ms-1" title="Reset Filter">
+              <i class="fa-solid fa-broom"></i> Reset
+            </button>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-12">
+      <div class="card mb-4">
+        <div class="card-body bg-success bg-opacity-75 text-white">
+          <h5 class="card-title">Driver Report</h5>
+          <p class="card-text">
+            <select class="form-select form-select-sm" id="driverexpiry4">
+              <option selected>-----Select-----</option>
+              <option value="To be built">To be built</option>
+            </select>
+          </p>
+          <p class="card-text">
+            <button class="btn btn-success" title="Export ">
+              <i class="fa-solid fa-file-excel"></i> Export
+            </button>
+            <button class="btn btn-secondary ms-1" title="Reset Filter">
+              <i class="fa-solid fa-broom"></i> Reset
+            </button>
+          </p>
+        </div>
       </div>
     </div>
   </div>

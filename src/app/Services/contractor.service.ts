@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
-import { computed, effect, inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
-import { BehaviorSubject, from, Observable, tap } from 'rxjs';
+import { Observable } from 'rxjs';
 import { apiContractorModel } from '../Models/Contractor';
 import { environment } from '../../environments/environment';
 import { rxResource } from '@angular/core/rxjs-interop';

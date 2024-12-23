@@ -83,7 +83,9 @@ export interface apiSessionModel {
 }
 export interface DATA {
   slavecategoryid: number;
+  slavecategoryname: string;
   activityid: number;
+  activityname: string;
   assessment_type: string;
   score: number;
   assessmentdate: string;

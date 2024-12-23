@@ -11,53 +11,143 @@
     </div>
     <div class="col-auto">
       <h2>Assessment Reports</h2>
-      <p>You can select it my navigating one by one and edit it (if needed):</p>
+      <p>You can download report by selection:</p>
     </div>
   </div>
   <hr />
   <app-toast />
-  <div class="bg-warning bg-opacity-50">
-    <form
-      [formGroup]="formSession"
-      class="row row-cols-lg-auto g-3 align-items-end ms-1"
-    >
-      <div class="col-auto">
-        <label class="label ms-1 strong" for="name">Session Name</label>
-        <div class="input-group">
-          <input
-            type="text"
-            class="form-control form-control-sm"
-            id="name"
-            placeholder="Session Name"
-            formControlName="name"
-          />
+  <div class="row">
+    <div class="col-lg-6 col-md-6 col-sm-12">
+      <div class="card mb-4">
+        <div class="card-body bg-warning bg-opacity-50 text-dark">
+          <h5 class="card-title">Session Certificates</h5>
+          <form [formGroup]="formSession">
+            <p class="card-text">
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                id="name"
+                placeholder="Session Name"
+                formControlName="name"
+              />
+            </p>
+            <p class="card-text">
+              <button
+                class="btn btn-primary"
+                type="button"
+                (click)="getSessionData()"
+                title="Search Session"
+              >
+                <i class="fa-brands fa-searchengin me-1"></i>Search
+              </button>
+              <button
+                class="btn btn-primary ms-1"
+                type="button"
+                (click)="downloadSessionReport(session())"
+                title="Download PDF"
+              >
+                <i class="fa-solid fa-file-pdf me-1"></i>Download Report
+              </button>
+            </p>
+          </form>
         </div>
       </div>
-      <div class="col-auto">
-        <button
-          class="btn btn-primary"
-          type="button"
-          (click)="getSessionData()"
-          title="Search Session"
-        >
-          <i class="fa-brands fa-searchengin me-1"></i>Search
-        </button>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-12">
+      <div class="card mb-4">
+        <div class="card-body bg-warning bg-opacity-50 text-dark">
+          <h5 class="card-title">Session report by client</h5>
+          <form [formGroup]="formDate">
+            <div class="row my-2">
+              <div class="col-auto">
+                <div class="form-floating mb-3">
+                  <input
+                    type="date"
+                    class="form-control"
+                    id="floatingFrom"
+                    formControlName="startDate"
+                  />
+                  <label for="floatingFrom">From</label>
+                </div>
+              </div>
+              <div class="col-auto">
+                <div class="form-floating">
+                  <input
+                    type="date"
+                    class="form-control"
+                    id="floatingTo"
+                    formControlName="endDate"
+                  />
+                  <label for="floatingTo">To</label>
+                </div>
+              </div>
+              <div class="col-auto">
+                <div class="form-floating">
+                  <select
+                    class="form-select"
+                    id="floatingSelectclient"
+                    formControlName="clientid"
+                  >
+                    <option disabled value="null">-----Select-----</option>
+                    @for (item of clients(); track $index) {
+                    <option [value]="item.id">{{ item.name }}</option>
+                    }
+                  </select>
+                  <label for="floatingSelectclient">Clients</label>
+                </div>
+              </div>
+              <div class="col-auto">
+                <div class="form-floating">
+                  <select
+                    class="form-select"
+                    id="floatingSelect"
+                    aria-label="Floating label select example"
+                    formControlName="contractorid"
+                  >
+                    <option disabled value="null">-----Select-----</option>
+                    @for (item of filteredContractors(); track $index) {
+                    <option [value]="item.id">{{ item.name }}</option>
+                    }
+                  </select>
+                  <label for="floatingSelect">Contractors</label>
+                </div>
+              </div>
+              <div class="col-auto">
+                @if (apiCallInProgress()) {
+                <button class="btn btn-primary" type="button" disabled>
+                  <span
+                    class="spinner-grow spinner-grow-sm"
+                    aria-hidden="true"
+                  ></span>
+                  <span role="status">Loading...</span>
+                </button>
+                }@else {
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  (click)="getReportByDate()"
+                >
+                  <i class="fa-solid fa-file-export"></i>
+                  Export
+                </button>
+
+                <button
+                  type="button"
+                  class="btn btn-secondary mx-1"
+                  (click)="formReset()"
+                >
+                  <i class="fa-solid fa-broom"></i> Reset
+                </button>
+                }
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
-      <div class="col-auto">
-        <button
-          class="btn btn-primary"
-          type="button"
-          (click)="downloadSessionReport(session())"
-          title="Download PDF"
-        >
-          <i class="fa-solid fa-file-pdf me-1"></i>Download Report
-        </button>
-      </div>
-    </form>
-    <hr />
+    </div>
   </div>
 
-  <div class="table-responsive">
+  <div class="table-responsive mt-3">
     <table
       class="table table-hover table-bordered fs-7"
       id="allassessment-table"

@@ -101,6 +101,7 @@ export class ContractorComponent implements OnInit, OnDestroy {
    */
   ngOnInit(): void {
     this.utils.setTitle('Contractor');
+    this.paginatedContractors.set(this.contractors());
   }
 
   /**
