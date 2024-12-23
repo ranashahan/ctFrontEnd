@@ -152,11 +152,11 @@
               <select
                 class="form-select form-select-sm"
                 id="courceTitle"
-                formControlName="cource"
+                formControlName="courseid"
               >
                 <option disabled selected value="null">-----Select-----</option>
-                @for (item of cources(); track $index) {
-                <option [value]="item">{{ item }}</option>
+                @for (item of courses(); track $index) {
+                <option [value]="item.id">{{ item.name }}</option>
                 }
               </select>
             </div>
@@ -167,11 +167,11 @@
               <select
                 class="form-select form-select-sm"
                 id="category"
-                formControlName="category"
+                formControlName="categoryid"
               >
                 <option disabled selected value="null">-----Select-----</option>
                 @for (item of categories(); track $index) {
-                <option [value]="item">{{ item }}</option>
+                <option [value]="item.id">{{ item.name }}</option>
                 }
               </select>
             </div>
@@ -557,6 +557,7 @@
           <th>Driver Name</th>
           <th>Driver Contractor</th>
           <th>N.I.C #</th>
+          <th>Permit #</th>
           <th>Code</th>
           <th>License #</th>
           <th>L-Type</th>
@@ -580,9 +581,10 @@
           </td>
           <td>{{ getContractorName(item.drivercontractorid) }}</td>
           <td>{{ item.nic }}</td>
+          <td>{{ item.permitnumber }}</td>
           <td>{{ item.drivercode }}</td>
           <td>{{ item.licensenumber }}</td>
-          <td>{{ item.licensetypeid }}</td>
+          <td>{{ getDLTypeName(item.licensetypeid) }}</td>
           <td>{{ item.licenseexpiry | date }}</td>
           <td>{{ getVerificationName(item.licenseverified) }}</td>
           <td>

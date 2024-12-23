@@ -36,8 +36,6 @@ export class UsersService {
           })
         )
         .subscribe();
-    } else {
-      console.log('i am in else block', false);
     }
   }
   /**
@@ -69,8 +67,6 @@ export class UsersService {
           })
         )
         .subscribe();
-    } else {
-      console.log('i am in else block');
     }
   }
   /**

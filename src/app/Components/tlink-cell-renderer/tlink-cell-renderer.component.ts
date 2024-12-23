@@ -5,9 +5,9 @@ import { ICellRendererAngularComp } from 'ag-grid-angular';
 @Component({
   selector: 'app-tlink-cell-renderer',
   imports: [RouterLink],
-  template: `<a [routerLink]="['/alltrainings/' + params.data.id]">{{
-    params.value
-  }}</a>`,
+  template: `<a [routerLink]="['/alltrainings/' + params.data.id]"
+    >{{ params.value }}
+  </a>`,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TlinkCellRendererComponent implements ICellRendererAngularComp {

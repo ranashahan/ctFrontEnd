@@ -3,7 +3,7 @@ import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { apiGenericModel } from '../Models/Generic';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { Observable } from 'rxjs';
 import { rxResource } from '@angular/core/rxjs-interop';
 
 @Injectable({
@@ -33,10 +33,6 @@ export class StageService {
   public refreshStages() {
     this.stageResponse.reload();
   }
-
-  // getStages(): Observable<apiGenericModel[]> {
-  //   return this.http.get<apiGenericModel[]>(this.apiURL + 'getAll');
-  // }
 
   /**
    * This method for update Stage

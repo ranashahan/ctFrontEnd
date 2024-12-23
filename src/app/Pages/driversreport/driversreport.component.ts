@@ -9,7 +9,6 @@ import {
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { apiDriverModel } from '../../Models/Driver';
-import { apiContractorModel } from '../../Models/Contractor';
 import {
   FormBuilder,
   FormGroup,
@@ -21,6 +20,7 @@ import { UtilitiesService } from '../../Services/utilities.service';
 import { DriverService } from '../../Services/driver.service';
 import { ContractorService } from '../../Services/contractor.service';
 import { ToastComponent } from '../../Widgets/toast/toast.component';
+import { ExcelreportService } from '../../Services/excelreport.service';
 
 @Component({
   selector: 'app-driversreport',
@@ -34,10 +34,12 @@ export class DriversreportComponent implements OnInit, OnDestroy {
   private utils = inject(UtilitiesService);
   private driverService = inject(DriverService);
   private cService = inject(ContractorService);
+  private eReportService = inject(ExcelreportService);
 
   drivers = signal<apiDriverModel[]>([]);
   contractors = this.cService.contractors;
   formSelectContractor: FormGroup;
+  formExpiry: FormGroup;
 
   /**
    * Subscriptionlist so ngondestory will destory all registered subscriptions.
@@ -54,6 +56,10 @@ export class DriversreportComponent implements OnInit, OnDestroy {
       ?.valueChanges.subscribe((selectedContractorId) => {
         this.getDriversData(selectedContractorId);
       });
+
+    this.formExpiry = this.fb.group({
+      expiry: [null, Validators.required],
+    });
   }
   /**
    * This method will invoke all the methods while rendering the page
@@ -73,6 +79,27 @@ export class DriversreportComponent implements OnInit, OnDestroy {
         .subscribe((res: any) => {
           this.drivers.set(res);
         })
+    );
+  }
+
+  /**
+   * This method will download expiry report
+   */
+  getDriversExpiry() {
+    let formValue = this.formExpiry.getRawValue();
+    console.log(formValue);
+    this.subscriptionList.push(
+      this.driverService.expiryReport(this.formExpiry.value.expiry).subscribe({
+        next: (res: any) => {
+          this.eReportService.exportJson(res, 'CNTD');
+        },
+        error: (err: any) => {
+          this.utils.showToast(
+            'Does not fetch any record, please update you filter',
+            'warning'
+          );
+        },
+      })
     );
   }
 
@@ -108,6 +135,20 @@ export class DriversreportComponent implements OnInit, OnDestroy {
     this.reportService.generateDriverPdfReport(name, drivers);
     this.utils.showToast('Report generated', 'info');
   }
+
+  /**
+   * This method will reset form
+   */
+  resetSelectorForm() {
+    this.formSelectContractor.reset();
+  }
+  /**
+   * This method will reset form
+   */
+  resetExpiryForm() {
+    this.formExpiry.reset();
+  }
+
   /**
    * This method will destory all the subscriptions
    */

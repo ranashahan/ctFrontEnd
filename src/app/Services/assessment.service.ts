@@ -1,7 +1,7 @@
 import { computed, inject, Injectable, Signal } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { catchError, forkJoin, map, Observable, take, throwError } from 'rxjs';
-import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import {
   apiAssessmentFormModel,
@@ -15,6 +15,13 @@ import { ResultService } from './result.service';
 import { StageService } from './stage.service';
 import { apiContractorModel } from '../Models/Contractor';
 import { apiGenericModel } from '../Models/Generic';
+import { rxResource } from '@angular/core/rxjs-interop';
+import {
+  Activity,
+  AssessmentFormModel,
+  MasterCategory,
+  Slavecategory,
+} from '../Models/AssessmentEXP';
 
 @Injectable({
   providedIn: 'root',
@@ -28,10 +35,31 @@ export class AssessmentService {
   private resultService = inject(ResultService);
   private stageService = inject(StageService);
 
-  contractors = this.cService.contractors;
-  locations = this.locationService.locations;
-  results = this.resultService.results;
-  stages = this.stageService.stages;
+  private contractors = this.cService.contractors;
+  private locations = this.locationService.locations;
+  private results = this.resultService.results;
+  private stages = this.stageService.stages;
+
+  /**
+   * Assessment API call
+   */
+  private assessmentResponse = rxResource({
+    loader: () => this.http.get<MasterCategory[]>(this.apiURL + 'getAllExp'),
+  });
+
+  /**
+   * Readonly Computed assessments
+   */
+  public assessments = computed(
+    () => this.assessmentResponse.value() ?? ([] as MasterCategory[])
+  );
+
+  /**
+   * Refresh Assessment API call
+   */
+  public refreshAssessments() {
+    this.assessmentResponse.reload();
+  }
 
   /**
    * Get all assessments
@@ -94,6 +122,31 @@ export class AssessmentService {
       params = params.set('endDate', endDate);
     }
     return this.http.get<apiSessionModel[]>(this.apiURL + 'getbydate', {
+      params,
+    });
+  }
+
+  getSessionReportByDate(
+    clientid?: number,
+    contractorid?: number,
+    startDate?: string,
+    endDate?: string
+  ): Observable<apiSessionModel[]> {
+    let params = new HttpParams();
+    if (clientid) {
+      params = params.set('clientid', clientid);
+    }
+    if (contractorid) {
+      params = params.set('contractorid', contractorid);
+    }
+    if (startDate) {
+      params = params.set('startDate', startDate);
+    }
+    if (endDate) {
+      params = params.set('endDate', endDate);
+    }
+
+    return this.http.get<apiSessionModel[]>(this.apiURL + 'getReportByDate', {
       params,
     });
   }
@@ -220,42 +273,38 @@ export class AssessmentService {
     obj.totalScore = jsonResult.totalScore;
     obj.assessmentData = jsonResult.data;
 
-    return this.http
-      .post<apiAssessmentFormModel>(
-        this.apiURL + 'create',
-        {
-          driverId,
-          obj,
-          contractorid,
-          userid: this.authService.getUserID(),
-        },
-        { observe: 'response' }
-      )
-      .pipe(
-        map((response: HttpResponse<any>) => {
-          // console.log(`Status: ${response.status}`); // Access status code
-          return response.body; // Return response body
-        }),
-        catchError((error) => {
-          // console.log('Full error response:', error); // Log the full error object
+    return this.http.post<apiAssessmentFormModel>(this.apiURL + 'create', {
+      driverId,
+      obj,
+      contractorid,
+      userid: this.authService.getUserID(),
+    });
+  }
 
-          // Extract the message from the error object.
-          let errorMessage = 'An unknown error occurred'; // Fallback message
+  createAssessmentExp(
+    driverId: number,
+    contractorid: number,
+    obj: AssessmentFormModel
+  ): Observable<AssessmentFormModel> {
+    var answerCategories = obj.categories;
+    var answerSessionDate = obj.sessionDate;
 
-          // Check if the error has a response body with a message.
-          if (error.error && typeof error.error === 'object') {
-            if (error.error.message) {
-              errorMessage = error.error.message; // Check if error message exists in the error object
-            } else if (error.message) {
-              errorMessage = error.message; // Use general error message if available
-            }
-          } else if (error.message) {
-            errorMessage = error.message; // Use the top-level error message if no nested error object
-          }
+    const jsonResult = this.convertCategoriesToJsonExp(
+      answerCategories,
+      answerSessionDate
+    );
+    // Convert to JSON string if needed
+    //const jsonString = JSON.stringify(jsonResult, null, 2);
+    obj.totalScore = jsonResult.totalScore;
+    obj.assessmentData = jsonResult.data;
+    debugger;
 
-          return throwError(() => new Error(errorMessage)); // Pass the correct error message
-        })
-      );
+    return this.http.post<AssessmentFormModel>(this.apiURL + 'create', {
+      driverId,
+      obj,
+      contractorid,
+      userid: this.authService.getUserID(),
+    });
   }
   /**
    * This method will update assessment form with driver and trainer information
@@ -272,50 +321,42 @@ export class AssessmentService {
       answerCategories,
       answerSessionDate
     );
-    // Convert to JSON string if needed
-    //const jsonString = JSON.stringify(jsonResult, null, 2);
+
     obj.totalScore = jsonResult.totalScore;
     obj.assessmentData = jsonResult.data;
-    console.log(obj.totalScore);
-    console.log(obj.assessmentData);
 
-    // const objReturn = this.matchData(objOriginal, obj);
-    // console.log(objReturn);
+    return this.http.put<apiAssessmentFormModel>(this.apiURL + id, {
+      obj,
+      userid: this.authService.getUserID(),
+    });
+    //   ,
+    //   { observe: 'response' }
+    // )
+    // .pipe(
+    //   map((response: HttpResponse<any>) => {
+    //     // console.log(`Status: ${response.status}`); // Access status code
+    //     return response.body; // Return response body
+    //   }),
+    //   catchError((error) => {
+    //     // console.log('Full error response:', error); // Log the full error object
 
-    return this.http
-      .put<apiAssessmentFormModel>(
-        this.apiURL + id,
-        {
-          obj,
-          userid: this.authService.getUserID(),
-        },
-        { observe: 'response' }
-      )
-      .pipe(
-        map((response: HttpResponse<any>) => {
-          // console.log(`Status: ${response.status}`); // Access status code
-          return response.body; // Return response body
-        }),
-        catchError((error) => {
-          // console.log('Full error response:', error); // Log the full error object
+    //     // Extract the message from the error object.
+    //     let errorMessage = 'An unknown error occurred'; // Fallback message
 
-          // Extract the message from the error object.
-          let errorMessage = 'An unknown error occurred'; // Fallback message
+    //     // Check if the error has a response body with a message.
+    //     if (error.error && typeof error.error === 'object') {
+    //       if (error.error.message) {
+    //         errorMessage = error.error.message; // Check if error message exists in the error object
+    //       } else if (error.message) {
+    //         errorMessage = error.message; // Use general error message if available
+    //       }
+    //     } else if (error.message) {
+    //       errorMessage = error.message; // Use the top-level error message if no nested error object
+    //     }
 
-          // Check if the error has a response body with a message.
-          if (error.error && typeof error.error === 'object') {
-            if (error.error.message) {
-              errorMessage = error.error.message; // Check if error message exists in the error object
-            } else if (error.message) {
-              errorMessage = error.message; // Use general error message if available
-            }
-          } else if (error.message) {
-            errorMessage = error.message; // Use the top-level error message if no nested error object
-          }
-
-          return throwError(() => new Error(errorMessage)); // Pass the correct error message
-        })
-      );
+    //     return throwError(() => new Error(errorMessage)); // Pass the correct error message
+    //   })
+    // );
   }
 
   /**
@@ -464,6 +505,58 @@ export class AssessmentService {
           });
           totalScore += assessment.scoreFinal;
         }
+      });
+    });
+    return { data: result, totalScore };
+  }
+
+  /**
+   * This method for covert data into json
+   * @param categories category
+   * @param sessionDate session date
+   * @returns json
+   */
+  private convertCategoriesToJsonExp(
+    categories: MasterCategory[],
+    sessionDate: string
+  ): { data: any[]; totalScore: number } {
+    const result: any[] = [];
+    let totalScore = 0;
+    categories.forEach((category) => {
+      category.slavecategories.forEach((slavecategory: Slavecategory) => {
+        slavecategory.activities.forEach((activity: Activity) => {
+          if (activity.scoreInitial != null) {
+            result.push({
+              slavecategoryid: slavecategory.id,
+              activityid: activity.id,
+              assessmenttype: 'Initial',
+              score: activity.scoreInitial,
+              assessmentdate: sessionDate,
+            });
+            totalScore += activity.scoreInitial;
+          }
+          if (activity.scoreMiddle != null) {
+            result.push({
+              slavecategoryid: slavecategory.id,
+              activityid: activity.id,
+              assessmenttype: 'Middle',
+              score: activity.scoreMiddle,
+              assessmentdate: sessionDate,
+            });
+            totalScore += activity.scoreMiddle;
+          }
+
+          if (activity.scoreFinal != null) {
+            result.push({
+              slavecategoryid: slavecategory.id,
+              activityid: activity.id,
+              assessmenttype: 'Final',
+              score: activity.scoreFinal,
+              assessmentdate: sessionDate,
+            });
+            totalScore += activity.scoreFinal;
+          }
+        });
       });
     });
     return { data: result, totalScore };

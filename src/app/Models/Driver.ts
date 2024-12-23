@@ -15,6 +15,7 @@ export interface apiDriverModel {
   permitnumber: string;
   permitissue: Date;
   permitexpiry: Date;
+  medicalexpiry: Date;
   bloodgroupid: number;
   contractorid: number;
   visualid: number;

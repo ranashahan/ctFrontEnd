@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { apiGenericModel } from '../Models/Generic';
 import { rxResource } from '@angular/core/rxjs-interop';

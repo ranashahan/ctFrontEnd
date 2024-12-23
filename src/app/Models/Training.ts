@@ -1,8 +1,8 @@
 export interface apiTrainingModel {
   id: number;
   name: string;
-  cource: string;
-  category: string;
+  courseid: number;
+  categoryid: number;
   plandate: Date;
   startdate: Date;
   enddate: Date;
@@ -31,6 +31,7 @@ export interface apiTrainingModel {
   classroom: number;
   assessment: number;
   commentry: number;
+  sessioncount: number;
   active: number;
   createdby: number;
   modifiedby: number;

@@ -14,8 +14,6 @@ import {
   Validators,
 } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { apiGenericModel } from '../../Models/Generic';
-import { apiContractorModel } from '../../Models/Contractor';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DriverService } from '../../Services/driver.service';
 import { BloodgroupService } from '../../Services/bloodgroup.service';
@@ -96,9 +94,10 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
       licenseverified: [{ value: null, disable: !this.isEdit }],
       designation: [{ value: '', disabled: !this.isEdit }],
       department: [{ value: '', disabled: !this.isEdit }],
-      permitnumber: [{ value: '', disabled: !this.isEdit }],
+      permitnumber: [{ value: '', disabled: true }],
       permitissue: [{ value: '', disabled: !this.isEdit }],
       permitexpiry: [{ value: '', disabled: !this.isEdit }],
+      medicalexpiry: [{ value: '', disabled: !this.isEdit }],
       bloodgroupid: [{ value: null, disabled: !this.isEdit }],
       contractorid: [{ value: null, disabled: !this.isEdit }],
       visualid: [{ value: null, disabled: !this.isEdit }],
@@ -140,6 +139,7 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
   getVerificationName(itemId: number): string {
     return this.utils.getGenericName(this.licenseVerification(), itemId);
   }
+
   /**
    * This method will set contractor name against contractor ID
    * @param itemId contractor ID
@@ -148,6 +148,7 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
   getContractorName(itemId: number): string {
     return this.utils.getGenericName(this.contractors(), itemId);
   }
+
   /**
    * This method will set DLType name against DLType ID
    * @param itemId DLType ID
@@ -172,6 +173,7 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
   getDriver(id: number) {
     this.subscriptionList.push(
       this.driverService.getDriverByID(id).subscribe((driverData: any) => {
+        console.log(driverData);
         this.driverForm.patchValue(driverData[0]);
 
         const formattedDOB = this.utils.convertToMySQLDate(driverData[0].dob);
@@ -211,6 +213,14 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
           permitexpiry: formattedPE,
         });
         this.driverForm.get('permitexpiry')?.updateValueAndValidity();
+
+        const formattedME = this.utils.convertToMySQLDate(
+          driverData[0].medicalexpiry
+        );
+        this.driverForm.patchValue({
+          medicalexpiry: formattedME,
+        });
+        this.driverForm.get('medicalexpiry')?.updateValueAndValidity();
         this.cdRef.detectChanges();
       })
     );
@@ -244,9 +254,9 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
             updatedDriver.licenseverified,
             updatedDriver.designation,
             updatedDriver.department,
-            updatedDriver.permitnumber,
             updatedDriver.permitissue,
             updatedDriver.permitexpiry,
+            updatedDriver.medicalexpiry,
             updatedDriver.bloodgroupid,
             updatedDriver.contractorid,
             updatedDriver.visualid,
@@ -293,7 +303,7 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
     this.isEdit = !this.isEdit;
     // Enable or disable all fields except 'id'
     Object.keys(this.driverForm.controls).forEach((field) => {
-      if (field !== 'id' && field !== 'age' && field !== 'createdby') {
+      if (field !== 'id' && field !== 'age' && field !== 'permitnumber') {
         const control = this.driverForm.get(field);
         if (this.isEdit) {
           control?.enable(); // Enable fields when in edit mode

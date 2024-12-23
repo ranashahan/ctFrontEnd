@@ -23,13 +23,13 @@ export const Menu = {
         {
           name: 'Add Driver',
           path: '/adddriver',
-          roles: ['admin', 'manager', 'staff'],
+          roles: ['admin', 'manager', 'staff', 'member'],
           icon: 'fa-solid fa-plus me-1',
         },
         {
           name: 'Drivers Report',
           path: '/driversreport',
-          roles: ['admin', 'manager'],
+          roles: ['admin', 'manager', 'staff'],
           icon: 'fa-solid fa-database me-1',
         },
       ],
@@ -49,13 +49,19 @@ export const Menu = {
         {
           name: 'Add Assessment',
           path: '/addassessment',
-          roles: ['admin', 'manager', 'staff'],
+          roles: ['admin', 'manager', 'staff', 'member'],
+          icon: 'fa-solid fa-table me-1',
+        },
+        {
+          name: 'Add AssessmentEXP ',
+          path: '/addassessmentEXP',
+          roles: ['admin'],
           icon: 'fa-solid fa-table me-1',
         },
         {
           name: 'Assessments Report',
           path: '/assessmentsreport',
-          roles: ['admin', 'manager'],
+          roles: ['admin', 'manager', 'staff'],
           icon: 'fa-solid fa-database me-1',
         },
         {
@@ -111,6 +117,12 @@ export const Menu = {
           icon: 'fa-solid fa-droplet me-1',
         },
         {
+          name: 'Category',
+          path: '/category',
+          roles: ['admin'],
+          icon: 'fa-solid fa-layer-group me-1',
+        },
+        {
           name: 'Clients',
           path: '/client',
           roles: ['admin', 'manager'],
@@ -121,6 +133,12 @@ export const Menu = {
           path: '/contractor',
           roles: ['admin', 'manager'],
           icon: 'fa-solid fa-building me-1',
+        },
+        {
+          name: 'Course',
+          path: '/course',
+          roles: ['admin'],
+          icon: 'fa-solid fa-graduation-cap me-1',
         },
         {
           name: 'DL Types',
