@@ -16,7 +16,7 @@
       </h4>
     </div>
     <app-toast></app-toast>
-    <form [formGroup]="formLogin" (ngSubmit)="onLogin()">
+    <form [formGroup]="formLogin">
       <div class="form">
         <input
           id="loginemail"
@@ -50,11 +50,12 @@
           [disabled]="formLogin.invalid"
           class="animation a6"
           title="Login Button"
+          (click)="onLogin()"
         >
           LOGIN
         </button>
         <div class="captcha-container">
-          <label>{{ captchaQuestion }}</label>
+          <!-- <label>{{ captchaQuestion }}</label>
           <input
             type="number"
             class="form-control form-control-sm"
@@ -66,7 +67,11 @@
           <span class="text-danger small"
             >Please answer the question above</span
           >
-          }
+          } -->
+          <re-captcha
+            (resolved)="onCaptchaResolved($event)"
+            [siteKey]="siteKey()"
+          ></re-captcha>
         </div>
       </div>
     </form>

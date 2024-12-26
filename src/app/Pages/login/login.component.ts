@@ -1,8 +1,10 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  inject,
   OnDestroy,
   OnInit,
+  signal,
 } from '@angular/core';
 import {
   FormBuilder,
@@ -16,19 +18,34 @@ import { Router } from '@angular/router';
 import { UtilitiesService } from '../../Services/utilities.service';
 import { AuthService } from '../../Services/auth.service';
 import { ROLES } from '../../Models/Constants';
+import { environment } from '../../../environments/environment';
+import {
+  RECAPTCHA_SETTINGS,
+  RecaptchaModule,
+  RecaptchaSettings,
+} from 'ng-recaptcha-2';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, ToastComponent],
+  imports: [ReactiveFormsModule, ToastComponent, RecaptchaModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
+  providers: [
+    {
+      provide: RECAPTCHA_SETTINGS,
+      useValue: {
+        siteKey: environment.recaptchaSiteKey, // Provide the site key dynamically
+      } as RecaptchaSettings,
+    },
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent implements OnInit, OnDestroy {
   formLogin: FormGroup;
   subscriptionList: Subscription[] = [];
-  captchaQuestion: string = '';
-  correctAnswer: number = 0;
+  //captchaQuestion: string = '';
+  //correctAnswer: number = 0;
+  siteKey = signal<string>(environment.recaptchaSiteKey);
 
   /**
    * Constructor
@@ -46,9 +63,13 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.formLogin = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
-      captchaAnswer: ['', Validators.required],
+      //captchaAnswer: ['', Validators.required],
+      recaptcha: ['', Validators.required],
     });
-    this.generateCaptcha();
+    if (!environment.production) {
+      this.formLogin.patchValue({ recaptcha: 'bypass-response' });
+    }
+    // this.generateCaptcha();
   }
   /**
    * This method will invoke all the methods while rendering the page
@@ -61,48 +82,34 @@ export class LoginComponent implements OnInit, OnDestroy {
    * Login method
    */
   onLogin() {
-    const userAnswer = parseInt(
-      this.formLogin.get('captchaAnswer')?.value || '0',
-      10
-    );
-    if (this.formLogin.valid && userAnswer === this.correctAnswer) {
+    if (environment)
       this.subscriptionList.push(
         this.authService
           .login(
-            this.formLogin.value.email ?? 'empty',
-            this.formLogin.value.password ?? 'empty'
+            this.formLogin.value.email,
+            this.formLogin.value.password,
+            this.formLogin.value.recaptcha
           )
           .subscribe({
             next: (data) => {
-              this.utils.showToast('Successfull Logged-in', 'success');
               if (data.role == ROLES.GUEST) {
                 this.router.navigateByUrl('gdashboard');
               } else {
                 this.router.navigateByUrl('dashboard');
               }
+              this.utils.showToast('Successfull Logged-in', 'success');
             },
-            error: (err) => {
+            error: (err: any) => {
+              console.log(err.message);
               this.utils.showToast(err.message, 'error');
             },
           })
       );
-    } else {
-      this.utils.showToast(
-        'Incorrect CAPTCHA answer. Please try again.',
-        'error'
-      );
-      this.generateCaptcha();
-    }
   }
 
-  /**
-   * This method will create captcha
-   */
-  generateCaptcha() {
-    const num1 = Math.floor(Math.random() * 10) + 1;
-    const num2 = Math.floor(Math.random() * 10) + 1;
-    this.correctAnswer = num1 + num2;
-    this.captchaQuestion = `${num1} + ${num2} = ?`;
+  onCaptchaResolved(response: string | null): void {
+    console.log('CAPTCHA resolved with response:', response);
+    this.formLogin.patchValue({ recaptcha: response });
   }
 
   /**
