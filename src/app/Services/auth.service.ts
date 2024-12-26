@@ -18,9 +18,9 @@ export class AuthService {
    * @param password string
    * @returns Observable
    */
-  login(email: string, password: string): Observable<any> {
+  login(email: string, password: string, token: string): Observable<any> {
     return this.http
-      .post<any>(`${this.apiUrl}/login`, { email, password })
+      .post<any>(`${this.apiUrl}/login`, { email, password, token })
       .pipe(
         tap((tokens) => {
           localStorage?.setItem('email', this.encryptData(tokens.email));
@@ -29,16 +29,6 @@ export class AuthService {
           localStorage?.setItem('role', this.encryptData(tokens.role));
           this.storeTokens(tokens.accessToken, tokens.refreshToken);
           this.storeUserTheme('light');
-        }),
-        catchError((error) => {
-          // If 401, it means the credentials are incorrect
-          if (error.status === 401) {
-            console.log('Incorrect credentials, please try again.');
-          }
-          // Pass the error forward
-          return throwError(
-            () => new Error('Login failed, please check your credentials.')
-          );
         })
       );
   }
