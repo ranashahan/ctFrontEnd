@@ -17,42 +17,221 @@
   <hr />
   <app-toast />
   <div class="row">
-    <div class="col-lg-6 col-md-6 col-sm-12">
+    <div class="col-lg-12 col-md-12 col-sm-12">
       <div class="card mb-4">
         <div class="card-body bg-warning bg-opacity-50 text-dark">
-          <h5 class="card-title">Session Certificates</h5>
-          <form [formGroup]="formSession">
-            <p class="card-text">
-              <input
-                type="text"
-                class="form-control form-control-sm"
-                id="name"
-                placeholder="Session Name"
-                formControlName="name"
-              />
-            </p>
-            <p class="card-text">
-              <button
-                class="btn btn-primary"
-                type="button"
-                (click)="getSessionData()"
-                title="Search Session"
-              >
-                <i class="fa-brands fa-searchengin me-1"></i>Search
-              </button>
-              <button
-                class="btn btn-primary ms-1"
-                type="button"
-                (click)="downloadSessionReport(session())"
-                title="Download PDF"
-              >
-                <i class="fa-solid fa-file-pdf me-1"></i>Download Report
-              </button>
-            </p>
+          <h5 class="card-title">Session Report All</h5>
+          <form [formGroup]="formAll">
+            <div class="row my-2">
+              <div class="col-auto">
+                <div class="form-floating mb-3">
+                  <input
+                    type="date"
+                    class="form-control"
+                    id="floatingAllFrom"
+                    formControlName="startDate"
+                  />
+                  <label for="floatingAllFrom">From</label>
+                </div>
+              </div>
+              <div class="col-auto">
+                <div class="form-floating">
+                  <input
+                    type="date"
+                    class="form-control"
+                    id="floatingAllTo"
+                    formControlName="endDate"
+                  />
+                  <label for="floatingAllTo">To</label>
+                </div>
+              </div>
+              <div class="col-auto">
+                <div class="form-floating">
+                  <select
+                    class="form-select"
+                    id="floatingAllSelectlicensetype"
+                    formControlName="licensetypeid"
+                  >
+                    <option disabled value="null">-----Select-----</option>
+                    @for (item of dltypes(); track $index) {
+                    <option [value]="item.id">{{ item.name }}</option>
+                    }
+                  </select>
+                  <label for="floatingAllSelectlicensetype"
+                    >License Types</label
+                  >
+                </div>
+              </div>
+              <div class="col-auto">
+                <div class="form-floating">
+                  <select
+                    class="form-select"
+                    id="floatingAllSelectbloodgroup"
+                    formControlName="bloodgroupid"
+                  >
+                    <option disabled value="null">-----Select-----</option>
+                    @for (item of bloodgroups(); track $index) {
+                    <option [value]="item.id">{{ item.name }}</option>
+                    }
+                  </select>
+                  <label for="floatingAllSelectbloodgroup">Blood Groups</label>
+                </div>
+              </div>
+              <div class="col-auto">
+                <div class="form-floating">
+                  <select
+                    class="form-select"
+                    id="floatingAllSelectVisual"
+                    formControlName="visualid"
+                  >
+                    <option disabled value="null">-----Select-----</option>
+                    @for (item of visuals(); track $index) {
+                    <option [value]="item.id">{{ item.name }}</option>
+                    }
+                  </select>
+                  <label for="floatingAllSelectVisual">Visuals</label>
+                </div>
+              </div>
+              <div class="col-auto">
+                <div class="form-floating">
+                  <select
+                    class="form-select"
+                    id="floatingAllSelectLocation"
+                    formControlName="locationid"
+                  >
+                    <option disabled value="null">-----Select-----</option>
+                    @for (item of locations(); track $index) {
+                    <option [value]="item.id">{{ item.name }}</option>
+                    }
+                  </select>
+                  <label for="floatingAllSelectLocation">Locations</label>
+                </div>
+              </div>
+              <div class="col-auto">
+                <div class="form-floating">
+                  <select
+                    class="form-select"
+                    id="floatingAllSelectResult"
+                    formControlName="resultid"
+                  >
+                    <option disabled value="null">-----Select-----</option>
+                    @for (item of results(); track $index) {
+                    <option [value]="item.id">{{ item.name }}</option>
+                    }
+                  </select>
+                  <label for="floatingAllSelectResult">Results</label>
+                </div>
+              </div>
+              <div class="col-auto">
+                <div class="form-floating">
+                  <select
+                    class="form-select"
+                    id="floatingAllSelectStage"
+                    formControlName="stageid"
+                  >
+                    <option disabled value="null">-----Select-----</option>
+                    @for (item of stages(); track $index) {
+                    <option [value]="item.id">{{ item.name }}</option>
+                    }
+                  </select>
+                  <label for="floatingAllSelectStage">Stages</label>
+                </div>
+              </div>
+              <div class="col-auto">
+                <div class="form-floating">
+                  <select
+                    class="form-select"
+                    id="floatingAllSelectTitle"
+                    formControlName="titleid"
+                  >
+                    <option disabled value="null">-----Select-----</option>
+                    @for (item of titles(); track $index) {
+                    <option [value]="item.id">{{ item.name }}</option>
+                    }
+                  </select>
+                  <label for="floatingAllSelectTitle">Titles</label>
+                </div>
+              </div>
+              <div class="col-auto">
+                <div class="form-floating">
+                  <select
+                    class="form-select"
+                    id="floatingSelectVehicle"
+                    formControlName="vehicleid"
+                  >
+                    <option disabled value="null">-----Select-----</option>
+                    @for (item of vehicles(); track $index) {
+                    <option [value]="item.id">{{ item.name }}</option>
+                    }
+                  </select>
+                  <label for="floatingSelectVehicle">Vehicles</label>
+                </div>
+              </div>
+              <div class="col-auto">
+                <div class="form-floating">
+                  <select
+                    class="form-select"
+                    id="floatingSelectContractor"
+                    formControlName="contractorid"
+                  >
+                    <option disabled value="null">-----Select-----</option>
+                    @for (item of contractors(); track $index) {
+                    <option [value]="item.id">{{ item.name }}</option>
+                    }
+                  </select>
+                  <label for="floatingSelectVehicle">Contractors</label>
+                </div>
+              </div>
+              <div class="col-auto">
+                <div class="form-floating">
+                  <select
+                    class="form-select"
+                    id="floatingSelectTrainer"
+                    formControlName="trainerid"
+                  >
+                    <option disabled value="null">-----Select-----</option>
+                    @for (item of trainers(); track $index) {
+                    <option [value]="item.id">{{ item.name }}</option>
+                    }
+                  </select>
+                  <label for="floatingSelectTrainer">Trainers</label>
+                </div>
+              </div>
+              <div class="col-auto">
+                @if (apiCallInProgress()) {
+                <button class="btn btn-primary" type="button" disabled>
+                  <span
+                    class="spinner-grow spinner-grow-sm"
+                    aria-hidden="true"
+                  ></span>
+                  <span role="status">Loading...</span>
+                </button>
+                }@else {
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  (click)="getReportALL()"
+                >
+                  <i class="fa-solid fa-file-export"></i>
+                  Export
+                </button>
+
+                <button
+                  type="button"
+                  class="btn btn-secondary mx-1"
+                  (click)="formAllReset()"
+                >
+                  <i class="fa-solid fa-broom"></i> Reset
+                </button>
+                }
+              </div>
+            </div>
           </form>
         </div>
       </div>
     </div>
+  </div>
+  <div class="row">
     <div class="col-lg-6 col-md-6 col-sm-12">
       <div class="card mb-4">
         <div class="card-body bg-warning bg-opacity-50 text-dark">
@@ -134,13 +313,50 @@
                 <button
                   type="button"
                   class="btn btn-secondary mx-1"
-                  (click)="formReset()"
+                  (click)="formDateReset()"
                 >
                   <i class="fa-solid fa-broom"></i> Reset
                 </button>
                 }
               </div>
             </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6 col-md-6 col-sm-12">
+      <div class="card mb-4">
+        <div class="card-body bg-warning bg-opacity-50 text-dark">
+          <h5 class="card-title">Session Certificates</h5>
+          <form [formGroup]="formSession">
+            <p class="card-text">
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                id="name"
+                placeholder="Session Name"
+                formControlName="name"
+              />
+            </p>
+            <p class="card-text">
+              <button
+                class="btn btn-primary"
+                type="button"
+                (click)="getSessionData()"
+                title="Search Session"
+              >
+                <i class="fa-brands fa-searchengin me-1"></i>Search
+              </button>
+              <button
+                class="btn btn-primary ms-1"
+                type="button"
+                (click)="downloadSessionReport(session())"
+                title="Download PDF"
+              >
+                <i class="fa-solid fa-file-pdf me-1"></i>Download Report
+              </button>
+            </p>
           </form>
         </div>
       </div>

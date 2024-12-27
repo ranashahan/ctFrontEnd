@@ -9,4 +9,7 @@ export interface apiTrainerModel {
   createdDate: string;
   modifiedDate: string;
   isEdit: boolean;
+  description: string;
+  created_at: string;
+  modified_at: string;
 }

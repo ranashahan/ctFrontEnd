@@ -6,6 +6,7 @@ import { AuthService } from './auth.service';
 import {
   apiAssessmentFormModel,
   apiAssessmentModel,
+  apiSessionDriverReportModel,
   apiSessionModel,
   apiVSessionModel,
 } from '../Models/Assessment';
@@ -126,6 +127,14 @@ export class AssessmentService {
     });
   }
 
+  /**
+   * This method will fetch the assessment report records
+   * @param clientid clientid
+   * @param contractorid contractorid
+   * @param startDate start date
+   * @param endDate end date
+   * @returns Observable
+   */
   getSessionReportByDate(
     clientid?: number,
     contractorid?: number,
@@ -149,6 +158,83 @@ export class AssessmentService {
     return this.http.get<apiSessionModel[]>(this.apiURL + 'getReportByDate', {
       params,
     });
+  }
+
+  /**
+   * This method will fetch all the session + driver records for report.
+   * @param startDate {Date} start date
+   * @param endDate {Date} end date
+   * @param licensetypeid {number} licensetype
+   * @param bloodgroupid {number} bloodgroup
+   * @param visualid {number} visual
+   * @param locationid {number} location
+   * @param resultid {number} result
+   * @param stageid {number} stage
+   * @param titleid {number} title
+   * @param vehicleid {number} vehicle
+   * @param contractorid {number} contractor
+   * @param trainerid {number} trainer
+   * @returns Observable
+   */
+  getSessionReportAll(
+    licensetypeid?: number,
+    bloodgroupid?: number,
+    visualid?: number,
+    locationid?: number,
+    resultid?: number,
+    stageid?: number,
+    titleid?: number,
+    vehicleid?: number,
+    contractorid?: number,
+    trainerid?: number,
+    startDate?: string,
+    endDate?: string
+  ): Observable<apiSessionDriverReportModel[]> {
+    let params = new HttpParams();
+    if (licensetypeid) {
+      params = params.set('licensetypeid', licensetypeid);
+    }
+    if (bloodgroupid) {
+      params = params.set('bloodgroupid', bloodgroupid);
+    }
+    if (visualid) {
+      params = params.set('visualid', visualid);
+    }
+    if (locationid) {
+      params = params.set('locationid', locationid);
+    }
+    if (resultid) {
+      params = params.set('resultid', resultid);
+    }
+    if (stageid) {
+      params = params.set('stageid', stageid);
+    }
+    if (titleid) {
+      params = params.set('titleid', titleid);
+    }
+    if (vehicleid) {
+      params = params.set('vehicleid', vehicleid);
+    }
+    if (contractorid) {
+      params = params.set('contractorid', contractorid);
+    }
+    if (trainerid) {
+      params = params.set('trainerid', trainerid);
+    }
+    if (startDate) {
+      params = params.set('startDate', startDate);
+    }
+    if (endDate) {
+      params = params.set('endDate', endDate);
+    }
+
+    console.log(params);
+    return this.http.get<apiSessionDriverReportModel[]>(
+      this.apiURL + 'getReportAll',
+      {
+        params,
+      }
+    );
   }
 
   /**
