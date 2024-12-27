@@ -112,6 +112,11 @@ export interface apiVSessionModel {
   driverid: number;
   drivername: string;
   nic: string;
+  dob: Date;
+  designation: string;
+  department: string;
+  bloodgroupid: number;
+  visualid: number;
   licensenumber: string;
   licensetypeid: number;
   licenseexpiry: string;
@@ -125,7 +130,52 @@ export interface apiVSessionModel {
   trainername: string;
   contractorid: number;
   contractorname: string;
+  clientid: number;
+  clientname: string;
   assessments: AssessmentData[];
   isEdit: boolean;
   message: string;
+}
+
+export interface apiSessionDriverReportModel {
+  driverid: number;
+  drivername: string;
+  gender: string;
+  dob: Date;
+  nic: string;
+  nicexpiry: Date;
+  licensenumber: string;
+  licensetypeid: number;
+  licenseexpiry: Date;
+  licenseverified: number;
+  designation: string;
+  department: string;
+  permitnumber: string;
+  permitissue: Date;
+  permitexpiry: Date;
+  medicalexpiry: Date;
+  bloodgroupid: number;
+  drivercontractorid: number;
+  visualid: number;
+  ddccount: number;
+  experience: number;
+  code: string;
+  drivercomment: string;
+  sessionid: number;
+  sessioname: string;
+  sessiondate: Date;
+  locationid: number;
+  resultid: number;
+  stageid: number;
+  titleid: number;
+  vehicleid: number;
+  classdate: Date;
+  yarddate: Date;
+  weather: string;
+  traffic: string;
+  route: string;
+  quizscore: number;
+  sessioncomment: Text;
+  sessioncontractorid: number;
+  trainerid: number;
 }

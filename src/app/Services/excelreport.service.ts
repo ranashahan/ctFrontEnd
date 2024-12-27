@@ -1,4 +1,4 @@
-import { inject, Inject, Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import * as XLSX from 'xlsx';
 import { UtilitiesService } from './utilities.service';
 import { apiGenericModel } from '../Models/Generic';
@@ -9,6 +9,10 @@ import { TitleService } from './title.service';
 import { DltypeService } from './dltype.service';
 import { BloodgroupService } from './bloodgroup.service';
 import { VehicleService } from './vehicle.service';
+import { ResultService } from './result.service';
+import { apiSessionDriverReportModel } from '../Models/Assessment';
+import { ContractorService } from './contractor.service';
+import { TrainerService } from './trainer.service';
 @Injectable({
   providedIn: 'root',
 })
@@ -21,6 +25,9 @@ export class ExcelreportService {
   private bgService = inject(BloodgroupService);
   private vehicleService = inject(VehicleService);
   private utils = inject(UtilitiesService);
+  private resultService = inject(ResultService);
+  private cService = inject(ContractorService);
+  private trainerService = inject(TrainerService);
 
   locations = this.locationService.locations;
   visuals = this.visualService.visuals;
@@ -29,15 +36,92 @@ export class ExcelreportService {
   dltypes = this.dltypeService.dltypes;
   bloodgroups = this.bgService.bloodGroups;
   vehicles = this.vehicleService.vehicles;
+  results = this.resultService.results;
+  contractors = this.cService.contractors;
+  trainers = this.trainerService.trainers;
 
   exportJson(param: any, fileName: string) {
     //console.log(param);
     const ws = XLSX.utils.json_to_sheet(param);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'RanaTest');
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
     XLSX.writeFile(wb, `${fileName + new Date().getTime()}.xlsx`);
   }
 
+  /**
+   * This method will download all the drivers & session info except assessment scores
+   * @param param SessionDriver report data
+   * @param fileName file name
+   */
+  exportReportAll(param: apiSessionDriverReportModel[], fileName: string) {
+    const flattenedData = param.map((item: apiSessionDriverReportModel) => {
+      const row: any = {
+        DriverDBID: item.driverid,
+        DriverName: item.drivername,
+        DriverGender: item.gender,
+        DriverDOB: item.dob,
+        DriverNIC: item.nic,
+        DriverNICExpiry: item.nicexpiry,
+        DriverLicenseNumber: item.licensenumber,
+        DriverLicenseType: this.convertGeneric(
+          this.dltypes(),
+          item.licensetypeid
+        ),
+        DriverLicenseExpiry: item.licenseexpiry,
+        DriverLicenseVerify: this.convertNumber(item.licenseverified),
+        DriverDesignation: item.designation,
+        DriverDepartment: item.department,
+        DriverPermitNumber: item.permitnumber,
+        DriverPermitIssue: item.permitissue,
+        DriverPermitExpiry: item.permitexpiry,
+        DriverMedicalExpiry: item.medicalexpiry,
+        DriverBloodGroup: this.convertGeneric(
+          this.bloodgroups(),
+          item.bloodgroupid
+        ),
+        DriverContractor: this.convertGeneric(
+          this.contractors(),
+          item.drivercontractorid
+        ),
+        DriverVisual: this.convertGeneric(this.visuals(), item.visualid),
+        DriverDefensiveCourses: item.ddccount,
+        DriverExperience: item.experience,
+        DriverCode: item.code,
+        DriverComment: item.drivercomment,
+        SesionDBID: item.sessionid,
+        SessionID: item.sessioname,
+        SessionDate: item.sessiondate,
+        Location: this.convertGeneric(this.locations(), item.locationid),
+        Result: this.convertGeneric(this.results(), item.resultid),
+        Stage: this.convertGeneric(this.stages(), item.stageid),
+        Title: this.convertGeneric(this.titles(), item.titleid),
+        Vehicle: this.convertGeneric(this.vehicles(), item.vehicleid),
+        ClassDate: item.classdate,
+        YardDate: item.yarddate,
+        Weather: item.weather,
+        Traffic: item.traffic,
+        Route: item.route,
+        QuizScore: item.quizscore,
+        Comment: item.sessioncomment,
+        SessionContractor: this.convertGeneric(
+          this.contractors(),
+          item.sessioncontractorid
+        ),
+        Trainer: this.convertGeneric(this.trainers(), item.trainerid),
+      };
+      return row;
+    });
+    const ws = XLSX.utils.json_to_sheet(flattenedData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+    XLSX.writeFile(wb, `${fileName + new Date().getTime()}.xlsx`);
+  }
+
+  /**
+   * This method will export excel sheet for assessment scores
+   * @param data assessment score along with driver & session info
+   * @param fileName file name
+   */
   exportToExcel(data: any[], fileName: string): void {
     // 1. Extract unique activity names to use as column headers
     const uniqueActivityNames = Array.from(
@@ -82,6 +166,7 @@ export class ExcelreportService {
         ClassRoom: item.classdate,
         SessionDate: item.sessiondate,
         VehicleUsed: this.convertGeneric(this.vehicles(), item.vehicleid),
+        SessionResult: this.convertGeneric(this.results(), item.resultid),
       }; // Include driver name
       uniqueActivityNames.forEach((activity) => {
         const assessment = item.assessments.find(
@@ -90,6 +175,10 @@ export class ExcelreportService {
         );
         row[activity] = assessment ? assessment.score : null; // Add score or null
       });
+      row['TotalScore'] = uniqueActivityNames.reduce((sum, activity) => {
+        const score = row[activity]; // Get the score for each activity
+        return sum + (score ? score : 0); // Add score, treat null as 0
+      }, 0);
       return row;
     });
     // 3. Convert JSON to a worksheet
@@ -105,11 +194,22 @@ export class ExcelreportService {
     XLSX.writeFile(workbook, `${fileName + new Date().getTime()}.xlsx`);
   }
 
-  convertGeneric(items: apiGenericModel[], itemid: number) {
+  /**
+   * This method will return item name
+   * @param items signal
+   * @param itemid number
+   * @returns string name
+   */
+  private convertGeneric(items: apiGenericModel[], itemid: number): string {
     return this.utils.getGenericName(items, itemid);
   }
 
-  convertNumber(item: number) {
+  /**
+   * This method will return license verification convertion
+   * @param item number
+   * @returns string
+   */
+  private convertNumber(item: number): string {
     if (item === 1) {
       return 'Not Verified';
     } else if (item === 2) {
