@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  inject,
   OnDestroy,
   OnInit,
   signal,
@@ -43,8 +42,6 @@ import {
 export class LoginComponent implements OnInit, OnDestroy {
   formLogin: FormGroup;
   subscriptionList: Subscription[] = [];
-  //captchaQuestion: string = '';
-  //correctAnswer: number = 0;
   siteKey = signal<string>(environment.recaptchaSiteKey);
 
   /**
@@ -79,7 +76,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Login method
+   * This method will fetch userid & password and captcha and validate login
    */
   onLogin() {
     if (environment)
@@ -100,15 +97,19 @@ export class LoginComponent implements OnInit, OnDestroy {
               this.utils.showToast('Successfull Logged-in', 'success');
             },
             error: (err: any) => {
-              console.log(err.message);
+              // console.log(err.message);
               this.utils.showToast(err.message, 'error');
             },
           })
       );
   }
 
+  /**
+   * This method will update captcha response into reactive form
+   * @param response captcha response
+   */
   onCaptchaResolved(response: string | null): void {
-    console.log('CAPTCHA resolved with response:', response);
+    // console.log('CAPTCHA resolved with response:', response);
     this.formLogin.patchValue({ recaptcha: response });
   }
 
