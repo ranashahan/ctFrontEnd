@@ -141,6 +141,16 @@
                   [checked]="isDarkMode()"
                   (change)="toggleTheme($event)"
                 />
+
+                <button
+                  class="btn btn-sm btn-outline-secondary ms-5"
+                  title="Reset Password"
+                  data-bs-toggle="modal"
+                  data-bs-target="#resetPassModal"
+                  (click)="formResetPassword()"
+                >
+                  <i class="fa-solid fa-key me-1"></i>Update Password
+                </button>
               </div>
             </div>
           </div>
@@ -162,8 +172,105 @@
           class="btn btn-secondary"
           data-bs-dismiss="modal"
           title="Close without saving"
+          (click)="formReset()"
         >
           Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div
+  class="modal fade"
+  id="resetPassModal"
+  tabindex="-1"
+  aria-labelledby="resetPassModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info-subtle">
+        <h6 class="modal-title" id="resetPassModalLabel">Update Password</h6>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="formPassword">
+          <div class="row">
+            <div class="col-12">
+              <label for="oldpass" class="form-label required"
+                >Current Password</label
+              >
+              <input
+                type="password"
+                name="oldpass"
+                class="form-control"
+                id="oldpass"
+                formControlName="oldpassword"
+                required
+              />
+              @if (oldpassword?.invalid && (oldpassword?.dirty ||
+              oldpassword?.touched)) {
+              <div class="text-danger fs-7">
+                @if (oldpassword?.errors?.['required']) {
+                <small><strong> Current Password is required</strong></small>
+                }
+              </div>
+              }
+            </div>
+            <div class="col-12">
+              <label for="newpass" class="form-label required"
+                >New Password</label
+              >
+              <input
+                type="password"
+                name="newpass"
+                class="form-control"
+                id="newpass"
+                formControlName="newpassword"
+                required
+              />
+              @if (newpassword?.invalid && (newpassword?.dirty ||
+              newpassword?.touched)) {
+              <div class="text-danger fs-7">
+                @if (newpassword?.errors?.['required']) {
+                <small><strong> New Password is required</strong></small>
+                } @if (newpassword?.errors?.['minlength']) {
+                <small><strong> New Password minimum lenght 8</strong></small>
+                }
+              </div>
+              }
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer bg-info-subtle">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+          title="Close without saving"
+        >
+          Close
+        </button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          title="Save Form"
+          [disabled]="formPassword.invalid"
+          data-bs-dismiss="modal"
+          (click)="
+            resetPassword(
+              formPassword.value.oldpassword,
+              formPassword.value.newpassword
+            )
+          "
+        >
+          Save changes
         </button>
       </div>
     </div>

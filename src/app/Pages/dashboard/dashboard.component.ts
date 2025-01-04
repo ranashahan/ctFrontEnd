@@ -2,6 +2,8 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  computed,
+  inject,
   OnDestroy,
   OnInit,
   signal,
@@ -27,15 +29,25 @@ import { UtilitiesService } from '../../Services/utilities.service';
 import { LocationService } from '../../Services/location.service';
 import { DriverService } from '../../Services/driver.service';
 import { TrainerService } from '../../Services/trainer.service';
+import { TrainingService } from '../../Services/training.service';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ToastComponent } from '../../Widgets/toast/toast.component';
+
 @Component({
   selector: 'app-dashboard',
-  imports: [NgApexchartsModule],
+  imports: [NgApexchartsModule, ToastComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   @ViewChild('chart') chart!: ChartComponent;
+  private trainingService = inject(TrainingService);
+  private utils = inject(UtilitiesService);
+  private locationService = inject(LocationService);
+  private driverService = inject(DriverService);
+  private trainerService = inject(TrainerService);
+
   public trendCOpt: {
     series: ApexAxisChartSeries;
     chart: ApexChart;
@@ -66,11 +78,22 @@ export class DashboardComponent implements OnInit, OnDestroy {
     stroke: ApexStroke;
     tooltip: ApexTooltip;
   };
+
   subscriptionList: Subscription[] = [];
   yearlyDrivers = signal<number>(0);
   monthlyDrivers = signal<number>(0);
   yearlySessions = signal<number>(0);
   monthlySessions = signal<number>(0);
+  trainers = this.trainerService.trainers;
+  private trainings = toSignal(this.trainingService.getAllTraining());
+  public latestTrainings = computed(() => {
+    const trainingsValue = this.trainings();
+    if (!trainingsValue || trainingsValue.length === 0) {
+      return []; // Return an empty array if trainings is undefined or empty
+    }
+
+    return [...trainingsValue].slice(0, 5);
+  });
 
   /**
    * Constructor
@@ -80,13 +103,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
    * @param trainerService trainer service
    * @param cdRef Change detector Reference
    */
-  constructor(
-    private utils: UtilitiesService,
-    private locationService: LocationService,
-    private driverService: DriverService,
-    private trainerService: TrainerService,
-    private cdRef: ChangeDetectorRef
-  ) {
+  constructor(private cdRef: ChangeDetectorRef) {
     this.locationCOpt = {
       series: [
         {
@@ -221,6 +238,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.getLocationData();
     this.getDriverSessionData();
     this.getTrainerSessionData();
+    // this.getAllTrainings();
   }
 
   /**
@@ -359,6 +377,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.cdRef.detectChanges();
       })
     );
+  }
+
+  /**
+   * This method will fetch all the trainings
+   */
+  public getTrainerName(item: number) {
+    return this.utils.getGenericName(this.trainers(), item);
   }
 
   /**

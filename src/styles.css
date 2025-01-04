@@ -65,10 +65,18 @@ body {
 }
 
 .legend-blue {
-  background-color: #85c0e4; /* Yellow for Permit Expired */
+  background-color: #85c0e4; /* Blue for Permit Expired */
+  border-color: #856404;
+}
+.legend-dblue {
+  background-color: #cfe2ff; /* light Blue for Permit Expired */
   border-color: #856404;
 }
 
+.legend-green {
+  background-color: #d1e7dd; /* Green for Permit Expired */
+  border-color: #856404;
+}
 .my-input {
   width: 100px; /* Adjust the width as needed */
 }

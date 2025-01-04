@@ -24,6 +24,7 @@ export interface apiDriverModel {
   code: string;
   comment: string;
   createdby: string;
+  created_at: Date;
   isEdit: boolean;
   message: string;
 }

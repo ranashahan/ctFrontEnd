@@ -72,12 +72,21 @@ export class DriversreportComponent implements OnInit, OnDestroy {
    * This method will fetch drivers against contractor id
    * @param contractorid {string} contractor id
    */
-  getDriversData(contractorid: string) {
+  public getDriversData(contractorid: number): void {
     this.subscriptionList.push(
       this.driverService
-        .searchDrivers(null, null, null, contractorid)
+        .searchDrivers(
+          undefined,
+          undefined,
+          undefined,
+          contractorid,
+          undefined,
+          undefined,
+          undefined
+        )
         .subscribe((res: any) => {
           this.drivers.set(res);
+          console.log(this.drivers());
         })
     );
   }
@@ -85,7 +94,7 @@ export class DriversreportComponent implements OnInit, OnDestroy {
   /**
    * This method will download expiry report
    */
-  getDriversExpiry() {
+  public getDriversExpiry(): void {
     let formValue = this.formExpiry.getRawValue();
     console.log(formValue);
     this.subscriptionList.push(
@@ -113,39 +122,24 @@ export class DriversreportComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * This method for download Report
-   */
-  downloadReport() {
-    const reportData = [
-      { field1: 'Data 1', field2: 'Data 2', field3: 'Data 3' },
-      { field1: 'Data 4', field2: 'Data 5', field3: 'Data 6' },
-    ];
-    this.reportService.generatePdfReport(reportData);
-  }
-
-  /**
    * This method for generate report against session
    * @param session session array
    */
-  downloadDriverReport(drivers: apiDriverModel[]) {
-    let name = this.getContractorName(
-      this.formSelectContractor.get('contractorid')?.value
-    );
-    // console.log(name);
-    this.reportService.generateDriverPdfReport(name, drivers);
-    this.utils.showToast('Report generated', 'info');
+  public downloadDriverReport(): void {
+    this.reportService.generateDriverContractorReport(this.drivers());
+    // this.reportService.generateDriverPdfReport(name, drivers);
   }
 
   /**
    * This method will reset form
    */
-  resetSelectorForm() {
+  public resetSelectorForm(): void {
     this.formSelectContractor.reset();
   }
   /**
    * This method will reset form
    */
-  resetExpiryForm() {
+  public resetExpiryForm(): void {
     this.formExpiry.reset();
   }
 

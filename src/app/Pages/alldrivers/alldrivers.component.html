@@ -78,33 +78,45 @@
         </div>
       </div>
       <div class="col-auto">
-        <label class="label ms-1 strong" for="inlineFormInputGroupExpiry"
-          >Permit Expiry</label
+        <label class="label ms-1 strong" for="inlineFormSelectContractor"
+          >Contractor</label
+        >
+        <select
+          class="form-select form-select-sm"
+          id="inlineFormSelectContractor"
+          formControlName="contractorid"
+        >
+          <option disabled value="null">-----Select-----</option>
+          @for (item of contractors(); track $index) {
+          <option [value]="item.id">{{ item.name }}</option>
+          }
+        </select>
+      </div>
+      <div class="col-auto">
+        <label class="label ms-1 strong" for="inlineFormInputGroupStartDate"
+          >From Date</label
         >
         <div class="input-group">
           <input
             type="date"
             class="form-control form-control-sm"
-            id="inlineFormInputGroupExpiry"
-            formControlName="permitexpiry"
+            id="inlineFormInputGroupStartDate"
+            formControlName="startDate"
           />
         </div>
       </div>
-
       <div class="col-auto">
-        <label class="label ms-1 strong" for="inlineFormSelectPref"
-          >Contractor</label
+        <label class="label ms-1 strong" for="inlineFormInputGroupEndDate"
+          >To Date</label
         >
-        <select
-          class="form-select form-select-sm"
-          id="inlineFormSelectPref"
-          formControlName="contractorid"
-        >
-          <option disabled value="null">Select Contractor name</option>
-          <option *ngFor="let group of contractors()" [value]="group.id">
-            {{ group.name }}
-          </option>
-        </select>
+        <div class="input-group">
+          <input
+            type="date"
+            class="form-control form-control-sm"
+            id="inlineFormInputGroupEndDate"
+            formControlName="endDate"
+          />
+        </div>
       </div>
       <div class="col-auto">
         <button
@@ -194,7 +206,7 @@
 
   <div>
     <ag-grid-angular
-      [class]="themeClass"
+      [class]="themeClass()"
       [rowData]="driversWithName()"
       [columnDefs]="colDefs"
       [getRowStyle]="getRowStyle"

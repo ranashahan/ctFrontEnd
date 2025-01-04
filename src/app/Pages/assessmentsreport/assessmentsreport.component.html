@@ -27,7 +27,7 @@
                 <div class="form-floating mb-3">
                   <input
                     type="date"
-                    class="form-control"
+                    class="form-control form-control-sm border border-warning border-2"
                     id="floatingAllFrom"
                     formControlName="startDate"
                   />
@@ -38,7 +38,7 @@
                 <div class="form-floating">
                   <input
                     type="date"
-                    class="form-control"
+                    class="form-control form-control-sm border border-warning border-2"
                     id="floatingAllTo"
                     formControlName="endDate"
                   />
@@ -48,7 +48,7 @@
               <div class="col-auto">
                 <div class="form-floating">
                   <select
-                    class="form-select"
+                    class="form-select form-select-sm border border-warning border-2"
                     id="floatingAllSelectlicensetype"
                     formControlName="licensetypeid"
                   >
@@ -65,7 +65,7 @@
               <div class="col-auto">
                 <div class="form-floating">
                   <select
-                    class="form-select"
+                    class="form-select form-select-sm border border-warning border-2"
                     id="floatingAllSelectbloodgroup"
                     formControlName="bloodgroupid"
                   >
@@ -80,7 +80,7 @@
               <div class="col-auto">
                 <div class="form-floating">
                   <select
-                    class="form-select"
+                    class="form-select form-select-sm border border-warning border-2"
                     id="floatingAllSelectVisual"
                     formControlName="visualid"
                   >
@@ -95,7 +95,7 @@
               <div class="col-auto">
                 <div class="form-floating">
                   <select
-                    class="form-select"
+                    class="form-select form-select-sm border border-warning border-2"
                     id="floatingAllSelectLocation"
                     formControlName="locationid"
                   >
@@ -110,7 +110,7 @@
               <div class="col-auto">
                 <div class="form-floating">
                   <select
-                    class="form-select"
+                    class="form-select form-select-sm border border-warning border-2"
                     id="floatingAllSelectResult"
                     formControlName="resultid"
                   >
@@ -125,7 +125,7 @@
               <div class="col-auto">
                 <div class="form-floating">
                   <select
-                    class="form-select"
+                    class="form-select form-select-sm border border-warning border-2"
                     id="floatingAllSelectStage"
                     formControlName="stageid"
                   >
@@ -140,7 +140,7 @@
               <div class="col-auto">
                 <div class="form-floating">
                   <select
-                    class="form-select"
+                    class="form-select form-select-sm border border-warning border-2"
                     id="floatingAllSelectTitle"
                     formControlName="titleid"
                   >
@@ -155,7 +155,7 @@
               <div class="col-auto">
                 <div class="form-floating">
                   <select
-                    class="form-select"
+                    class="form-select form-select-sm border border-warning border-2"
                     id="floatingSelectVehicle"
                     formControlName="vehicleid"
                   >
@@ -170,7 +170,7 @@
               <div class="col-auto">
                 <div class="form-floating">
                   <select
-                    class="form-select"
+                    class="form-select form-select-sm border border-warning border-2"
                     id="floatingSelectContractor"
                     formControlName="contractorid"
                   >
@@ -185,7 +185,7 @@
               <div class="col-auto">
                 <div class="form-floating">
                   <select
-                    class="form-select"
+                    class="form-select form-select-sm border border-warning border-2"
                     id="floatingSelectTrainer"
                     formControlName="trainerid"
                   >
@@ -199,17 +199,17 @@
               </div>
               <div class="col-auto">
                 @if (apiCallInProgress()) {
-                <button class="btn btn-primary" type="button" disabled>
+                <button class="btn btn-warning" type="button" disabled>
                   <span
                     class="spinner-grow spinner-grow-sm"
                     aria-hidden="true"
                   ></span>
-                  <span role="status">Loading...</span>
+                  <span role="status"> Loading...</span>
                 </button>
                 }@else {
                 <button
                   type="submit"
-                  class="btn btn-primary"
+                  class="btn btn-warning"
                   (click)="getReportALL()"
                 >
                   <i class="fa-solid fa-file-export"></i>
@@ -237,12 +237,12 @@
         <div class="card-body bg-warning bg-opacity-50 text-dark">
           <h5 class="card-title">Session report by client</h5>
           <form [formGroup]="formDate">
-            <div class="row my-2">
+            <div class="row">
               <div class="col-auto">
                 <div class="form-floating mb-3">
                   <input
                     type="date"
-                    class="form-control"
+                    class="form-control form-control-sm border border-warning border-2"
                     id="floatingFrom"
                     formControlName="startDate"
                   />
@@ -253,7 +253,7 @@
                 <div class="form-floating">
                   <input
                     type="date"
-                    class="form-control"
+                    class="form-control form-control-sm border border-warning border-2"
                     id="floatingTo"
                     formControlName="endDate"
                   />
@@ -263,7 +263,7 @@
               <div class="col-auto">
                 <div class="form-floating">
                   <select
-                    class="form-select"
+                    class="form-select form-select-sm border border-warning border-2"
                     id="floatingSelectclient"
                     formControlName="clientid"
                   >
@@ -278,7 +278,7 @@
               <div class="col-auto">
                 <div class="form-floating">
                   <select
-                    class="form-select"
+                    class="form-select form-select-sm border border-warning border-2"
                     id="floatingSelect"
                     aria-label="Floating label select example"
                     formControlName="contractorid"
@@ -293,17 +293,17 @@
               </div>
               <div class="col-auto">
                 @if (apiCallInProgress()) {
-                <button class="btn btn-primary" type="button" disabled>
+                <button class="btn btn-warning" type="button" disabled>
                   <span
                     class="spinner-grow spinner-grow-sm"
                     aria-hidden="true"
                   ></span>
-                  <span role="status">Loading...</span>
+                  <span role="status"> Loading...</span>
                 </button>
                 }@else {
                 <button
                   type="submit"
-                  class="btn btn-primary"
+                  class="btn btn-warning"
                   (click)="getReportByDate()"
                 >
                   <i class="fa-solid fa-file-export"></i>
@@ -332,30 +332,49 @@
           <form [formGroup]="formSession">
             <p class="card-text">
               <input
-                type="text"
-                class="form-control form-control-sm"
+                type="search"
+                class="form-control border border-warning border-2"
                 id="name"
-                placeholder="Session Name"
+                placeholder="Session ID"
                 formControlName="name"
               />
             </p>
             <p class="card-text">
+              @if (apiCallInProgress()) {
+              <button class="btn btn-warning" type="button" disabled>
+                <span
+                  class="spinner-grow spinner-grow-sm"
+                  aria-hidden="true"
+                ></span>
+                <span role="status"> Loading...</span>
+              </button>
+              }@else {
               <button
-                class="btn btn-primary"
+                class="btn btn-warning"
                 type="button"
                 (click)="getSessionData()"
                 title="Search Session"
+                [disabled]="formSession.invalid"
               >
                 <i class="fa-brands fa-searchengin me-1"></i>Search
               </button>
               <button
-                class="btn btn-primary ms-1"
+                class="btn btn-warning ms-1"
                 type="button"
-                (click)="downloadSessionReport(session())"
+                (click)="downloadSessionReport()"
                 title="Download PDF"
               >
-                <i class="fa-solid fa-file-pdf me-1"></i>Download Report
+                <i class="fa-solid fa-file-pdf me-1"></i>Generate Certificates
               </button>
+              <button
+                class="btn btn-warning ms-1"
+                type="button"
+                (click)="downloadDriverReport()"
+                title="Download PDF"
+              >
+                <i class="fa-solid fa-file-pdf me-1"></i>Generate Card
+              </button>
+              }
             </p>
           </form>
         </div>
@@ -375,11 +394,6 @@
           <th>Session Date</th>
           <th>Driver Name</th>
           <th>Driver NIC</th>
-          <th>Contractor</th>
-          <th>Location</th>
-          <th>Result</th>
-          <th>Stage</th>
-          <th>Score</th>
         </tr>
       </thead>
       <tbody>
@@ -392,7 +406,7 @@
           </td>
           <td>
             <div>
-              {{ item.name }}
+              {{ item.sessioname }}
             </div>
           </td>
           <td>
@@ -406,11 +420,6 @@
           <td>
             <div>
               {{ item.nic }}
-            </div>
-          </td>
-          <td>
-            <div>
-              {{ item.totalscore }}
             </div>
           </td>
         </tr>

@@ -174,14 +174,26 @@
           <span class="legend-box legend-blue"></span>
           <span>Selected Row</span>
         </div>
-        <!-- <div class="legend-item fs-7">
+        <div class="legend-item fs-7">
           <span class="legend-box legend-red"></span>
-          <span>License Expired</span>
+          <span>New</span>
         </div>
         <div class="legend-item fs-7">
           <span class="legend-box legend-yellow"></span>
-          <span>Permit Expired</span>
-        </div> -->
+          <span>Open</span>
+        </div>
+        <div class="legend-item fs-7">
+          <span class="legend-box legend-dblue"></span>
+          <span>Plan</span>
+        </div>
+        <div class="legend-item fs-7">
+          <span class="legend-box legend-green"></span>
+          <span>InProgress</span>
+        </div>
+        <div class="legend-item fs-7">
+          <span class="legend-box"></span>
+          <span>Completed</span>
+        </div>
         <div class="legend-item fs-7">
           <button
             type="button"
@@ -225,6 +237,7 @@
       [class]="themeClass()"
       [rowData]="trainingsWithNames()"
       [columnDefs]="colDefs"
+      [getRowStyle]="getRowStyle"
       [pagination]="true"
       [paginationPageSize]="20"
       [paginationPageSizeSelector]="[5, 10, 20, 50, 100]"

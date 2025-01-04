@@ -8,8 +8,16 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
-import { apiSessionModel } from '../../Models/Assessment';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import {
+  apiSessionDriverReportModel,
+  apiSessionModel,
+} from '../../Models/Assessment';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { UtilitiesService } from '../../Services/utilities.service';
 import { AssessmentService } from '../../Services/assessment.service';
@@ -50,7 +58,7 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
   private trainerService = inject(TrainerService);
   private excelReport = inject(ExcelreportService);
 
-  session = signal<apiSessionModel[]>([]);
+  session = signal<apiSessionDriverReportModel[]>([]);
   contractors = this.cService.contractors;
   clients = this.clientService.clients;
   dltypes = this.dlTypeService.dltypes;
@@ -92,14 +100,7 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
     private cdRef: ChangeDetectorRef
   ) {
     this.formSession = this.fb.group({
-      name: 'session',
-      sessiondate: [{ value: null }],
-      locationid: [{ value: 0 }],
-      resultid: [{ value: 0 }],
-      classdate: [{ value: null }],
-      nic: [{ value: '' }],
-      drivername: [{ value: '' }],
-      driverid: [{ value: 0 }],
+      name: ['', Validators.required],
     });
 
     this.formDate = this.fb.group({
@@ -138,22 +139,29 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
   /**
    * This method will fetch all the session against session name
    */
-  getSessionData() {
+  public getSessionData(): void {
+    this.apiCallInProgress.set(true);
+
     this.subscriptionList.push(
       this.assessmentService
-        .getSessionbydate(
-          null,
-          this.formSession.value.name,
-          null,
-          null,
-          7001,
-          null,
-          null,
-          undefined,
-          undefined
-        )
-        .subscribe((res: any) => {
-          this.session.set(res);
+        .getSessionReportAll(this.formSession.value.name)
+        .subscribe({
+          next: (data) => {
+            if (!data) {
+              this.utils.showToast(
+                'Did not fetch any record, please update criteria',
+                'warning'
+              );
+              this.apiCallInProgress.set(false);
+            } else {
+              this.session.set(data);
+              this.apiCallInProgress.set(false);
+            }
+          },
+          error: (err: any) => {
+            this.utils.showToast(err.message, 'error');
+            this.apiCallInProgress.set(false);
+          },
         })
     );
   }
@@ -161,7 +169,7 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
   /**
    * This method will fetch all the assessment scores along with driver & session data
    */
-  getReportByDate() {
+  public getReportByDate() {
     this.apiCallInProgress.set(true);
     this.subscriptionList.push(
       this.assessmentService
@@ -196,12 +204,13 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
   /**
    * This method will fetch all the records for report
    */
-  getReportALL() {
+  public getReportALL(): void {
     this.apiCallInProgress.set(true);
 
     this.subscriptionList.push(
       this.assessmentService
         .getSessionReportAll(
+          undefined,
           this.formAll.value.licensetypeid,
           this.formAll.value.bloodgroupid,
           this.formAll.value.visualid,
@@ -261,8 +270,12 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
    * This method for generate report against session
    * @param session session array
    */
-  async downloadSessionReport(session: apiSessionModel[]) {
-    await this.reportService.generatePdfReportSession(session);
+  public async downloadSessionReport() {
+    await this.reportService.generatePdfReportSession(this.session());
+  }
+
+  public async downloadDriverReport() {
+    await this.reportService.generateCardPDF(this.session());
   }
 
   /**

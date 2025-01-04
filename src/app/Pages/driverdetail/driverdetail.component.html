@@ -16,20 +16,37 @@
           </div>
           <div class="col-auto">
             <h3>
-              <i class="fa-regular fa-user me-1 text-success"></i
+              <i
+                title="Driver Name"
+                class="fa-regular fa-user me-1 text-success"
+              ></i
               >{{ driverForm.get("name")?.value }}
             </h3>
             <p>
-              <i class="fa-regular fa-building me-1 text-success"></i>
+              <i
+                title="Driver Contractor"
+                class="fa-regular fa-building me-1 text-success"
+              ></i>
               {{ getContractorName(driverForm.get("contractorid")?.value) }}
             </p>
             <p>
-              <i class="fa-regular fa-id-badge me-1 text-success"></i
+              <i
+                title="DriverDBID"
+                class="fa-regular fa-id-badge me-1 text-success"
+              ></i
               >{{ driverForm.get("id")?.value }}
             </p>
             <p>
-              <i class="fa-solid fa-user-tie me-1 text-success"></i
+              <i
+                title="Created By"
+                class="fa-solid fa-user-tie me-1 text-success"
+              ></i
               >{{ driverForm.get("createdby")?.value }}
+              <i
+                title="Created Date"
+                class="fa-solid fa-thumbtack me-1 text-success"
+              ></i
+              >{{ driverForm.get("created_at")?.value | date }}
             </p>
           </div>
           <div class="mb-3 col-auto">
@@ -490,6 +507,46 @@
         </div>
       </div>
     </form>
-    }
+
+    @if (sessions().length>0) {
+    <h6>Driver Session List:</h6>
+    <table
+      class="table table-hover table-bordered table-responsive-sm"
+      id="driversession-table"
+    >
+      <thead class="table-success fs-7">
+        <tr>
+          <th>Sr. #</th>
+          <th>Session ID</th>
+          <th>Session Date</th>
+          <th>Class Date</th>
+          <th>Location</th>
+          <th>Stage</th>
+          <th>Title</th>
+          <th>Result</th>
+          <th>QuizScore</th>
+          <th>TotalScore</th>
+        </tr>
+      </thead>
+      <tbody class="fs-7">
+        @for (item of sessions(); track $index) {
+        <tr>
+          <td>{{ $index + 1 }}</td>
+          <td>
+            <a [routerLink]="['/allassessments/' + item.id]">{{ item.name }}</a>
+          </td>
+          <td>{{ item.sessiondate | date }}</td>
+          <td>{{ item.classdate | date }}</td>
+          <td>{{ getLocationName(item.locationid) }}</td>
+          <td>{{ getStageName(item.stageid) }}</td>
+          <td>{{ getTitleName(item.titleid) }}</td>
+          <td>{{ getResultName(item.resultid) }}</td>
+          <td>{{ item.quizscore }}</td>
+          <td>{{ item.totalscore }}</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+    } }
   </div>
 </div>

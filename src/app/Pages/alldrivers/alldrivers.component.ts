@@ -11,9 +11,8 @@ import {
 import { Subscription } from 'rxjs';
 import { DeleteConfirmationComponent } from '../../Widgets/delete-confirmation/delete-confirmation.component';
 import { apiDriverModel } from '../../Models/Driver';
-import { apiContractorModel } from '../../Models/Contractor';
-import { apiGenericModel } from '../../Models/Generic';
 import {
+  FormBuilder,
   FormControl,
   FormGroup,
   FormsModule,
@@ -70,6 +69,7 @@ export class AlldriversComponent implements OnInit, OnDestroy {
   private dltypeService = inject(DltypeService);
   private authService = inject(AuthService);
 
+  public themeClass = signal<string>('ag-theme-quartz');
   gridApi!: GridApi;
   drivers = signal<apiDriverModel[]>([]);
   initialValues: apiDriverModel[] = [];
@@ -78,21 +78,28 @@ export class AlldriversComponent implements OnInit, OnDestroy {
   driversWithName = this.driverService.getDriversWithNames(this.drivers);
   subscriptionList: Subscription[] = [];
 
-  formSaveDrivers = new FormGroup({
-    name: new FormControl(),
-    nic: new FormControl(),
-    licensenumber: new FormControl(),
-    permitnumber: new FormControl(),
-    permitexpiry: new FormControl(),
-    contractorid: new FormControl(),
-  });
+  formSaveDrivers: FormGroup;
 
-  constructor(private datePipe: DatePipe, private cdRef: ChangeDetectorRef) {}
+  constructor(
+    private fb: FormBuilder,
+    private datePipe: DatePipe,
+    private cdRef: ChangeDetectorRef
+  ) {
+    this.formSaveDrivers = this.fb.group({
+      name: [''],
+      nic: [''],
+      licensenumber: [''],
+      contractorid: [null],
+      permitnumber: [''],
+      startDate: [this.utils.monthAgo(3).toISOString().substring(0, 10)],
+      endDate: [this.utils.daysAhead(1).toISOString().substring(0, 10)],
+    });
+  }
 
   /**
-   * This method will invoke all the methods while rendering the page
+   * This method will invoke all the fetch records while rendering the page
    */
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.utils.setTitle('All Drivers');
     this.updatetheme();
     this.getAll();
@@ -101,7 +108,7 @@ export class AlldriversComponent implements OnInit, OnDestroy {
   /**
    * This method will filter the drivers
    */
-  getFillterredData() {
+  public getFillterredData(): void {
     this.subscriptionList.push(
       this.driverService
         .searchDrivers(
@@ -109,8 +116,9 @@ export class AlldriversComponent implements OnInit, OnDestroy {
           this.formSaveDrivers.value.licensenumber,
           this.formSaveDrivers.value.name,
           this.formSaveDrivers.value.contractorid,
-          this.formSaveDrivers.value.permitexpiry,
-          this.formSaveDrivers.value.permitnumber
+          this.formSaveDrivers.value.permitnumber,
+          this.formSaveDrivers.value.startDate,
+          this.formSaveDrivers.value.endDate
         )
         .subscribe({
           next: (res) => {
@@ -133,12 +141,40 @@ export class AlldriversComponent implements OnInit, OnDestroy {
   /**
    * This method will get all the drivers
    */
-  getAll() {
+  public getAll(): void {
+    // this.subscriptionList.push(
+    //   this.driverService.getAllDrivers().subscribe((res: any) => {
+    //     this.drivers.set(res);
+    //     this.initialValues = res;
+    //   })
+    // );
     this.subscriptionList.push(
-      this.driverService.getAllDrivers().subscribe((res: any) => {
-        this.drivers.set(res);
-        this.initialValues = res;
-      })
+      this.driverService
+        .searchDrivers(
+          this.formSaveDrivers.value.nic,
+          this.formSaveDrivers.value.licensenumber,
+          this.formSaveDrivers.value.name,
+          this.formSaveDrivers.value.contractorid,
+          this.formSaveDrivers.value.permitnumber,
+          this.formSaveDrivers.value.startDate,
+          this.formSaveDrivers.value.endDate
+        )
+        .subscribe({
+          next: (res) => {
+            if (res) {
+              this.drivers.set(res);
+              this.initialValues = res;
+            } else {
+              this.utils.showToast('No content found', 'warning');
+            }
+          },
+          error: (err) => {
+            this.utils.showToast(
+              'Could not found any record, please change your search criteria',
+              'warning'
+            );
+          },
+        })
     );
   }
 
@@ -178,8 +214,16 @@ export class AlldriversComponent implements OnInit, OnDestroy {
   /**
    * This method will reset the form value to blank
    */
-  formRest() {
-    this.formSaveDrivers.reset();
+  public formRest(): void {
+    this.formSaveDrivers.reset({
+      name: '',
+      nic: '',
+      licensenumber: '',
+      contractorid: null,
+      permitnumber: '',
+      startDate: [this.utils.monthAgo(3).toISOString().substring(0, 10)],
+      endDate: [this.utils.daysAhead(1).toISOString().substring(0, 10)],
+    });
     this.drivers.set(this.initialValues);
   }
   /**
@@ -187,7 +231,7 @@ export class AlldriversComponent implements OnInit, OnDestroy {
    * @param contractorId number contractor id
    * @returns string name
    */
-  getContractorName(contractorId: number): string {
+  public getContractorName(contractorId: number): string {
     return this.utils.getGenericName(this.contractors(), contractorId);
   }
 
@@ -196,7 +240,7 @@ export class AlldriversComponent implements OnInit, OnDestroy {
    * @param dlTypeId number driver license type id
    * @returns string name
    */
-  getDLTypesName(dlTypeId: number): string {
+  public getDLTypesName(dlTypeId: number): string {
     return this.utils.getGenericName(this.dltypes(), dlTypeId);
   }
 
@@ -238,16 +282,17 @@ export class AlldriversComponent implements OnInit, OnDestroy {
       headerTooltip: 'Contractor Name',
     },
     {
-      headerName: 'N.I.C #',
+      headerName: 'C.N.I.C #',
       field: 'nic',
       filter: 'agTextColumnFilter',
-      flex: 1.5,
+      flex: 1.2,
       headerTooltip: 'National Identity Card #',
     },
     {
-      headerName: 'DL #',
+      headerName: 'DL-Number',
       field: 'licensenumber',
       filter: 'agTextColumnFilter',
+      flex: 1.2,
       headerTooltip: 'Driver License Number',
     },
     {
@@ -270,6 +315,7 @@ export class AlldriversComponent implements OnInit, OnDestroy {
       headerName: 'Permit #',
       field: 'permitnumber',
       filter: 'agTextColumnFilter',
+      flex: 1.1,
       headerTooltip: 'Permit Number',
     },
     {
@@ -311,23 +357,24 @@ export class AlldriversComponent implements OnInit, OnDestroy {
     resizable: true,
   };
 
-  onFilterTextBoxChanged() {
+  public onFilterTextBoxChanged(): void {
     this.gridApi.setGridOption(
       'quickFilterText',
       (document.getElementById('filter-text-box') as HTMLInputElement).value
     );
   }
 
-  public themeClass: string = 'ag-theme-quartz';
-
-  updatetheme() {
+  /**
+   * Update theme
+   */
+  private updatetheme(): void {
     const themeName = this.authService.getUserTheme();
     if (themeName === 'dark') {
-      this.themeClass += '-dark';
+      this.themeClass.set('ag-theme-quartz-dark');
     }
   }
 
-  onGridReady(params: any) {
+  public onGridReady(params: any): void {
     this.gridApi = params.api;
   }
 
@@ -369,14 +416,14 @@ export class AlldriversComponent implements OnInit, OnDestroy {
   /**
    * Grid filter resets
    */
-  resetFilters() {
+  public resetFilters(): void {
     this.gridApi.setFilterModel(null);
   }
 
   /**
    * This method will destory all the subscriptions
    */
-  ngOnDestroy(): void {
+  public ngOnDestroy(): void {
     this.subscriptionList.forEach((sub: Subscription) => {
       sub.unsubscribe();
     });

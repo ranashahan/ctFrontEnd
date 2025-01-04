@@ -20,8 +20,6 @@ import { TrainerService } from '../../Services/trainer.service';
 import { apiTrainingModel } from '../../Models/Training';
 import { Subscription } from 'rxjs';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { apiGenericModel } from '../../Models/Generic';
-import { apiTrainerModel } from '../../Models/Trainer';
 import { AuthService } from '../../Services/auth.service';
 import { AgGridAngular } from 'ag-grid-angular'; // Angular Data Grid Component
 import { AgGridModule } from 'ag-grid-angular';
@@ -100,18 +98,6 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
 
   formTrainingSearch: FormGroup;
 
-  today = new Date();
-  oneMonthAgo = new Date(
-    this.today.getFullYear(),
-    this.today.getMonth() - 1,
-    this.today.getDate()
-  );
-  oneMonthAhead = new Date(
-    this.today.getFullYear(),
-    this.today.getMonth(),
-    this.today.getDate() + 1
-  );
-
   constructor(
     private utils: UtilitiesService,
     private fb: FormBuilder,
@@ -129,8 +115,8 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
       contractorid: [],
       courseid: [],
       categoryid: [],
-      startDate: [this.oneMonthAgo.toISOString().substring(0, 10)],
-      endDate: [this.oneMonthAhead.toISOString().substring(0, 10)],
+      startDate: [this.utils.monthAgo(1).toISOString().substring(0, 10)],
+      endDate: [this.utils.daysAhead(1).toISOString().substring(0, 10)],
     });
     this.formTrainingSearch
       .get('clientid')
@@ -229,6 +215,7 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
       width: 50, // Set to a small but visible width in pixels
       maxWidth: 50, // Enforce a maximum width
       minWidth: 30, // Optionally enforce a minimum width
+      headerTooltip: 'Sr. #',
     },
     {
       headerName: 'Training ID',
@@ -237,6 +224,7 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
       cellRenderer: 'tlinkCellRendererComponent',
       flex: 1.5,
       headerClass: 'bold-header',
+      headerTooltip: 'Training ID',
     },
     {
       headerName: 'Plan Date',
@@ -253,36 +241,51 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
       field: 'courseName',
       filter: 'agTextColumnFilter',
       flex: 1.5,
+      headerTooltip: 'Courses',
     },
     {
       headerName: 'Category',
       field: 'categoryName',
       filter: 'agTextColumnFilter',
+      headerTooltip: 'Categories',
     },
     {
-      headerName: 'Client',
+      headerName: 'Sponsor',
       field: 'clientName',
       filter: 'agTextColumnFilter',
+      headerTooltip: 'Clients',
     },
     {
       headerName: 'Contractor',
       field: 'contractorName',
       filter: 'agTextColumnFilter',
+      headerTooltip: 'Contractors',
     },
     {
       headerName: 'Total Amount',
       field: 'total',
       filter: 'agNumberColumnFilter',
+      valueFormatter: (params) => {
+        // Check for null or undefined values
+        return params.value != null ? `Rs. ${params.value}` : ''; // Show empty string if null
+      },
+      headerTooltip: 'Total Amount',
     },
     {
       headerName: 'Received Amount',
       field: 'amountreceived',
       filter: 'agNumberColumnFilter',
+      valueFormatter: (params) => {
+        // Check for null or undefined values
+        return params.value != null ? `Rs. ${params.value}` : ''; // Show empty string if null
+      },
+      headerTooltip: 'Received Amount',
     },
     {
-      headerName: 'Job Status',
+      headerName: 'Status',
       field: 'status',
       filter: 'agTextColumnFilter',
+      headerTooltip: 'Job Status',
     },
     {
       headerName: 'Actions',
@@ -327,7 +330,7 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
   /**
    * Update Theme
    */
-  updatetheme() {
+  private updatetheme(): void {
     const themeName = this.authService.getUserTheme();
     if (themeName === 'dark') {
       this.themeClass.set('ag-theme-quartz-dark');
@@ -352,6 +355,26 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
     },
     rowHeight: 40,
     domLayout: 'autoHeight' as DomLayoutType,
+  };
+
+  /**
+   * This method for row style
+   * @param params RowStyles
+   * @returns row styles
+   */
+  public getRowStyle = (params: any) => {
+    switch (params.data.status) {
+      case 'New': // Red Theme
+        return { background: '#f8d7da', color: '#842029' };
+      case 'Open': // Yellow Theme
+        return { background: '#fff3cd', color: '#856404' };
+      case 'Plan':
+        return { background: '#cfe2ff', color: '#084298' };
+      case 'InProgress': // Green Theme
+        return { background: '#d1e7dd', color: '#0f5132' };
+      default: // Return undefined for other cases
+        return undefined;
+    }
   };
 
   /**
@@ -380,8 +403,8 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
       nic: '',
       resultid: null,
       stageid: null,
-      startDate: this.oneMonthAgo.toISOString().substring(0, 10),
-      endDate: this.oneMonthAhead.toISOString().substring(0, 10),
+      startDate: this.utils.monthAgo(1).toISOString().substring(0, 10),
+      endDate: this.utils.daysAhead(1).toISOString().substring(0, 10),
     });
     this.trainings.set(this.initialValues);
   }

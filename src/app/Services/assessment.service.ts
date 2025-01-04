@@ -66,7 +66,7 @@ export class AssessmentService {
    * Get all assessments
    * @returns response
    */
-  getAllAssessments(): Observable<any> {
+  public getAllAssessments(): Observable<any> {
     return this.http.get(this.apiURL + 'getAll');
   }
 
@@ -83,7 +83,7 @@ export class AssessmentService {
    * @param endDate date search end date
    * @returns
    */
-  getSessionbydate(
+  public getSessionbydate(
     nic?: any,
     name?: any,
     sessiondate?: any,
@@ -135,7 +135,7 @@ export class AssessmentService {
    * @param endDate end date
    * @returns Observable
    */
-  getSessionReportByDate(
+  public getSessionReportByDate(
     clientid?: number,
     contractorid?: number,
     startDate?: string,
@@ -176,7 +176,8 @@ export class AssessmentService {
    * @param trainerid {number} trainer
    * @returns Observable
    */
-  getSessionReportAll(
+  public getSessionReportAll(
+    name?: string,
     licensetypeid?: number,
     bloodgroupid?: number,
     visualid?: number,
@@ -191,6 +192,9 @@ export class AssessmentService {
     endDate?: string
   ): Observable<apiSessionDriverReportModel[]> {
     let params = new HttpParams();
+    if (name) {
+      params = params.set('name', name);
+    }
     if (licensetypeid) {
       params = params.set('licensetypeid', licensetypeid);
     }
@@ -227,8 +231,6 @@ export class AssessmentService {
     if (endDate) {
       params = params.set('endDate', endDate);
     }
-
-    console.log(params);
     return this.http.get<apiSessionDriverReportModel[]>(
       this.apiURL + 'getReportAll',
       {
@@ -241,7 +243,7 @@ export class AssessmentService {
    * This method will fetch all the sessions with contractor,location,result,stages names
    * @returns Session Signal
    */
-  getSessionsWithNames(sessionParam: Signal<apiSessionModel[]>) {
+  public getSessionsWithNames(sessionParam: Signal<apiSessionModel[]>) {
     return computed(() => {
       const sessions = sessionParam();
       const contractorsValue = this.contractors();
@@ -290,7 +292,7 @@ export class AssessmentService {
    * @param id number sessionid
    * @returns response
    */
-  getSessionbyID(id: number) {
+  public getSessionbyID(id: number) {
     return this.http.get(this.apiURL + id);
   }
 
@@ -328,7 +330,7 @@ export class AssessmentService {
    * @param sessionid session
    * @returns Observalbe
    */
-  deleteSessionTraining(trainingid: number, sessionid: number) {
+  public deleteSessionTraining(trainingid: number, sessionid: number) {
     return this.http.post(this.apiURL + 'deletets', {
       trainingid,
       sessionid,
@@ -342,7 +344,7 @@ export class AssessmentService {
    * @param obj Complete form object with assessment scores
    * @returns response
    */
-  createAssessment(
+  public createAssessment(
     driverId: number,
     contractorid: number,
     obj: apiAssessmentFormModel
@@ -367,7 +369,7 @@ export class AssessmentService {
     });
   }
 
-  createAssessmentExp(
+  public createAssessmentExp(
     driverId: number,
     contractorid: number,
     obj: AssessmentFormModel
@@ -398,8 +400,7 @@ export class AssessmentService {
    * @param obj Complete form object with assessment scores
    * @returns response
    */
-  updateAssessment(id: number, obj: apiAssessmentFormModel) {
-    console.log('this is my assessment object : ', obj);
+  public updateAssessment(id: number, obj: apiAssessmentFormModel) {
     var answerCategories = obj.categories;
     var answerSessionDate = obj.sessionDate;
 

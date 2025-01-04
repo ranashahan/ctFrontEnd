@@ -89,6 +89,18 @@ export class DriverService {
   getDriverByID(id: number) {
     return this.http.get<apiDriverModel>(this.apiURL + id);
   }
+  /**
+   * This method will fetch driver sessions
+   * @param id {number} driver id
+   * @returns Observable
+   */
+  getDriverSessionByID(id: number) {
+    let params = new HttpParams();
+    if (id) {
+      params = params.set('id', id);
+    }
+    return this.http.get(this.apiURL + 'sessiondriver/', { params });
+  }
 
   /**
    * This mehtod for dactivete driver
@@ -119,16 +131,15 @@ export class DriverService {
    * @returns Observable
    */
   searchDrivers(
-    nic?: any,
-    licenseNumber?: any,
-    name?: any,
-    contractorid?: any,
-    permitexpiry?: any,
-    permitnumber?: any
+    nic?: string,
+    licenseNumber?: string,
+    name?: string,
+    contractorid?: number,
+    permitnumber?: string,
+    startDate?: string,
+    endDate?: string
   ): Observable<apiDriverModel[]> {
     let params = new HttpParams();
-
-    // Add parameters only if they are provided (not undefined or empty)
     if (nic) {
       params = params.set('nic', nic);
     }
@@ -141,11 +152,14 @@ export class DriverService {
     if (contractorid) {
       params = params.set('contractorid', contractorid);
     }
-    if (permitexpiry) {
-      params = params.set('permitexpiry', permitexpiry);
-    }
     if (permitnumber) {
       params = params.set('permitnumber', permitnumber);
+    }
+    if (startDate) {
+      params = params.set('startDate', startDate);
+    }
+    if (endDate) {
+      params = params.set('endDate', endDate);
     }
     return this.http.get<apiDriverModel[]>(`${this.apiURL}search`, { params });
   }
