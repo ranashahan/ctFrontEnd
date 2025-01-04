@@ -22,10 +22,16 @@ import { DltypeService } from '../../Services/dltype.service';
 import { UtilitiesService } from '../../Services/utilities.service';
 import { VisualService } from '../../Services/visual.service';
 import { ToastComponent } from '../../Widgets/toast/toast.component';
+import { DatePipe } from '@angular/common';
+import { apiSessionModel } from '../../Models/Assessment';
+import { LocationService } from '../../Services/location.service';
+import { StageService } from '../../Services/stage.service';
+import { ResultService } from '../../Services/result.service';
+import { TitleService } from '../../Services/title.service';
 
 @Component({
   selector: 'app-driverdetail',
-  imports: [RouterLink, ReactiveFormsModule, ToastComponent],
+  imports: [RouterLink, ReactiveFormsModule, ToastComponent, DatePipe],
   templateUrl: './driverdetail.component.html',
   styleUrl: './driverdetail.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,13 +46,22 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
   private dltypeService = inject(DltypeService);
   private utils = inject(UtilitiesService);
   private vService = inject(VisualService);
+  private locationService = inject(LocationService);
+  private stageService = inject(StageService);
+  private resultService = inject(ResultService);
+  private titleService = inject(TitleService);
 
   bloodgroups = this.bgService.bloodGroups;
   dltypes = this.dltypeService.dltypes;
   visuals = this.vService.visuals;
   contractors = this.cService.contractors;
+  locations = this.locationService.locations;
+  stages = this.stageService.stages;
+  results = this.resultService.results;
+  titles = this.titleService.titles;
   licenseVerification = signal<any[]>([]);
   gender = signal<string[]>([]);
+  sessions = signal<apiSessionModel[]>([]);
   initialFormData: any;
   /**
    * Subscriptionlist so ngondestory will destory all registered subscriptions.
@@ -106,6 +121,7 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
       code: [{ value: '', disabled: !this.isEdit }],
       comment: [{ value: '', disabled: !this.isEdit }],
       createdby: [{ value: '', disabled: true }],
+      created_at: [{ value: '', disabled: true }],
     });
   }
   /**
@@ -157,6 +173,38 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
   getDLTypeName(itemId: number): string {
     return this.utils.getGenericName(this.dltypes(), itemId);
   }
+  /**
+   * This method will set DLType name against DLType ID
+   * @param itemId DLType ID
+   * @returns string DLType name
+   */
+  getLocationName(itemId: number): string {
+    return this.utils.getGenericName(this.locations(), itemId);
+  }
+  /**
+   * This method will set DLType name against DLType ID
+   * @param itemId DLType ID
+   * @returns string DLType name
+   */
+  getStageName(itemId: number): string {
+    return this.utils.getGenericName(this.stages(), itemId);
+  }
+  /**
+   * This method will set DLType name against DLType ID
+   * @param itemId DLType ID
+   * @returns string DLType name
+   */
+  getTitleName(itemId: number): string {
+    return this.utils.getGenericName(this.titles(), itemId);
+  }
+  /**
+   * This method will set DLType name against DLType ID
+   * @param itemId DLType ID
+   * @returns string DLType name
+   */
+  getResultName(itemId: number): string {
+    return this.utils.getGenericName(this.results(), itemId);
+  }
 
   /**
    * This method will set visual name against visual ID
@@ -173,7 +221,6 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
   getDriver(id: number) {
     this.subscriptionList.push(
       this.driverService.getDriverByID(id).subscribe((driverData: any) => {
-        console.log(driverData);
         this.driverForm.patchValue(driverData[0]);
 
         const formattedDOB = this.utils.convertToMySQLDate(driverData[0].dob);
@@ -222,6 +269,12 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
         });
         this.driverForm.get('medicalexpiry')?.updateValueAndValidity();
         this.cdRef.detectChanges();
+      })
+    );
+
+    this.subscriptionList.push(
+      this.driverService.getDriverSessionByID(id).subscribe((res: any) => {
+        this.sessions.set(res);
       })
     );
   }

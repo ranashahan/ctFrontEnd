@@ -107,12 +107,46 @@ export class UtilitiesService {
    * This method will use for generics item finds
    * @param items your required id
    * @param itemId your list of objects
-   * @returns
+   * @returns {string} name
    */
   public getGenericName(items: apiGenericModel[], itemId: number): string {
     const selectedGroup = items.find((group) => group.id === Number(itemId));
     return selectedGroup ? selectedGroup.name : '';
   }
+  /**
+   * This method will use for generics item finds
+   * @param items your required id
+   * @param itemId your list of objects
+   * @returns {string} description
+   */
+  public getGenericDescription(
+    items: apiGenericModel[],
+    itemId: number
+  ): string {
+    const selectedGroup = items.find((group) => group.id === Number(itemId));
+    return selectedGroup ? selectedGroup.description : '';
+  }
+
+  /**
+   * This method will update the date format
+   * @param dateString {string} date
+   * @returns {Date} formatted date
+   */
+  public formatDate(dateString: Date): string {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+
+    // Options for date formatting
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: 'long', // Full day name (e.g., Friday)
+      day: '2-digit', // Day with leading zero if needed (e.g., 20)
+      month: 'long', // Full month name (e.g., December)
+      year: 'numeric', // Full year (e.g., 2024)
+    };
+
+    return date.toLocaleDateString('en-US', options);
+  }
+
   /**
    * This is the generic method for date conversion
    * @param date {string} date wanted to be coverted
@@ -199,6 +233,21 @@ export class UtilitiesService {
       { id: 1, name: 'Not Verified' },
       { id: 2, name: 'Verified' },
     ];
+  }
+
+  /**
+   * This method will use for license Verification
+   * @param item {number} licensenumber
+   * @returns {string} status
+   */
+  public convertLicenseNumber(item: number): string {
+    if (item === 1) {
+      return 'Not Verified';
+    } else if (item === 2) {
+      return 'Verified';
+    } else {
+      return 'Not-Configured';
+    }
   }
 
   /**

@@ -32,6 +32,10 @@ export class ProfileComponent implements OnDestroy {
   formUser: FormGroup;
 
   /**
+   * Form Password
+   */
+  formPassword: FormGroup;
+  /**
    * Userid signal
    */
   private userid = signal<number>(0);
@@ -77,6 +81,12 @@ export class ProfileComponent implements OnDestroy {
       imagepath: [''],
       role: [{ value: '', disabled: true }, Validators.required],
     });
+
+    this.formPassword = this.fb.group({
+      oldpassword: ['', [Validators.required]],
+      newpassword: ['', [Validators.required, Validators.minLength(8)]],
+    });
+
     this.userid.set(Number(this.authService.getUserID()));
     this.getLoggedinUser();
     this.getRoles();
@@ -90,7 +100,7 @@ export class ProfileComponent implements OnDestroy {
    * This method for toggle theme dark or light
    * @param event event
    */
-  toggleTheme(event: Event) {
+  public toggleTheme(event: Event) {
     this.isDarkMode.set((event.target as HTMLInputElement).checked);
     document.documentElement.setAttribute(
       'data-bs-theme',
@@ -106,7 +116,7 @@ export class ProfileComponent implements OnDestroy {
   /**
    * This method to get the user profile info from database
    */
-  getLoggedinUser(): void {
+  private getLoggedinUser(): void {
     this.userService.getUserByID(this.userid().toString());
     this.subscriptionList.push(
       this.userService.user$.subscribe({
@@ -122,6 +132,7 @@ export class ProfileComponent implements OnDestroy {
           }
         },
         error: (err: any) => {
+          this.utils.showToast(err.message, 'error');
           console.log(err.message);
         },
       })
@@ -131,7 +142,7 @@ export class ProfileComponent implements OnDestroy {
   /**
    * This This method to update the user profile form
    */
-  saveForm(): void {
+  public saveForm(): void {
     this.subscriptionList.push(
       this.userService
         .updateUserByID(
@@ -156,16 +167,56 @@ export class ProfileComponent implements OnDestroy {
   }
 
   /**
+   * This method will fetch form control
+   */
+  public get oldpassword() {
+    return this.formPassword.get('oldpassword');
+  }
+
+  /**
+   * This method will fetch form control
+   */
+  public get newpassword() {
+    return this.formPassword.get('newpassword');
+  }
+
+  /**
+   * This method will update password
+   * @param oldpassword {string} user old password
+   * @param newpassword {string} user new password
+   */
+  public resetPassword(oldpassword: string, newpassword: string): void {
+    this.subscriptionList.push(
+      this.userService
+        .resetUserPasswordByID(oldpassword, newpassword)
+        .subscribe({
+          next: (res: any) => {
+            this.utils.showToast('Password Update Successfully', 'success');
+          },
+          error: (err: any) => {
+            this.utils.showToast(err.message, 'error');
+          },
+        })
+    );
+  }
+
+  /**
    * This method to reset the user profile form
    */
-  formReset(): void {
+  public formReset(): void {
     this.getLoggedinUser();
+  }
+  /**
+   * This method to reset the user profile password form
+   */
+  public formResetPassword(): void {
+    this.formPassword.reset();
   }
 
   /**
    * This method will open user profile as popup
    */
-  openModal(): void {
+  public openModal(): void {
     this.formReset();
     const modalElement = document.getElementById('userprofile');
     if (modalElement) {
@@ -179,14 +230,14 @@ export class ProfileComponent implements OnDestroy {
   /**
    * This method will fetch all the user roles
    */
-  getRoles(): void {
+  private getRoles(): void {
     this.roles.set(this.utils.roles());
   }
 
   /**
    * This method will destory all the subscriptions
    */
-  ngOnDestroy(): void {
+  public ngOnDestroy(): void {
     this.subscriptionList.forEach((sub: Subscription) => {
       sub.unsubscribe();
     });

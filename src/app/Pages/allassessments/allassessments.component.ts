@@ -20,8 +20,6 @@ import { ToastComponent } from '../../Widgets/toast/toast.component';
 import { DeleteConfirmationComponent } from '../../Widgets/delete-confirmation/delete-confirmation.component';
 import { Subscription } from 'rxjs';
 import { apiSessionModel } from '../../Models/Assessment';
-import { apiContractorModel } from '../../Models/Contractor';
-import { apiGenericModel } from '../../Models/Generic';
 import { UtilitiesService } from '../../Services/utilities.service';
 import { AssessmentService } from '../../Services/assessment.service';
 import { ContractorService } from '../../Services/contractor.service';
@@ -80,18 +78,6 @@ export class AllassessmentsComponent implements OnInit, OnDestroy {
 
   gridApi!: GridApi;
 
-  today = new Date();
-  oneMonthAgo = new Date(
-    this.today.getFullYear(),
-    this.today.getMonth() - 1,
-    this.today.getDate()
-  );
-  oneMonthAhead = new Date(
-    this.today.getFullYear(),
-    this.today.getMonth(),
-    this.today.getDate() + 1
-  );
-
   formSession: FormGroup;
 
   constructor(
@@ -114,8 +100,8 @@ export class AllassessmentsComponent implements OnInit, OnDestroy {
       nic: [''],
       resultid: [null],
       stageid: [null],
-      startDate: [this.oneMonthAgo.toISOString().substring(0, 10)],
-      endDate: [this.oneMonthAhead.toISOString().substring(0, 10)],
+      startDate: [this.utils.monthAgo(1).toISOString().substring(0, 10)],
+      endDate: [this.utils.daysAhead(1).toISOString().substring(0, 10)],
     });
   }
 
@@ -220,13 +206,14 @@ export class AllassessmentsComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * This is table columns definations
+   * This is session table columns definations
    */
   colDefs: ColDef[] = [
     {
       headerName: '#',
       valueGetter: 'node.rowIndex + 1', // Add 1 to make it 1-based index
       cellClass: 'serial-number-cell',
+      headerTooltip: 'Sr. #',
       width: 50, // Set to a small but visible width in pixels
       maxWidth: 50, // Enforce a maximum width
       minWidth: 30, // Optionally enforce a minimum width
@@ -238,6 +225,7 @@ export class AllassessmentsComponent implements OnInit, OnDestroy {
       cellRenderer: 'slinkCellRendererComponent',
       flex: 1.5,
       headerClass: 'bold-header',
+      headerTooltip: 'Session ID',
     },
     {
       headerName: 'Session Date',
@@ -255,32 +243,38 @@ export class AllassessmentsComponent implements OnInit, OnDestroy {
       filter: 'agTextColumnFilter',
       cellRenderer: 'sdLinkCellRendererComponent',
       flex: 1.5,
+      headerTooltip: 'Driver Name',
     },
     {
       headerName: 'Contractor',
       field: 'contractorName',
       filter: 'agTextColumnFilter',
       flex: 1.5,
+      headerTooltip: 'Session Contractor',
     },
     {
       headerName: 'Location',
       field: 'locationName',
       filter: 'agTextColumnFilter',
+      headerTooltip: 'Location',
     },
     {
       headerName: 'Result',
       field: 'resultName',
       filter: 'agTextColumnFilter',
+      headerTooltip: 'Result',
     },
     {
       headerName: 'Stage',
       field: 'stageName',
       filter: 'agTextColumnFilter',
+      headerTooltip: 'Stage',
     },
     {
       headerName: 'Score',
       field: 'totalscore',
       filter: 'agNumberColumnFilter',
+      headerTooltip: 'Total Score',
     },
     {
       headerName: 'Actions',
@@ -356,8 +350,8 @@ export class AllassessmentsComponent implements OnInit, OnDestroy {
       nic: '',
       resultid: null,
       stageid: null,
-      startDate: this.oneMonthAgo.toISOString().substring(0, 10),
-      endDate: this.oneMonthAhead.toISOString().substring(0, 10),
+      startDate: [this.utils.monthAgo(1).toISOString().substring(0, 10)],
+      endDate: [this.utils.daysAhead(1).toISOString().substring(0, 10)],
     });
     this.sessions.set(this.initialValues);
   }

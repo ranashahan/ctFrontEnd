@@ -133,6 +133,24 @@ export class UsersService {
   }
 
   /**
+   * This method will update user password
+   * @param id number userid
+   * @param password string user password
+   * @returns Observable
+   */
+  resetUserPasswordByID(
+    oldpassword: string,
+    newpassword: string
+  ): Observable<apiUserModel> {
+    return this.http.post<apiUserModel>(this.apiURL + 'resetpassword', {
+      id: this.authService.getUserID(),
+      oldpassword,
+      newpassword,
+      userid: this.authService.getUserID(),
+    });
+  }
+
+  /**
    * This method will create the user
    * @param obj user object
    * @returns Observable

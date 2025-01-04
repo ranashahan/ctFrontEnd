@@ -167,6 +167,8 @@ export class AddassessmentEXPComponent implements OnInit, OnDestroy {
    * this method will toggle initial assessment
    */
   public toggleInitial(): void {
+    // this.assessmentForm.markAsUntouched();
+    // this.assessmentForm.markAsPristine();
     this.showInitial.set(!this.showInitial());
     if (!this.showInitial()) {
       this.showMiddle.set(false);

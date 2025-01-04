@@ -68,7 +68,9 @@ export class ExcelreportService {
           item.licensetypeid
         ),
         DriverLicenseExpiry: item.licenseexpiry,
-        DriverLicenseVerify: this.convertNumber(item.licenseverified),
+        DriverLicenseVerify: this.utils.convertLicenseNumber(
+          item.licenseverified
+        ),
         DriverDesignation: item.designation,
         DriverDepartment: item.department,
         DriverPermitNumber: item.permitnumber,
@@ -157,7 +159,9 @@ export class ExcelreportService {
           this.dltypes(),
           item.licensetypeid
         ),
-        DriverLicenseVerify: this.convertNumber(item.licenseverified),
+        DriverLicenseVerify: this.utils.convertLicenseNumber(
+          item.licenseverified
+        ),
         DriverPermit: item.permitnumber,
         DriverPermitIssue: item.permitissue,
         DriverPermitExpire: item.permitexpiry,
@@ -202,20 +206,5 @@ export class ExcelreportService {
    */
   private convertGeneric(items: apiGenericModel[], itemid: number): string {
     return this.utils.getGenericName(items, itemid);
-  }
-
-  /**
-   * This method will return license verification convertion
-   * @param item number
-   * @returns string
-   */
-  private convertNumber(item: number): string {
-    if (item === 1) {
-      return 'Not Verified';
-    } else if (item === 2) {
-      return 'Verified';
-    } else {
-      return 'Not-Configured';
-    }
   }
 }
