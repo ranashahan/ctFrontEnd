@@ -75,7 +75,7 @@ export class AllassessmentsComponent implements OnInit, OnDestroy {
   results = this.resultService.results;
   stages = this.stageService.stages;
   sessionsWithName = this.assessmentService.getSessionsWithNames(this.sessions);
-
+  public themeClass: string = 'ag-theme-quartz';
   gridApi!: GridApi;
 
   formSession: FormGroup;
@@ -105,12 +105,18 @@ export class AllassessmentsComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * This method will invoke all the methods while rendering the page
+   */
   ngOnInit(): void {
     this.getAllSessionsByDate();
     this.updatetheme();
   }
 
-  getAllSessionsByDate() {
+  /**
+   * This method will get all standard sessions.
+   */
+  private getAllSessionsByDate(): void {
     this.subscriptionList.push(
       this.assessmentService
         .getSessionbydate(
@@ -133,16 +139,11 @@ export class AllassessmentsComponent implements OnInit, OnDestroy {
     );
   }
 
-  viewAssessmentDetails(id: number): void {
-    // Navigate to the driver detail page
-    this.router.navigate([`/allassessments/${id}`], { relativeTo: this.route });
-  }
-
   /**
    * This method will delete the session and remove all the relevent records
    * @param id number sessionid
    */
-  async deleteAssessment(id: number) {
+  public async deleteAssessment(id: number) {
     const isConfirmed = await this.deleteConfirmation.openModal(
       'assessment: ' + id
     );
@@ -159,20 +160,45 @@ export class AllassessmentsComponent implements OnInit, OnDestroy {
       );
   }
 
-  getStageName(itemId: number): string {
+  /**
+   * This method will fetch name against number
+   * @param itemId item number
+   * @returns {string} item name
+   */
+  public getStageName(itemId: number): string {
     return this.utils.getGenericName(this.stages(), itemId);
   }
-  getResultName(itemId: number): string {
+
+  /**
+   * This method will fetch name against number
+   * @param itemId item number
+   * @returns {string} item name
+   */
+  public getResultName(itemId: number): string {
     return this.utils.getGenericName(this.results(), itemId);
   }
-  getLocationName(itemId: number): string {
+
+  /**
+   * This method will fetch name against number
+   * @param itemId item number
+   * @returns {string} item name
+   */
+  public getLocationName(itemId: number): string {
     return this.utils.getGenericName(this.locations(), itemId);
   }
-  getContractorName(itemId: number): string {
+  /**
+   * This method will fetch name against number
+   * @param itemId item number
+   * @returns {string} item name
+   */
+  public getContractorName(itemId: number): string {
     return this.utils.getGenericName(this.contractors(), itemId);
   }
 
-  getFillterredData() {
+  /**
+   * This method will update filter data
+   */
+  public getFillterredData(): void {
     this.subscriptionList.push(
       this.assessmentService
         .getSessionbydate(
@@ -301,16 +327,20 @@ export class AllassessmentsComponent implements OnInit, OnDestroy {
     actionCellRenderer: SActionCellRendererComponent,
   };
 
-  onFilterTextBoxChanged() {
+  /**
+   * This method will update filter
+   */
+  public onFilterTextBoxChanged(): void {
     this.gridApi.setGridOption(
       'quickFilterText',
       (document.getElementById('filter-text-box') as HTMLInputElement).value
     );
   }
 
-  public themeClass: string = 'ag-theme-quartz';
-
-  updatetheme() {
+  /**
+   * This method will update theme
+   */
+  private updatetheme(): void {
     const themeName = this.authService.getUserTheme();
     if (themeName === 'dark') {
       this.themeClass += '-dark';
@@ -333,15 +363,21 @@ export class AllassessmentsComponent implements OnInit, OnDestroy {
   /**
    * Grid filter resets
    */
-  resetFilters() {
+  public resetFilters(): void {
     this.gridApi.setFilterModel(null);
   }
 
-  executeExport() {
+  /**
+   * This method for download excel
+   */
+  public executeExport() {
     this.gridApi.exportDataAsCsv();
   }
 
-  formRest() {
+  /**
+   * This method for reset the search form
+   */
+  public formRest() {
     this.formSession.reset({
       name: '',
       sessiondate: null,

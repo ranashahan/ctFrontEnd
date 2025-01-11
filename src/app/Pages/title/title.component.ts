@@ -32,7 +32,7 @@ export class TitleComponent implements OnInit, OnDestroy {
   /**
    * title Signal
    */
-  titles = signal<apiGenericModel[]>([]);
+  titles = this.titleService.titles;
 
   /**
    * Form for creating new title
