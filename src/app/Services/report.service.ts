@@ -1,8 +1,17 @@
 import { inject, Injectable } from '@angular/core';
-import * as pdfMake from 'pdfmake/build/pdfmake';
-import * as pdfFonts from 'pdfmake/build/vfs_fonts';
+// import * as pdfMake from 'pdfmake/build/pdfmake';
 
-(<any>pdfMake).addVirtualFileSystem(pdfFonts);
+// import pdfFonts from '../../../public/fonts/vfs_fonts';
+// pdfMake.vfs = pdfFonts.pdfMake.vfs;
+// import * as pdfFonts from 'pdfmake/build/vfs_fonts';
+// import pdfFonts from '../../../public/fonts/vfs_fonts.js';
+// (<any>pdfMake).addVirtualFileSystem(pdfFonts);
+import pdfMake from 'pdfmake/build/pdfmake.min';
+
+// import pdfFonts from 'pdfmake/build/vfs_fonts';
+// (<any>pdfMake).addVirtualFileSystem(pdfFonts);
+// pdfMake.vfs = pdfFonts.vfs;
+
 import { Content, TableCell, TDocumentDefinitions } from 'pdfmake/interfaces';
 import { apiDriverModel } from '../Models/Driver';
 import { apiSessionDriverReportModel } from '../Models/Assessment';
@@ -13,6 +22,7 @@ import { DltypeService } from './dltype.service';
 import { TitleService } from './title.service';
 import { BloodgroupService } from './bloodgroup.service';
 import { VisualService } from './visual.service';
+import { fontsPDF } from '../Models/Fonts';
 
 @Injectable({
   providedIn: 'root',
@@ -38,6 +48,39 @@ export class ReportService {
    * @param sessions apiSessionDriverReportModel
    */
   async generatePdfReportSession(sessions: apiSessionDriverReportModel[]) {
+    pdfMake.vfs = {
+      'Roboto-Regular.ttf': fontsPDF.RobotoRegular,
+      'Roboto-Bold.ttf': fontsPDF.RobotoBold,
+      'Roboto-Italic.ttf': fontsPDF.RobotoItalic,
+      'Roboto-BoldItalic.ttf': fontsPDF.RobotoBoldItalic,
+      'Roboto-Medium.ttf': fontsPDF.RobotoMedium,
+      'Tangerine-Regular.ttf': fontsPDF.TangerineRegular,
+      'Tangerine-Bold.ttf': fontsPDF.TangerineBold,
+      'Pacifico-Regular.ttf': fontsPDF.PacificoRegular,
+      'DMSerifText-Regular.ttf': fontsPDF.DMSerifTextRegular,
+      'DMSerifText-Italic.ttf': fontsPDF.DMSerifTextItalic,
+    };
+
+    pdfMake.fonts = {
+      Roboto: {
+        normal: 'Roboto-Regular.ttf',
+        bold: 'Roboto-Bold.ttf',
+        italics: 'Roboto-Italic.ttf',
+        bolditalics: 'Roboto-BoldItalic.ttf',
+      },
+      Tangerine: {
+        normal: 'Tangerine-Regular.ttf',
+        bold: 'Tangerine-Bold.ttf',
+      },
+      Pacifico: {
+        normal: 'Pacifico-Regular.ttf',
+      },
+      DMSerifText: {
+        normal: 'DMSerifText-Regular.ttf',
+        italics: 'DMSerifText-Italic.ttf',
+      },
+    };
+
     const logoAslam = await this.getBase64ImageFromURL('/img/AslamSig.png');
     const logoAmina = await this.getBase64ImageFromURL('/img/AmenaSig.png');
     const printDate = new Date().toLocaleDateString('en-US');
@@ -48,26 +91,10 @@ export class ReportService {
 
         const sessionContent: Content[] = [
           {
-            columns: [
-              {
-                text: `Print Date: ${printDate} \nValid Till:${session.permitexpiry}`,
-                alignment: 'left',
-                style: 'verticalText',
-              },
-              {
-                text: 'certifies that',
-                style: 'subheader',
-                alignment: 'center',
-              },
-              {
-                text: `STC-${this.utils.getGenericName(
-                  this.titles(),
-                  session.titleid
-                )}-16H`,
-                style: 'verticalText',
-                alignment: 'right',
-              },
-            ],
+            text: 'certifies that',
+            style: 'subheader',
+            alignment: 'center',
+
             margin: [0, 90, 0, 10],
           },
 
@@ -88,7 +115,6 @@ export class ReportService {
             text: 'of',
             style: 'subheader',
             alignment: 'center',
-            margin: [0, 20, 0, 0],
           },
           {
             text: `${this.utils.getGenericName(
@@ -97,13 +123,13 @@ export class ReportService {
             )}`,
             style: 'company',
             alignment: 'center',
-            margin: [0, 20, 0, 0],
+            margin: [0, 10, 0, 0],
           },
           {
             text: 'successfully completed',
             style: 'subheader',
             alignment: 'center',
-            margin: [0, 20, 0, 0],
+            margin: [0, 10, 0, 0],
           },
           {
             text:
@@ -154,13 +180,29 @@ export class ReportService {
             columns: [
               {
                 image: logoAmina, // Left image
-                width: 80, // Set width
+                width: 70, // Set width
                 alignment: 'left', // Align to left
               },
               {
-                qr: `${session.sessioname}`,
-                fit: 50,
-                alignment: 'center',
+                stack: [
+                  {
+                    qr: `${session.sessioname}`, // QR code content
+                    fit: 50, // Set size for QR code
+                    alignment: 'center', // Align the QR code
+                  },
+                  {
+                    text: `Print Date: ${printDate} \nValid Till:${
+                      session.permitexpiry
+                    } \n STC-${this.utils.getGenericName(
+                      this.titles(),
+                      session.titleid
+                    )}-16H`,
+                    alignment: 'center',
+                    style: 'verticalText',
+                    margin: [0, 5, 0, 0],
+                  },
+                ],
+                alignment: 'center', // Align the stack to center
               },
               {
                 image: logoAslam, // Right image
@@ -168,7 +210,7 @@ export class ReportService {
                 alignment: 'right', // Align to right
               },
             ],
-            margin: [0, 90, 0, 10], // Optional margin
+            margin: [10, 70, 0, 10], // Optional margin
           },
 
           { text: '', pageBreak: 'after' }, // Adds a page break after each session
@@ -217,39 +259,44 @@ export class ReportService {
           margin: [0, 0, 0, 20],
         },
         subheader: {
+          font: 'DMSerifText',
           fontSize: 14,
-          margin: [0, 10, 0, 5],
         },
         name: {
-          fontSize: 24,
+          fontSize: 50,
+          font: 'Tangerine',
           bold: true,
           margin: [0, 0, 0, 5],
         },
         details: {
+          font: 'DMSerifText',
           fontSize: 12,
           margin: [0, 0, 0, 20],
         },
         company: {
+          font: 'DMSerifText',
           fontSize: 20,
-          bold: true,
+
           margin: [0, 0, 0, 5],
         },
         course: {
+          font: 'DMSerifText',
           fontSize: 18,
-          bold: true,
+
           margin: [0, 0, 0, 10],
         },
         date: {
+          font: 'DMSerifText',
           fontSize: 14,
           margin: [0, 0, 0, 5],
         },
         location: {
+          font: 'DMSerifText',
           fontSize: 14,
           margin: [0, 0, 0, 10],
         },
         verticalText: {
-          fontSize: 10,
-          bold: true,
+          fontSize: 8,
           color: 'gray',
         },
         signature: {
@@ -406,6 +453,38 @@ export class ReportService {
    * @param drivers drivers
    */
   public async generateDriverContractorReport(drivers: apiDriverModel[]) {
+    pdfMake.vfs = {
+      'Roboto-Regular.ttf': fontsPDF.RobotoRegular,
+      'Roboto-Bold.ttf': fontsPDF.RobotoBold,
+      'Roboto-Italic.ttf': fontsPDF.RobotoItalic,
+      'Roboto-BoldItalic.ttf': fontsPDF.RobotoBoldItalic,
+      'Roboto-Medium.ttf': fontsPDF.RobotoMedium,
+      'Tangerine-Regular.ttf': fontsPDF.TangerineRegular,
+      'Tangerine-Bold.ttf': fontsPDF.TangerineBold,
+      'Pacifico-Regular.ttf': fontsPDF.PacificoRegular,
+      'DMSerifText-Regular.ttf': fontsPDF.DMSerifTextRegular,
+      'DMSerifText-Italic.ttf': fontsPDF.DMSerifTextItalic,
+    };
+
+    pdfMake.fonts = {
+      Roboto: {
+        normal: 'Roboto-Regular.ttf',
+        bold: 'Roboto-Bold.ttf',
+        italics: 'Roboto-Italic.ttf',
+        bolditalics: 'Roboto-BoldItalic.ttf',
+      },
+      Tangerine: {
+        normal: 'Tangerine-Regular.ttf',
+        bold: 'Tangerine-Bold.ttf',
+      },
+      Pacifico: {
+        normal: 'Pacifico-Regular.ttf',
+      },
+      DMSerifText: {
+        normal: 'DMSerifText-Regular.ttf',
+        italics: 'DMSerifText-Italic.ttf',
+      },
+    };
     const logoUrl = await this.getBase64ImageFromURL('/img/logo.png');
     const currentDate = new Date().toDateString();
     var docDefinition: TDocumentDefinitions = {
@@ -540,6 +619,39 @@ export class ReportService {
   }
 
   public async generateCardPDF(drivers: apiSessionDriverReportModel[]) {
+    pdfMake.vfs = {
+      'Roboto-Regular.ttf': fontsPDF.RobotoRegular,
+      'Roboto-Bold.ttf': fontsPDF.RobotoBold,
+      'Roboto-Italic.ttf': fontsPDF.RobotoItalic,
+      'Roboto-BoldItalic.ttf': fontsPDF.RobotoBoldItalic,
+      'Roboto-Medium.ttf': fontsPDF.RobotoMedium,
+      'Tangerine-Regular.ttf': fontsPDF.TangerineRegular,
+      'Tangerine-Bold.ttf': fontsPDF.TangerineBold,
+      'Pacifico-Regular.ttf': fontsPDF.PacificoRegular,
+      'DMSerifText-Regular.ttf': fontsPDF.DMSerifTextRegular,
+      'DMSerifText-Italic.ttf': fontsPDF.DMSerifTextItalic,
+    };
+
+    pdfMake.fonts = {
+      Roboto: {
+        normal: 'Roboto-Regular.ttf',
+        bold: 'Roboto-Bold.ttf',
+        italics: 'Roboto-Italic.ttf',
+        bolditalics: 'Roboto-BoldItalic.ttf',
+      },
+      Tangerine: {
+        normal: 'Tangerine-Regular.ttf',
+        bold: 'Tangerine-Bold.ttf',
+      },
+      Pacifico: {
+        normal: 'Pacifico-Regular.ttf',
+      },
+      DMSerifText: {
+        normal: 'DMSerifText-Regular.ttf',
+        italics: 'DMSerifText-Italic.ttf',
+      },
+    };
+
     const cardTemplate = drivers.map((driver) => {
       return {
         table: {
@@ -551,7 +663,7 @@ export class ReportService {
                   { text: 'Defensive Driving HV Permit', style: 'header' },
                   { text: `${driver.permitnumber}`, style: 'subheader' },
                   {
-                    text: `Valid Upto: ${driver.permitexpiry}`,
+                    text: `Valid Upto: ${driver.permitexpiry || ''}`,
                     style: 'validUpto',
                   },
                   {
@@ -575,10 +687,10 @@ export class ReportService {
                     style: 'details',
                   },
                   {
-                    text: `DL Expiry: ${driver.licenseexpiry}`,
+                    text: `DL Expiry: ${driver.licenseexpiry || ''}`,
                     style: 'details',
                   },
-                  { text: `CNIC #: ${driver.nic}`, style: 'details' },
+                  { text: `CNIC #: ${driver.nic || ''}`, style: 'details' },
                   {
                     text: `Driver Code: ${driver.code || ''}`,
                     style: 'details',

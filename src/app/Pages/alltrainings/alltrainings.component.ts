@@ -115,7 +115,7 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
       contractorid: [],
       courseid: [],
       categoryid: [],
-      startDate: [this.utils.monthAgo(1).toISOString().substring(0, 10)],
+      startDate: [this.utils.monthAgo(3).toISOString().substring(0, 10)],
       endDate: [this.utils.daysAhead(1).toISOString().substring(0, 10)],
     });
     this.formTrainingSearch
@@ -138,7 +138,7 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
   /**
    * This method will fetch all the training records against selected filters
    */
-  getFillterredData() {
+  public getFillterredData(): void {
     this.subscriptionList.push(
       this.trainingService
         .getSessionbydate(
@@ -169,13 +169,24 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
   /**
    * This method will fetch all the trainings
    */
-  getAllTrainings() {
+  private getAllTrainings(): void {
     this.subscriptionList.push(
-      this.trainingService.getAllTraining().subscribe((res: any) => {
-        this.trainings.set(res);
-        // console.log(this.trainings());
-        this.initialValues = res;
-      })
+      this.trainingService
+        .getSessionbydate(
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          this.formTrainingSearch.value.startDate,
+          this.formTrainingSearch.value.endDate
+        )
+        .subscribe((res: any) => {
+          this.trainings.set(res);
+          // console.log(this.trainings());
+          this.initialValues = res;
+        })
     );
   }
 
@@ -183,7 +194,7 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
    * This method will delete the training and remove all the relevent records
    * @param id number sessionid
    */
-  async deleteTraining(id: number) {
+  public async deleteTraining(id: number) {
     const isConfirmed = await this.deleteConfirmation.openModal(
       'Training: ' + id
     );
@@ -320,7 +331,7 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
   /**
    * Filter text box
    */
-  onFilterTextBoxChanged() {
+  public onFilterTextBoxChanged(): void {
     this.gridApi.setGridOption(
       'quickFilterText',
       (document.getElementById('filter-text-box') as HTMLInputElement).value
@@ -403,7 +414,7 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
       nic: '',
       resultid: null,
       stageid: null,
-      startDate: this.utils.monthAgo(1).toISOString().substring(0, 10),
+      startDate: this.utils.monthAgo(3).toISOString().substring(0, 10),
       endDate: this.utils.daysAhead(1).toISOString().substring(0, 10),
     });
     this.trainings.set(this.initialValues);

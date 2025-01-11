@@ -100,7 +100,7 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
     private cdRef: ChangeDetectorRef
   ) {
     this.formSession = this.fb.group({
-      name: ['', Validators.required],
+      sessionname: ['', Validators.required],
     });
 
     this.formDate = this.fb.group({
@@ -144,7 +144,7 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
 
     this.subscriptionList.push(
       this.assessmentService
-        .getSessionReportAll(this.formSession.value.name)
+        .getSessionReportAll(this.formSession.value.sessionname)
         .subscribe({
           next: (data) => {
             if (!data) {
