@@ -233,6 +233,16 @@
   </div>
 
   <div>
+    @if (isLoading()) {
+    <div
+      class="d-flex justify-content-center align-items-center"
+      style="height: 100vh"
+    >
+      <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+    </div>
+    } @if (!isLoading()) {
     <ag-grid-angular
       [class]="themeClass()"
       [rowData]="trainingsWithNames()"
@@ -245,6 +255,7 @@
       (gridReady)="onGridReady($event)"
       [gridOptions]="gridOptions"
     ></ag-grid-angular>
+    }
   </div>
   <app-delete-confirmation #confirmationModal></app-delete-confirmation>
   <router-outlet></router-outlet>

@@ -44,19 +44,7 @@
           </div>
           }
         </div>
-        <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
-          <label class="label ms-1" for="gender">Gender</label>
-          <select
-            class="form-select form-select-sm"
-            id="gender"
-            formControlName="gender"
-          >
-            <option disabled selected value="null">-----Select-----</option>
-            @for (item of gender(); track $index) {
-            <option [value]="item">{{ item }}</option>
-            }
-          </select>
-        </div>
+
         <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
           <label class="label label-sm ms-1" for="driverdob"
             >Date of Birth</label
@@ -162,6 +150,37 @@
           </select>
         </div>
         <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
+          <div class="form-group">
+            <label class="label ms-1" for="permitnumber">Permit #</label>
+            <input
+              class="form-control form-control-sm"
+              id="permitnumber"
+              type="text"
+              placeholder="CONT-XXXX"
+              formControlName="permitnumber"
+            />
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
+          <label class="label ms-1" for="permitissue">Permit Issue</label>
+          <input
+            class="form-control form-control-sm"
+            id="permitissue"
+            type="date"
+            formControlName="permitissue"
+          />
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
+          <label class="label ms-1" for="permitexpiry">Permit Expiry</label>
+          <input
+            class="form-control form-control-sm"
+            id="permitexpiry"
+            type="date"
+            formControlName="permitexpiry"
+          />
+        </div>
+
+        <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
           <label class="label ms-1" for="formcount">DDC Count</label>
           <input
             class="form-control form-control-sm"
@@ -242,6 +261,19 @@
           </select>
         </div>
         <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
+          <label class="label ms-1" for="gender">Gender</label>
+          <select
+            class="form-select form-select-sm"
+            id="gender"
+            formControlName="gender"
+          >
+            <option disabled selected value="null">-----Select-----</option>
+            @for (item of gender(); track $index) {
+            <option [value]="item">{{ item }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
           <label class="label ms-1" for="experience"
             >Driver Experience in Years</label
           >
@@ -265,12 +297,13 @@
             formControlName="code"
           />
         </div>
-        <div class="col-12 mt-2">
+        <div class="col-lg-9 col-md-8 col-sm-12 mt-2">
           <label class="label ms-1" for="comment">Comments</label>
           <textarea
             class="form-control form-control-sm"
             id="comment"
             formControlName="comment"
+            placeholder="Comment..."
           ></textarea>
         </div>
       </div>

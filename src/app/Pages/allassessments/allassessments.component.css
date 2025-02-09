@@ -27,3 +27,7 @@
 .bold-header {
   font-weight: bold;
 }
+.expired-row {
+  background-color: #f8d7da !important;
+  color: #842029 !important;
+}

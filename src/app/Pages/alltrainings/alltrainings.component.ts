@@ -83,6 +83,7 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
   statuses = signal<string[]>([]);
   sources = signal<string[]>([]);
   selectedClient = signal<number | null>(null);
+  isLoading = signal<boolean>(true);
 
   filteredContractors = computed(() => {
     const clientid = this.selectedClient();
@@ -105,7 +106,6 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
     private datePipe: DatePipe,
     private cdRef: ChangeDetectorRef
   ) {
-    this.utils.setTitle('All Trainings');
     this.formTrainingSearch = this.fb.group({
       name: [],
       plandate: [],
@@ -129,6 +129,7 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
    * This method will invoke all the methods while rendering the page
    */
   ngOnInit(): void {
+    this.utils.setTitle('All Trainings');
     this.statuses.set(this.utils.statuses());
     this.sources.set(this.utils.sources());
     this.updatetheme();
@@ -186,6 +187,7 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
           this.trainings.set(res);
           // console.log(this.trainings());
           this.initialValues = res;
+          this.isLoading.set(false);
         })
     );
   }

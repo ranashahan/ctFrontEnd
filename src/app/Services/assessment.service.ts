@@ -381,11 +381,8 @@ export class AssessmentService {
       answerCategories,
       answerSessionDate
     );
-    // Convert to JSON string if needed
-    //const jsonString = JSON.stringify(jsonResult, null, 2);
     obj.totalScore = jsonResult.totalScore;
     obj.assessmentData = jsonResult.data;
-    debugger;
 
     return this.http.post<AssessmentFormModel>(this.apiURL + 'create', {
       driverId,
@@ -444,6 +441,27 @@ export class AssessmentService {
     //     return throwError(() => new Error(errorMessage)); // Pass the correct error message
     //   })
     // );
+  }
+
+  public updateAssessmentExp(
+    id: number,
+    obj: AssessmentFormModel
+  ): Observable<AssessmentFormModel> {
+    var answerCategories = obj.categories;
+    var answerSessionDate = obj.sessionDate;
+
+    const jsonResult = this.convertCategoriesToJsonExp(
+      answerCategories,
+      answerSessionDate
+    );
+
+    obj.totalScore = jsonResult.totalScore;
+    obj.assessmentData = jsonResult.data;
+
+    return this.http.put<AssessmentFormModel>(this.apiURL + id, {
+      obj,
+      userid: this.authService.getUserID(),
+    });
   }
 
   /**

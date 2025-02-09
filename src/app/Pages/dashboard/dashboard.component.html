@@ -113,6 +113,7 @@
                   <th>#</th>
                   <th>Status</th>
                   <th>Training</th>
+                  <th>Sponsor - Contractors</th>
                   <th>Trainer</th>
                   <th>Assessments</th>
                   <th>Start Date</th>
@@ -125,6 +126,10 @@
                   <td>{{ $index + 1 }}</td>
                   <td>{{ item.status }}</td>
                   <td>{{ item.name }}</td>
+                  <td>
+                    {{ getClientName(item.clientid) }} -
+                    {{ getContractorName(item.contractorid) }}
+                  </td>
                   <td>{{ getTrainerName(item.trainerid) }}</td>
                   <td>{{ item.sessioncount }}</td>
                   <td>{{ item.startdate }}</td>

@@ -66,7 +66,6 @@ export class AllusersComponent implements OnInit, OnDestroy {
     private userService: UsersService,
     private fb: FormBuilder
   ) {
-    this.utils.setTitle('All Employees');
     this.roles.set(this.utils.roles());
     this.formPassword = this.fb.group({
       id: [{ value: 0 }],
@@ -88,7 +87,7 @@ export class AllusersComponent implements OnInit, OnDestroy {
    * This method will invoke all the methods while rendering the page
    */
   ngOnInit(): void {
-    this.utils.setTitle('Trainers');
+    this.utils.setTitle('All Employees');
     this.getAll();
   }
   /**

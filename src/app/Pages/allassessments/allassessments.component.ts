@@ -15,7 +15,7 @@ import {
   FormsModule,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { ToastComponent } from '../../Widgets/toast/toast.component';
 import { DeleteConfirmationComponent } from '../../Widgets/delete-confirmation/delete-confirmation.component';
 import { Subscription } from 'rxjs';
@@ -29,7 +29,13 @@ import { ResultService } from '../../Services/result.service';
 import { AgGridAngular } from 'ag-grid-angular'; // Angular Data Grid Component
 import { AgGridModule } from 'ag-grid-angular';
 
-import { ColDef, DomLayoutType, GridApi } from 'ag-grid-community'; // Column Definition Type Interface
+import {
+  ColDef,
+  DomLayoutType,
+  GridApi,
+  RowClassParams,
+  RowStyle,
+} from 'ag-grid-community'; // Column Definition Type Interface
 import 'ag-grid-community/styles/ag-grid.css';
 /* Quartz Theme Specific CSS */
 import 'ag-grid-community/styles/ag-theme-quartz.css';
@@ -75,22 +81,17 @@ export class AllassessmentsComponent implements OnInit, OnDestroy {
   results = this.resultService.results;
   stages = this.stageService.stages;
   sessionsWithName = this.assessmentService.getSessionsWithNames(this.sessions);
-  public themeClass: string = 'ag-theme-quartz';
+  public themeClass = signal<string>('ag-theme-quartz');
   gridApi!: GridApi;
+  isLoading = signal<boolean>(true);
 
   formSession: FormGroup;
 
   constructor(
     private fb: FormBuilder,
-
-    private router: Router,
-    private route: ActivatedRoute,
     private datePipe: DatePipe,
-
     private cdRef: ChangeDetectorRef
   ) {
-    this.utils.setTitle('All Assessments');
-
     this.formSession = this.fb.group({
       name: [''],
       sessiondate: [null],
@@ -100,7 +101,7 @@ export class AllassessmentsComponent implements OnInit, OnDestroy {
       nic: [''],
       resultid: [null],
       stageid: [null],
-      startDate: [this.utils.monthAgo(1).toISOString().substring(0, 10)],
+      startDate: [this.utils.monthAgo(3).toISOString().substring(0, 10)],
       endDate: [this.utils.daysAhead(1).toISOString().substring(0, 10)],
     });
   }
@@ -109,6 +110,7 @@ export class AllassessmentsComponent implements OnInit, OnDestroy {
    * This method will invoke all the methods while rendering the page
    */
   ngOnInit(): void {
+    this.utils.setTitle('All Assessments');
     this.getAllSessionsByDate();
     this.updatetheme();
   }
@@ -133,8 +135,9 @@ export class AllassessmentsComponent implements OnInit, OnDestroy {
 
         .subscribe((res: any) => {
           this.sessions.set(res);
-          //console.log(this.sessions());
+          // console.log(this.sessions());
           this.initialValues = res;
+          this.isLoading.set(false);
         })
     );
   }
@@ -343,13 +346,37 @@ export class AllassessmentsComponent implements OnInit, OnDestroy {
   private updatetheme(): void {
     const themeName = this.authService.getUserTheme();
     if (themeName === 'dark') {
-      this.themeClass += '-dark';
+      this.themeClass.set('ag-theme-quartz-dark');
     }
   }
 
-  onGridReady(params: any) {
+  /**
+   * This method will ready rows of ag-grid
+   * @param params grid event
+   */
+  public onGridReady(params: any) {
     this.gridApi = params.api;
   }
+
+  /**
+   * This method for row styles
+   * @param params RowStyles
+   * @returns row styles
+   */
+  public getRowStyle = (params: RowClassParams): RowStyle | undefined => {
+    if (!params.data || params.data.totalscore == null) return undefined; // Ensure data exists
+
+    if (params.data.totalscore === 0) {
+      return this.expiredRowStyle;
+    }
+
+    return undefined; // Default style for other rows.
+  };
+
+  private expiredRowStyle: RowStyle = {
+    background: '#f8d7da',
+    color: '#842029',
+  };
 
   gridOptions = {
     components: this.components,
@@ -386,7 +413,7 @@ export class AllassessmentsComponent implements OnInit, OnDestroy {
       nic: '',
       resultid: null,
       stageid: null,
-      startDate: [this.utils.monthAgo(1).toISOString().substring(0, 10)],
+      startDate: [this.utils.monthAgo(3).toISOString().substring(0, 10)],
       endDate: [this.utils.daysAhead(1).toISOString().substring(0, 10)],
     });
     this.sessions.set(this.initialValues);

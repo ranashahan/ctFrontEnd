@@ -34,6 +34,7 @@ import { TrainingsreportComponent } from './Pages/trainingsreport/trainingsrepor
 import { AddassessmentEXPComponent } from './Pages/addassessment-exp/addassessment-exp.component';
 import { CategoryComponent } from './Pages/category/category.component';
 import { CourseComponent } from './Pages/course/course.component';
+import { AssessmentdetailExpComponent } from './Pages/assessmentdetail-exp/assessmentdetail-exp.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -84,9 +85,15 @@ export const routes: Routes = [
         canActivate: [authGuard],
         data: { roles: ['admin', 'manager', 'staff', 'member'] },
       },
+      // {
+      //   path: 'allassessments/:id',
+      //   component: AssessmentdetailComponent,
+      //   canActivate: [authGuard],
+      //   data: { roles: ['admin', 'manager', 'staff', 'member'] },
+      // },
       {
         path: 'allassessments/:id',
-        component: AssessmentdetailComponent,
+        component: AssessmentdetailExpComponent,
         canActivate: [authGuard],
         data: { roles: ['admin', 'manager', 'staff', 'member'] },
       },

@@ -24,13 +24,6 @@
             </h3>
             <p>
               <i
-                title="Driver Contractor"
-                class="fa-regular fa-building me-1 text-success"
-              ></i>
-              {{ getContractorName(driverForm.get("contractorid")?.value) }}
-            </p>
-            <p>
-              <i
                 title="DriverDBID"
                 class="fa-regular fa-id-badge me-1 text-success"
               ></i
@@ -39,7 +32,7 @@
             <p>
               <i
                 title="Created By"
-                class="fa-solid fa-user-tie me-1 text-success"
+                class="fa-solid fa-user-tie me-2 text-success"
               ></i
               >{{ driverForm.get("createdby")?.value }}
               <i
@@ -47,6 +40,18 @@
                 class="fa-solid fa-thumbtack me-1 text-success"
               ></i
               >{{ driverForm.get("created_at")?.value | date }}
+            </p>
+            <p>
+              <i
+                title="Modified By"
+                class="fa-solid fa-user-pen me-1 text-success"
+              ></i
+              >{{ driverForm.get("modifiedby")?.value }}
+              <i
+                title="Modified Date"
+                class="fa-solid fa-thumbtack me-1 text-success"
+              ></i
+              >{{ driverForm.get("modified_at")?.value | date }}
             </p>
           </div>
           <div class="mb-3 col-auto">
