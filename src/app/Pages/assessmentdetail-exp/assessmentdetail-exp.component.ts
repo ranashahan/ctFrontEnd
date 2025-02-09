@@ -1,7 +1,7 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
-  effect,
   inject,
   OnDestroy,
   OnInit,
@@ -36,21 +36,24 @@ import { apiContractorModel } from '../../Models/Contractor';
 import { DriversearchComponent } from '../../Widgets/driversearch/driversearch.component';
 import { ToastComponent } from '../../Widgets/toast/toast.component';
 import { CommonModule } from '@angular/common';
+import { apiSessionModel, DATA } from '../../Models/Assessment';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { DriverService } from '../../Services/driver.service';
 
 @Component({
-  selector: 'app-addassessment-exp',
+  selector: 'app-assessmentdetail-exp',
   imports: [
     ReactiveFormsModule,
     ToastComponent,
-    DriversearchComponent,
     CommonModule,
     FormsModule,
+    RouterLink,
   ],
-  templateUrl: './addassessment-exp.component.html',
-  styleUrl: './addassessment-exp.component.css',
+  templateUrl: './assessmentdetail-exp.component.html',
+  styleUrl: './assessmentdetail-exp.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AddassessmentEXPComponent implements OnInit, OnDestroy {
+export class AssessmentdetailExpComponent implements OnInit, OnDestroy {
   /**
    * Injection
    */
@@ -67,11 +70,12 @@ export class AddassessmentEXPComponent implements OnInit, OnDestroy {
   private stageService = inject(StageService);
   private vehicleService = inject(VehicleService);
   private clientService = inject(ClientService);
+  private driverService = inject(DriverService);
   /**
    * Variables / Signals
    */
-  showInitial = signal<boolean>(false);
-  showMiddle = signal<boolean>(false);
+  sessionID: number = 0;
+  sessionDetail = signal<apiSessionModel | null>(null);
   isLoading = signal<boolean>(true);
   bloodGroups = this.bgService.bloodGroups;
   visuals = this.visualService.visuals;
@@ -91,38 +95,39 @@ export class AddassessmentEXPComponent implements OnInit, OnDestroy {
   isAPICallInProgress = signal<boolean>(false);
   assessmentForm: FormGroup;
   driverForm: FormGroup;
-  initialFormData: any;
+  isEdit = signal<boolean>(false);
   subscriptionList: Subscription[] = [];
 
   @ViewChild(DriversearchComponent)
   driverSearchComponent!: DriversearchComponent;
 
-  constructor(private fb: FormBuilder) {
-    this.assessmentForm = this.fb.group({
-      sessionName: ['', Validators.required],
-      sessionDate: [null, Validators.required],
-      classdate: [null],
-      yarddate: [null],
-      trainerid: [null, Validators.required],
-      stageId: [],
-      titleId: [],
-      resultId: [],
-      locationId: [],
-      vehicleId: [],
-      route: [],
-      quizscore: [],
-      comment: [],
-      traffic: [],
-      weather: [],
-      categories: this.fb.array([]), // Initialize categories array
-    });
+  constructor(
+    private fb: FormBuilder,
+    private cdRef: ChangeDetectorRef,
+    private route: ActivatedRoute
+  ) {
+    this.sessionID = parseInt(this.route.snapshot.paramMap.get('id') ?? '0');
 
-    effect(() => {
-      const categories = this.assessments();
-      if (categories && categories.length > 0) {
-        this.isLoading.set(false);
-        this.setCategories(categories);
-      }
+    this.assessmentForm = this.fb.group({
+      sessionName: [{ value: '', disabled: true }, Validators.required],
+      sessionDate: [
+        { value: null, disabled: !this.isEdit() },
+        Validators.required,
+      ],
+      classdate: [{ value: null, disabled: !this.isEdit() }],
+      yarddate: [{ value: null, disabled: !this.isEdit() }],
+      trainerid: [{ value: 0, disabled: !this.isEdit() }, Validators.required],
+      stageId: [{ value: 0, disabled: !this.isEdit() }],
+      titleId: [{ value: 0, disabled: !this.isEdit() }],
+      resultId: [{ value: 0, disabled: !this.isEdit() }],
+      locationId: [{ value: 0, disabled: !this.isEdit() }],
+      vehicleId: [{ value: 0, disabled: !this.isEdit() }],
+      route: [{ value: '', disabled: !this.isEdit() }],
+      quizscore: [{ value: '', disabled: !this.isEdit() }],
+      comment: [{ value: '', disabled: !this.isEdit() }],
+      traffic: [{ value: '', disabled: !this.isEdit() }],
+      weather: [{ value: '', disabled: !this.isEdit() }],
+      categories: this.fb.array([]), // Initialize categories array
     });
 
     this.driverForm = this.fb.group({
@@ -149,7 +154,10 @@ export class AddassessmentEXPComponent implements OnInit, OnDestroy {
    */
   ngOnInit(): void {
     this.utils.setTitle('Experimental Page');
-    // this.setCategories(this.assessments());
+    const scores = this.assessments(); // Assuming this fetches scores
+    if (!scores || scores.length === 0) {
+    }
+    this.getSessionByID();
   }
 
   /**
@@ -164,29 +172,10 @@ export class AddassessmentEXPComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * this method will toggle initial assessment
-   */
-  public toggleInitial(): void {
-    // this.assessmentForm.markAsUntouched();
-    // this.assessmentForm.markAsPristine();
-    this.showInitial.set(!this.showInitial());
-    if (!this.showInitial()) {
-      this.showMiddle.set(false);
-    }
-  }
-
-  /**
-   * this method will toggle middle assessment
-   */
-  public toggleMiddle(): void {
-    this.showMiddle.set(!this.showMiddle());
-  }
-
-  /**
    * This method will setup assessment Form
    * @param categories
    */
-  private setCategories(categories: MasterCategory[]): void {
+  private setCategories(categories: MasterCategory[], scores: DATA[]): void {
     const categoryFGs = categories.map((category) =>
       this.fb.group({
         id: category.id,
@@ -198,16 +187,48 @@ export class AddassessmentEXPComponent implements OnInit, OnDestroy {
               name: slavecategory.name,
               initials: slavecategory.initials,
               activities: this.fb.array(
-                slavecategory.activities?.map((activity) =>
-                  this.fb.group({
+                slavecategory.activities?.map((activity) => {
+                  // Find saved scores for this activity
+                  const assessments = scores.filter(
+                    (a) => a.activityid === activity.id
+                  );
+
+                  // Assign scores based on assessment_type
+                  const scoreInitial =
+                    assessments.find((a) => a.assessment_type === 'Initial')
+                      ?.score ?? null;
+                  const scoreMiddle =
+                    assessments.find((a) => a.assessment_type === 'Middle')
+                      ?.score ?? null;
+                  const scoreFinal =
+                    assessments.find((a) => a.assessment_type === 'Final')
+                      ?.score ?? null;
+
+                  return this.fb.group({
                     id: activity.id,
                     name: activity.name,
                     initials: activity.initials,
-                    scoreInitial: [activity.scoreInitial],
-                    scoreMiddle: [activity.scoreMiddle],
-                    scoreFinal: [activity.scoreFinal],
-                  })
-                )
+                    scoreInitial: [
+                      { value: scoreInitial, disabled: !this.isEdit() },
+                    ], // Set Initial score
+                    scoreMiddle: [
+                      { value: scoreMiddle, disabled: !this.isEdit() },
+                    ], // Set Middle score
+                    scoreFinal: [
+                      { value: scoreFinal, disabled: !this.isEdit() },
+                    ], // Set Final score
+                  });
+                })
+                // slavecategory.activities?.map((activity) =>
+                //   this.fb.group({
+                //     id: activity.id,
+                //     name: activity.name,
+                //     initials: activity.initials,
+                //     scoreInitial: [activity.scoreInitial],
+                //     scoreMiddle: [activity.scoreMiddle],
+                //     scoreFinal: [activity.scoreFinal],
+                //   })
+                // )
               ),
             })
           )
@@ -216,7 +237,6 @@ export class AddassessmentEXPComponent implements OnInit, OnDestroy {
     );
     const categoryFormArray = this.fb.array(categoryFGs);
     this.assessmentForm.setControl('categories', categoryFormArray);
-    this.initialFormData = this.assessmentForm.value;
   }
 
   /**
@@ -253,37 +273,13 @@ export class AddassessmentEXPComponent implements OnInit, OnDestroy {
    * This method will save the assessment into database
    */
   public saveAssessment(): void {
-    console.log(this.assessmentForm.getRawValue());
-    var driverId = this.driverForm.get('id')?.value;
-    var contractorID = this.driverForm.get('contractorid')?.value;
+    //console.log(this.assessmentForm.getRawValue());
     var vCategories: MasterCategory[] = this.assessmentForm.value.categories;
     var checkAssessment: boolean = this.checkAssessments(vCategories);
-    var sessionName: string = this.assessmentForm.get('sessionName')?.value;
     var sessionDate: string = this.assessmentForm.get('sessionDate')?.value;
-    var trainerID: string = this.assessmentForm.get('trainerid')?.value;
-    if (!driverId) {
-      this.utils.showToast(
-        'Assessment could not be submitted without Driver, Please select driver first!',
-        'error'
-      );
-    } else if (!contractorID) {
-      this.utils.showToast(
-        'Assessment could not be submitted without Contractor, Please update driver first!',
-        'error'
-      );
-    } else if (!sessionName) {
-      this.utils.showToast(
-        'Assessment could not be submitted without Session Name, Please fill session name first!',
-        'error'
-      );
-    } else if (!sessionDate) {
+    if (!sessionDate) {
       this.utils.showToast(
         'Assessment could not be submitted without Session Date, Please select date first!',
-        'error'
-      );
-    } else if (!trainerID) {
-      this.utils.showToast(
-        'Assessment could not be submitted without Trainer, Please select trainer first!',
         'error'
       );
     } else if (!checkAssessment) {
@@ -296,18 +292,16 @@ export class AddassessmentEXPComponent implements OnInit, OnDestroy {
         this.isAPICallInProgress.set(true);
         this.subscriptionList.push(
           this.assessmentService
-            .createAssessmentExp(
-              driverId,
-              contractorID,
+            .updateAssessmentExp(
+              this.sessionDetail()?.id ?? 0,
               this.assessmentForm.value
             )
             .subscribe({
               next: (data) => {
                 this.utils.showToast(
-                  'DDC form has been saved successfully!',
+                  'DDC form has been updated successfully!',
                   'success'
                 );
-                this.formRest();
                 this.isAPICallInProgress.set(false);
               },
               error: (err) => {
@@ -349,21 +343,24 @@ export class AddassessmentEXPComponent implements OnInit, OnDestroy {
     slaveCategoryId: number
   ): number {
     const formGroup = category as FormGroup;
-    const slaveCategories = formGroup.get('slavecategories')?.value || [];
+    const slaveCategoriesArray = formGroup.get('slavecategories') as FormArray;
+    if (!slaveCategoriesArray) return 0;
+
     let totalScore = 0;
 
-    // Find the specific slavecategory by its ID
-    const slaveCategory = slaveCategories.find(
-      (sc: any) => sc.id === slaveCategoryId
-    );
-    if (slaveCategory) {
-      const activities = slaveCategory.activities || [];
-      totalScore = activities.reduce(
-        (sum: number, activity: any) => sum + (activity.scoreFinal || 0),
-        0
-      );
-    }
+    (slaveCategoriesArray.controls as FormGroup[]).forEach(
+      (slaveCategoryFG) => {
+        if (slaveCategoryFG.get('id')?.value === slaveCategoryId) {
+          const activitiesArray = slaveCategoryFG.get(
+            'activities'
+          ) as FormArray;
 
+          (activitiesArray.controls as FormGroup[]).forEach((activityFG) => {
+            totalScore += Number(activityFG.get('scoreFinal')?.value) || 0;
+          });
+        }
+      }
+    );
     return totalScore;
   }
 
@@ -397,59 +394,75 @@ export class AddassessmentEXPComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Open Driver Search Model Popup
+   * This method for fetch session from database against sessionid
    */
-  public openSearchModal(): void {
-    const buttonElement = document.activeElement as HTMLElement; // Get the currently focused element
-    buttonElement.blur(); // Remove focus from the button
-    this.driverSearchComponent.openModal(); // Call method to show the modal
-  }
+  getSessionByID() {
+    setTimeout(() => {
+      this.subscriptionList.push(
+        this.assessmentService
+          .getSessionbyID(this.sessionID)
+          .subscribe((res: any) => {
+            this.sessionDetail.set(res[0]);
+            this.getDriver(res[0].driverid);
+            const formattedSessionDate = this.utils.convertToMySQLDate(
+              res[0].sessiondate
+            );
+            const formattedClassDate = this.utils.convertToMySQLDate(
+              res[0].classdate
+            );
+            const formattedYardDate = this.utils.convertToMySQLDate(
+              res[0].yarddate
+            );
 
-  /**
-   * This method will update driver form
-   * @param driver object
-   */
-  public onDriverSelected(driver: object): void {
-    this.driverForm.patchValue(driver);
-    this.isDriverLoaded.set(true);
-    const clientid =
-      this.getClientID(this.driverForm.get('contractorid')?.value) || 0;
-    this.driverForm.get('clientname')?.setValue(this.getClientName(clientid));
-    this.checkLicenseExpiry(this.driverForm.get('licenseexpiry')?.value);
-    this.validateDriverHasContractor(
-      this.driverForm.get('contractorid')?.value
-    );
-  }
+            this.assessmentForm.patchValue({
+              sessionName: res[0].name,
+              sessionDate: formattedSessionDate,
+              classdate: formattedClassDate,
+              yarddate: formattedYardDate,
+              trainerid: res[0].trainerid,
+              stageId: res[0].stageid,
+              titleId: res[0].titleid,
+              resultId: res[0].resultid,
+              locationId: res[0].locationid,
+              vehicleId: res[0].vehicleid,
+              route: res[0].route,
+              quizscore: res[0].quizscore,
+              comment: res[0].comment,
+              traffic: res[0].traffic,
+              weather: res[0].weather,
+            });
 
-  /**
-   * This method will validate Contractor existance
-   * @param value {number} contractorid
-   */
-  private validateDriverHasContractor(value: number): void {
-    if (!value) {
-      this.isContractorExist.set(true);
-    } else {
-      this.isContractorExist.set(false);
-    }
-  }
+            // Step 5: Fetch categories and set categories once
+            const categories = this.assessments(); // Assuming this is your computed categories logic
+            this.setCategories(
+              categories,
+              this.sessionDetail()?.assessments || []
+            );
 
-  /**
-   * This method will verify license expiry date passed on current date.
-   * @param expiryDate {string} licenseDate
-   */
-  private checkLicenseExpiry(expiryDate: string): void {
-    const today = new Date();
-    const expiry = new Date(expiryDate);
+            // Step 6: Stop loader once everything is set
+            this.isLoading.set(false);
 
-    if (expiry < today) {
-      this.isLicenseExpired.set(true); // Apply red border
-      this.utils.showToast(
-        'Drivers license has expired. Please update it!',
-        'warning'
+            // this.cdRef.detectChanges();
+          })
       );
-    } else {
-      this.isLicenseExpired.set(false); // Remove red border
-    }
+    }, 100);
+  }
+
+  /**
+   * This method will get driver against driver id
+   */
+  getDriver(id: number) {
+    this.subscriptionList.push(
+      this.driverService.getDriverByID(id).subscribe((driverData: any) => {
+        // this.driver = driverData[0];
+        this.driverForm.patchValue(driverData[0]);
+        const clientid = this.getClientID(driverData[0].contractorid) || 0;
+        const clietname = this.getClientName(clientid);
+        this.driverForm.patchValue({
+          clientname: clietname,
+        });
+      })
+    );
   }
 
   /**
@@ -472,13 +485,35 @@ export class AddassessmentEXPComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * This is for print
+   */
+  printPage(): void {
+    window.print();
+  }
+
+  /**
+   * This method will toggel the edit button
+   */
+  toggleEdit(): void {
+    this.isEdit.set(!this.isEdit());
+    Object.keys(this.assessmentForm.controls).forEach((field) => {
+      if (field !== 'sessionName' && field !== 'trainerid') {
+        const control = this.assessmentForm.get(field);
+
+        if (this.isEdit()) {
+          control?.enable(); // Enable fields when in edit mode
+        } else {
+          control?.disable(); // Disable fields when not in edit mode
+        }
+      }
+    });
+  }
+
+  /**
    * This method will reset the form value to blank
    */
   public formRest(): void {
-    this.driverForm.reset();
-    this.isLicenseExpired.set(false);
-    this.assessmentForm.reset(this.initialFormData); // Reset form to initial state
-    //this.assessmentForm.markAsPristine(); // Optional: mark form as pristine
+    this.getSessionByID();
   }
 
   /**

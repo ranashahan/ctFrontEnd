@@ -54,8 +54,8 @@
               <th>Select</th>
             </tr>
           </thead>
+          @for (item of drivers(); track $index) {
           <tbody>
-            @for (item of drivers(); track $index) {
             <td>{{ item.id }}</td>
             <td>{{ item.name }}</td>
             <td>{{ item.nic }}</td>
@@ -71,8 +71,8 @@
                 select
               </button>
             </td>
-            }
           </tbody>
+          }
         </table>
         }@else {
         <div>

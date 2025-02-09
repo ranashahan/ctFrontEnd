@@ -218,6 +218,7 @@ export class DriverService {
     licenseverified: number,
     designation: string,
     department: string,
+    permitnumber: string,
     permitissue: Date,
     permitexpiry: Date,
     medicalexpiry: Date,
@@ -241,6 +242,7 @@ export class DriverService {
       licenseverified,
       designation,
       department,
+      permitnumber,
       permitissue,
       permitexpiry,
       medicalexpiry,
@@ -265,6 +267,9 @@ export class DriverService {
    * @param licensenumber license number
    * @param licensetypeid license type
    * @param licenseexpiry expiry
+   * @param permitnumber permit number
+   * @param permitissue permit issue
+   * @param permitexpiry permit expiry
    * @param designation designation
    * @param department department
    * @param licenseverified licenseVerified
@@ -287,6 +292,9 @@ export class DriverService {
     licensenumber: string,
     licensetypeid: number,
     licenseexpiry: Date,
+    permitnumber: string,
+    permitissue: Date,
+    permitexpiry: Date,
     licenseverified: number,
     designation: string,
     department: string,
@@ -308,6 +316,9 @@ export class DriverService {
       licensenumber,
       licensetypeid,
       licenseexpiry,
+      permitnumber,
+      permitissue,
+      permitexpiry,
       licenseverified,
       designation,
       department,

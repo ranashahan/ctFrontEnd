@@ -109,7 +109,7 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
       licenseverified: [{ value: null, disable: !this.isEdit }],
       designation: [{ value: '', disabled: !this.isEdit }],
       department: [{ value: '', disabled: !this.isEdit }],
-      permitnumber: [{ value: '', disabled: true }],
+      permitnumber: [{ value: '', disabled: !this.isEdit }],
       permitissue: [{ value: '', disabled: !this.isEdit }],
       permitexpiry: [{ value: '', disabled: !this.isEdit }],
       medicalexpiry: [{ value: '', disabled: !this.isEdit }],
@@ -122,6 +122,8 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
       comment: [{ value: '', disabled: !this.isEdit }],
       createdby: [{ value: '', disabled: true }],
       created_at: [{ value: '', disabled: true }],
+      modifiedby: [{ value: '', disabled: true }],
+      modified_at: [{ value: '', disabled: true }],
     });
   }
   /**
@@ -307,6 +309,7 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
             updatedDriver.licenseverified,
             updatedDriver.designation,
             updatedDriver.department,
+            updatedDriver.permitnumber,
             updatedDriver.permitissue,
             updatedDriver.permitexpiry,
             updatedDriver.medicalexpiry,
@@ -318,12 +321,18 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
             updatedDriver.code,
             updatedDriver.comment
           )
-          .subscribe((res: any) => {
-            this.utils.showToast(
-              updatedDriver.name + ' Driver update successfully',
-              'success'
-            );
-            this.getDriver(this.driverId());
+          .subscribe({
+            next: (data) => {
+              this.utils.showToast(
+                updatedDriver.name + ' Driver update successfully',
+                'success'
+              );
+              this.getDriver(this.driverId());
+            },
+            error: (err) => {
+              this.utils.showToast(err.message, 'error');
+              this.toggleEdit();
+            },
           })
       );
     }
@@ -356,7 +365,7 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
     this.isEdit = !this.isEdit;
     // Enable or disable all fields except 'id'
     Object.keys(this.driverForm.controls).forEach((field) => {
-      if (field !== 'id' && field !== 'age' && field !== 'permitnumber') {
+      if (field !== 'id' && field !== 'age') {
         const control = this.driverForm.get(field);
         if (this.isEdit) {
           control?.enable(); // Enable fields when in edit mode

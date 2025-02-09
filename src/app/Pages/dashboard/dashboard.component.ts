@@ -32,6 +32,8 @@ import { TrainerService } from '../../Services/trainer.service';
 import { TrainingService } from '../../Services/training.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ToastComponent } from '../../Widgets/toast/toast.component';
+import { ClientService } from '../../Services/client.service';
+import { ContractorService } from '../../Services/contractor.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -47,6 +49,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private locationService = inject(LocationService);
   private driverService = inject(DriverService);
   private trainerService = inject(TrainerService);
+  private clientService = inject(ClientService);
+  private cService = inject(ContractorService);
 
   public trendCOpt: {
     series: ApexAxisChartSeries;
@@ -84,7 +88,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   monthlyDrivers = signal<number>(0);
   yearlySessions = signal<number>(0);
   monthlySessions = signal<number>(0);
-  trainers = this.trainerService.trainers;
+  private trainers = this.trainerService.trainers;
+  private clients = this.clientService.clients;
+  private contractors = this.cService.contractors;
   private trainings = toSignal(this.trainingService.getAllTraining());
   public latestTrainings = computed(() => {
     const trainingsValue = this.trainings();
@@ -380,10 +386,22 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * This method will fetch all the trainings
+   * This method will fetch trainer name
    */
   public getTrainerName(item: number) {
     return this.utils.getGenericName(this.trainers(), item);
+  }
+  /**
+   * This method will fetch client name
+   */
+  public getClientName(item: number) {
+    return this.utils.getGenericName(this.clients(), item);
+  }
+  /**
+   * This method will fetch contractor name
+   */
+  public getContractorName(item: number) {
+    return this.utils.getGenericName(this.contractors(), item);
   }
 
   /**

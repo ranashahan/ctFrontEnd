@@ -15,8 +15,6 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { apiContractorModel } from '../../Models/Contractor';
-import { apiGenericModel } from '../../Models/Generic';
 import { DriverService } from '../../Services/driver.service';
 import { UtilitiesService } from '../../Services/utilities.service';
 import { BloodgroupService } from '../../Services/bloodgroup.service';
@@ -70,6 +68,9 @@ export class AdddriverComponent implements OnInit, OnDestroy {
       licensenumber: ['', Validators.required],
       licensetypeid: [null],
       licenseexpiry: [null],
+      permitnumber: [null],
+      permitissue: [null],
+      permitexpiry: [null],
       licenseverified: [1],
       designation: [''],
       department: [''],
@@ -82,6 +83,25 @@ export class AdddriverComponent implements OnInit, OnDestroy {
       code: [''],
       comment: [''],
     });
+
+    this.formDriver.get('permitissue')?.valueChanges.subscribe((issueDate) => {
+      if (issueDate) {
+        const expiryDate = new Date(issueDate);
+        expiryDate.setFullYear(expiryDate.getFullYear() + 2); // Add 2 years
+        this.formDriver
+          .get('permitexpiry')
+          ?.setValue(this.formatDate(expiryDate));
+      }
+    });
+  }
+
+  /**
+   * This method for convert date
+   * @param date Date
+   * @returns date
+   */
+  private formatDate(date: Date): string {
+    return date.toISOString().split('T')[0];
   }
 
   /**
@@ -107,6 +127,9 @@ export class AdddriverComponent implements OnInit, OnDestroy {
           this.formDriver.value.licensenumber,
           this.formDriver.value.licensetypeid,
           this.formDriver.value.licenseexpiry,
+          this.formDriver.value.permitnumber,
+          this.formDriver.value.permitissue,
+          this.formDriver.value.permitexpiry,
           this.formDriver.value.licenseverified,
           this.formDriver.value.designation,
           this.formDriver.value.department,

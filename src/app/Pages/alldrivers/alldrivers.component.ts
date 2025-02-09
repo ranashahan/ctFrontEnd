@@ -77,6 +77,7 @@ export class AlldriversComponent implements OnInit, OnDestroy {
   dltypes = this.dltypeService.dltypes;
   driversWithName = this.driverService.getDriversWithNames(this.drivers);
   subscriptionList: Subscription[] = [];
+  isLoading = signal<boolean>(true);
 
   formSaveDrivers: FormGroup;
 
@@ -142,12 +143,6 @@ export class AlldriversComponent implements OnInit, OnDestroy {
    * This method will get all the drivers
    */
   public getAll(): void {
-    // this.subscriptionList.push(
-    //   this.driverService.getAllDrivers().subscribe((res: any) => {
-    //     this.drivers.set(res);
-    //     this.initialValues = res;
-    //   })
-    // );
     this.subscriptionList.push(
       this.driverService
         .searchDrivers(
@@ -167,12 +162,14 @@ export class AlldriversComponent implements OnInit, OnDestroy {
             } else {
               this.utils.showToast('No content found', 'warning');
             }
+            this.isLoading.set(false);
           },
           error: (err) => {
             this.utils.showToast(
               'Could not found any record, please change your search criteria',
               'warning'
             );
+            this.isLoading.set(false);
           },
         })
     );
@@ -374,6 +371,10 @@ export class AlldriversComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * This method will ready rows of ag-grid
+   * @param params grid event
+   */
   public onGridReady(params: any): void {
     this.gridApi = params.api;
   }
