@@ -1,18 +1,25 @@
 import { inject, Injectable } from '@angular/core';
-// import * as pdfMake from 'pdfmake/build/pdfmake';
 
-// import pdfFonts from '../../../public/fonts/vfs_fonts';
-// pdfMake.vfs = pdfFonts.pdfMake.vfs;
-// import * as pdfFonts from 'pdfmake/build/vfs_fonts';
-// import pdfFonts from '../../../public/fonts/vfs_fonts.js';
-// (<any>pdfMake).addVirtualFileSystem(pdfFonts);
 import pdfMake from 'pdfmake/build/pdfmake.min';
 
-// import pdfFonts from 'pdfmake/build/vfs_fonts';
-// (<any>pdfMake).addVirtualFileSystem(pdfFonts);
-// pdfMake.vfs = pdfFonts.vfs;
+import {
+  Document,
+  Packer,
+  Paragraph,
+  Table,
+  TableCell,
+  TableRow,
+  WidthType,
+  ImageRun,
+  TextRun,
+  ShadingType,
+  BorderStyle,
+  AlignmentType,
+  VerticalAlign,
+} from 'docx';
+import QRCode from 'qrcode';
 
-import { Content, TableCell, TDocumentDefinitions } from 'pdfmake/interfaces';
+import { Content, TDocumentDefinitions } from 'pdfmake/interfaces';
 import { apiDriverModel } from '../Models/Driver';
 import { apiSessionDriverReportModel } from '../Models/Assessment';
 import { UtilitiesService } from './utilities.service';
@@ -47,7 +54,9 @@ export class ReportService {
    * This method will generate and open pdf
    * @param sessions apiSessionDriverReportModel
    */
-  async generatePdfReportSession(sessions: apiSessionDriverReportModel[]) {
+  public async generatePdfReportSession(
+    sessions: apiSessionDriverReportModel[]
+  ) {
     pdfMake.vfs = {
       'Roboto-Regular.ttf': fontsPDF.RobotoRegular,
       'Roboto-Bold.ttf': fontsPDF.RobotoBold,
@@ -308,145 +317,6 @@ export class ReportService {
 
     pdfMake.createPdf(documentDefinition).open();
   }
-
-  // /**
-  //  * This method aweeen
-  //  * @param contractorName contractor name
-  //  * @param drivers drivers
-  //  */
-  // async generateDriverPdfReport(contractorName: string, drivers: any[]) {
-  //   const logoUrl = await this.getBase64ImageFromURL('/img/logo.png');
-  //   const currentDate = new Date().toDateString();
-  //   // Define 10 drivers per page
-  //   const driversPerPage = 6;
-  //   const driverPages = [];
-
-  //   for (let i = 0; i < drivers.length; i += driversPerPage) {
-  //     driverPages.push(drivers.slice(i, i + driversPerPage));
-  //   }
-
-  //   // Build content for each page
-  //   const documentContent: Content[] = driverPages.flatMap(
-  //     (pageDrivers, pageIndex) => {
-  //       // Header for the page
-  //       const pageHeader: Content = {
-  //         columns: [
-  //           {
-  //             // Image on the left
-  //             image: logoUrl, // Ensure logoUrl contains the base64-encoded image or image path
-  //             width: 100, // Adjust width as needed
-  //             alignment: 'left',
-  //             margin: [0, 0, 10, 0], // Add right margin to create space between image and text
-  //           },
-  //           {
-  //             // Text on the right
-  //             text: `ContractorName: ${contractorName}  `,
-  //             style: 'header',
-  //             alignment: 'center',
-  //             margin: [0, 0, 0, 10],
-  //           },
-  //         ],
-
-  //         margin: [0, 0, 0, 10],
-  //       };
-  //       const pageFooter: Content = {
-  //         columns: [
-  //           {
-  //             // Page number on the right
-  //             text: `${currentDate} - Page ${pageIndex + 1}`,
-  //             alignment: 'right',
-  //             fontSize: 8, // Smaller font size for the footer
-  //             margin: [0, 0, 20, 0], // Add some right margin
-  //           },
-  //         ],
-  //         margin: [0, 10, 0, 0], // Margin for the footer
-  //       };
-
-  //       // Table of driver "boxes" (each driver in a cell with border)
-  //       const driverBoxes = pageDrivers.map(
-  //         (driver: apiDriverModel): TableCell => ({
-  //           stack: [
-  //             { text: `Name: ${driver.name}`, style: 'info' },
-  //             { text: `DOB: ${driver.dob}`, style: 'info' },
-  //             { text: `NIC: ${driver.nic}`, style: 'info' },
-  //             { text: `License: ${driver.licensenumber}`, style: 'info' },
-  //             {
-  //               text: `License Expiry: ${driver.licenseexpiry}`,
-  //               style: 'info',
-  //             },
-  //             { text: `Permit: ${driver.permitnumber}`, style: 'info' },
-  //             { text: `Permit Issue: ${driver.permitissue}`, style: 'info' },
-  //             { text: `Permit Expiry: ${driver.permitexpiry}`, style: 'info' },
-  //             { text: `Designation: ${driver.designation}`, style: 'info' },
-  //             { text: `Department: ${driver.department}`, style: 'info' },
-  //             {
-  //               qr: `Name: ${driver.name} Nic: ${driver.nic} License: ${driver.licensenumber} Permit: ${driver.permitnumber} PermitExpiry: ${driver.permitexpiry}`,
-  //               fit: 80, // Size of the QR code (adjust as needed)
-  //               alignment: 'left', // Adjust alignment if needed
-  //               margin: [0, 10, 0, 0], // Add some margin above the QR code
-  //             },
-  //           ],
-  //           margin: [5, 5, 5, 5], // Add spacing inside each box
-  //           border: [true, true, true, true], // Border around each driver box
-  //         })
-  //       );
-  //       // Ensure each row has exactly 2 cells by adding an empty cell if necessary
-  //       const driverGridBody = this.chunkArray(driverBoxes, 2).map((row) => {
-  //         if (row.length < 2) {
-  //           row.push({ text: '', border: [false, false, false, false] }); // Placeholder cell
-  //         }
-  //         return row;
-  //       });
-
-  //       // Create a grid layout with driver boxes (2 columns per row)
-  //       const driverGrid: Content = {
-  //         table: {
-  //           widths: ['*', '*'], // Two boxes per row
-  //           body: driverGridBody, // Organize drivers in rows of 2
-  //         },
-  //         layout: {
-  //           paddingLeft: () => 10,
-  //           paddingRight: () => 10,
-  //           paddingTop: () => 10,
-  //           paddingBottom: () => 10,
-  //           hLineWidth: () => 1,
-  //           vLineWidth: () => 1,
-  //           hLineColor: () => 'black',
-  //           vLineColor: () => 'black',
-  //         },
-
-  //         margin: [0, 10, 0, 10], // Space between header and table
-  //       };
-
-  //       // Return page content with header, driver grid, and page break
-  //       return [
-  //         pageHeader,
-  //         driverGrid,
-  //         pageFooter,
-  //         { text: '', pageBreak: 'after' },
-  //       ];
-  //     }
-  //   );
-
-  //   // Remove the last page break
-  //   if (documentContent.length > 0) {
-  //     const lastElement = documentContent[documentContent.length - 1];
-  //     if (typeof lastElement === 'object' && 'pageBreak' in lastElement) {
-  //       delete lastElement.pageBreak;
-  //     }
-  //   }
-
-  //   // Define PDF styles
-  //   const documentDefinition: TDocumentDefinitions = {
-  //     content: documentContent,
-  //     styles: {
-  //       header: { fontSize: 18, bold: true, alignment: 'center' },
-  //       info: { fontSize: 12, margin: [0, 2, 0, 2] },
-  //     },
-  //   };
-
-  //   pdfMake.createPdf(documentDefinition).open();
-  // }
 
   /**
    * This method will open pdf for drivers' contractor
@@ -787,14 +657,11 @@ export class ReportService {
     pdfMake.createPdf(docDefinition).open();
   }
 
-  // private chunkArray<T>(array: T[], chunkSize: number): T[][] {
-  //   const chunks: T[][] = [];
-  //   for (let i = 0; i < array.length; i += chunkSize) {
-  //     chunks.push(array.slice(i, i + chunkSize));
-  //   }
-  //   return chunks;
-  // }
-
+  /**
+   * This method will convert image into Base54
+   * @param url
+   * @returns image base64
+   */
   private getBase64ImageFromURL(url: string): Promise<string> {
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -814,5 +681,837 @@ export class ReportService {
       img.onerror = () => reject('Could not load image');
       img.src = url;
     });
+  }
+
+  /**
+   * This method will generate Docx file
+   * @param drivers API Session Driver Reprot
+   */
+  async generateWordFile(drivers: apiSessionDriverReportModel[]) {
+    const tableRows: TableRow[] = [];
+
+    for (let i = 0; i < drivers.length; i++) {
+      const driver1 = drivers[i];
+      const qrcodeString = `Name: ${driver1.drivername} NIC: ${driver1.nic} License: ${driver1.licensenumber} Permit: ${driver1.permitnumber} Expiry: ${driver1.permitexpiry} SessionID: ${driver1.sessioname}`;
+
+      // Generate QR Codes
+      const qrCode1 = await this.generateQRCode(qrcodeString);
+      const logo = await this.loadImage();
+      //console.log(qrCode1);
+      // Create driver cards
+      const driverCard1 = this.createDriverCard(driver1, qrCode1, logo);
+
+      tableRows.push(new TableRow({ children: [driverCard1] }));
+    }
+
+    // Create document
+    const doc = new Document({
+      styles: {
+        paragraphStyles: [
+          {
+            id: 'Normal',
+            name: 'Normal',
+            run: {
+              font: 'Arial',
+              size: 24, // 12pt font size (1pt = 2 half-points)
+            },
+          },
+        ],
+      },
+      sections: [
+        {
+          children: [
+            new Table({
+              rows: tableRows,
+              width: { size: 100, type: WidthType.PERCENTAGE },
+            }),
+          ],
+        },
+      ],
+    });
+
+    // Download the document
+    const blob = await Packer.toBlob(doc);
+    this.downloadBlob(blob, 'Driver_Permits.docx');
+  }
+
+  /**
+   * This method will create driver card
+   * @param driver API Session Driver Reprot
+   * @param qrCodeBase64 QR code image
+   * @param logo C&T Logo
+   * @returns TableCell
+   */
+  private createDriverCard(driver: any, qrCodeBase64: string, logo: any) {
+    const base64Data = qrCodeBase64.replace(/^data:image\/png;base64,/, '');
+    const imageBuffer = new Uint8Array(
+      atob(base64Data)
+        .split('')
+        .map((char) => char.charCodeAt(0))
+    );
+
+    return new TableCell({
+      children: [
+        new Table({
+          width: {
+            size: 100,
+            type: WidthType.PERCENTAGE, // Ensure table spans the full width
+          },
+          borders: {
+            top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+            bottom: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+            left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+            right: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+          },
+
+          alignment: AlignmentType.CENTER,
+          rows: [
+            new TableRow({
+              children: [
+                new TableCell({
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new ImageRun({
+                          type: 'png',
+                          data: logo, // Your loaded image buffer
+                          transformation: { width: 70, height: 50 },
+                        }),
+                      ],
+                      alignment: AlignmentType.CENTER,
+                      pageBreakBefore: true,
+                    }),
+                  ],
+                  rowSpan: 2, // Merge first column across two rows
+                  verticalAlign: VerticalAlign.CENTER, // Center content vertically
+                  borders: {
+                    top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    bottom: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                    left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    right: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                  },
+                }),
+                new TableCell({
+                  children: [
+                    new Paragraph({
+                      // alignment: AlignmentType.CENTER,
+                      children: [
+                        new TextRun({
+                          text: 'Defensive Driving HV Permit',
+                          bold: true,
+                          size: 32,
+                        }),
+                      ],
+                      spacing: { line: 300 },
+                      indent: { left: 500 },
+                    }),
+                  ],
+                  borders: {
+                    top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    bottom: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                    left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    right: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                  },
+                  columnSpan: 2,
+                }),
+              ],
+            }),
+            new TableRow({
+              children: [
+                new TableCell({
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: `${driver.permitnumber ?? ''} `,
+                          bold: true,
+                        }),
+                        new TextRun({
+                          text: `Valid Upto: ${driver.permitexpiry ?? ''}`,
+                          bold: true,
+                          border: {
+                            color: '#DE3163',
+                            space: 1,
+                            style: BorderStyle.THICK,
+                            size: 12,
+                          },
+                        }),
+                      ],
+                      spacing: { line: 300 },
+                      indent: { left: 500 },
+                    }),
+                  ],
+                  borders: {
+                    top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    bottom: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                    left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    right: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                  },
+                  columnSpan: 2,
+                }),
+              ],
+            }),
+            new TableRow({
+              children: [
+                new TableCell({
+                  shading: {
+                    type: ShadingType.SOLID,
+                    color: '11a53c', // Green background
+                  },
+                  borders: {
+                    top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    bottom: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                    left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    right: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                  },
+
+                  children: [
+                    new Paragraph({
+                      alignment: AlignmentType.CENTER,
+                      children: [
+                        new TextRun({
+                          text: 'Trained and Assessed on UEPL ADDT Protocol',
+                          bold: true,
+                          color: 'FFFFFF',
+                        }),
+                      ],
+                      spacing: { before: 90, line: 300 },
+                    }),
+                  ],
+                  columnSpan: 3,
+                }),
+              ],
+            }),
+            new TableRow({
+              children: [
+                new TableCell({
+                  borders: {
+                    top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    bottom: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                    left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    right: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                  },
+
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: `Name: `,
+                        }),
+                      ],
+                      spacing: { before: 90, line: 300 },
+                    }),
+                  ],
+                  columnSpan: 1,
+                }),
+                new TableCell({
+                  borders: {
+                    top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    bottom: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                    left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    right: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                  },
+
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: `${driver.drivername} `,
+                          bold: true,
+                        }),
+                      ],
+                      spacing: { before: 90, line: 300 },
+                    }),
+                  ],
+                  columnSpan: 1,
+                }),
+                new TableCell({
+                  children: [
+                    new Paragraph({
+                      alignment: AlignmentType.CENTER,
+                      children: [
+                        new TextRun({ text: 'PHOTO', bold: true, size: 28 }),
+                      ],
+                      spacing: { before: 90, line: 300 },
+                    }),
+                  ],
+                  columnSpan: 1,
+                  rowSpan: 4,
+                  verticalAlign: VerticalAlign.CENTER,
+                }),
+              ],
+            }),
+            new TableRow({
+              children: [
+                new TableCell({
+                  borders: {
+                    top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    bottom: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                    left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    right: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                  },
+
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: `Company:`,
+                        }),
+                      ],
+                      spacing: { before: 90, line: 300 },
+                    }),
+                  ],
+                  columnSpan: 1,
+                }),
+                new TableCell({
+                  borders: {
+                    top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    bottom: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                    left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    right: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                  },
+
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: `${this.utils.getGenericName(
+                            this.contractors(),
+                            driver.sessioncontractorid
+                          )}`,
+                          bold: true,
+                        }),
+                      ],
+                      spacing: { before: 90, line: 300 },
+                    }),
+                  ],
+                  columnSpan: 1,
+                }),
+              ],
+            }),
+            new TableRow({
+              children: [
+                new TableCell({
+                  borders: {
+                    top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    bottom: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                    left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    right: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                  },
+
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: `License No:`,
+                        }),
+                      ],
+                      spacing: { before: 90, line: 300 },
+                    }),
+                  ],
+                  columnSpan: 1,
+                }),
+                new TableCell({
+                  borders: {
+                    top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    bottom: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                    left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    right: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                  },
+
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: `${driver.licensenumber}`,
+                          bold: true,
+                        }),
+                      ],
+                      spacing: { before: 90, line: 300 },
+                    }),
+                  ],
+                  columnSpan: 1,
+                }),
+              ],
+            }),
+            new TableRow({
+              children: [
+                new TableCell({
+                  borders: {
+                    top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    bottom: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                    left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    right: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                  },
+
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: `DL Type:`,
+                        }),
+                      ],
+                      spacing: { before: 90, line: 300 },
+                    }),
+                  ],
+                  columnSpan: 1,
+                }),
+                new TableCell({
+                  borders: {
+                    top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    bottom: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                    left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    right: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                  },
+
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: `${this.utils.getGenericName(
+                            this.dltypes(),
+                            driver.licensetypeid
+                          )}`,
+                          bold: true,
+                        }),
+                      ],
+                      spacing: { before: 90, line: 300 },
+                    }),
+                  ],
+                  columnSpan: 1,
+                }),
+              ],
+            }),
+            new TableRow({
+              children: [
+                new TableCell({
+                  borders: {
+                    top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    bottom: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                    left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    right: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                  },
+
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: `N.I.C. #:`,
+                        }),
+                      ],
+                      spacing: { before: 90, line: 300 },
+                    }),
+                  ],
+                  columnSpan: 1,
+                }),
+                new TableCell({
+                  borders: {
+                    top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    bottom: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                    left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    right: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                  },
+
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: `${driver.nic}`,
+                          bold: true,
+                        }),
+                      ],
+                      spacing: { before: 90, line: 300 },
+                    }),
+                  ],
+                  columnSpan: 1,
+                }),
+                new TableCell({
+                  borders: {
+                    top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    bottom: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                    left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    right: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                  },
+
+                  children: [
+                    new Paragraph({
+                      alignment: AlignmentType.CENTER,
+                      children: [
+                        new TextRun({
+                          text: `${driver.designation}`,
+                          size: 20,
+                          color: 'FF0000',
+                        }),
+                      ],
+                    }),
+                  ],
+                  columnSpan: 1,
+                }),
+              ],
+            }),
+            new TableRow({
+              children: [
+                new TableCell({
+                  borders: {
+                    top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    bottom: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                    left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    right: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                  },
+
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: `BG:`,
+                        }),
+                      ],
+                      spacing: { before: 90, line: 300 },
+                    }),
+                  ],
+                  columnSpan: 1,
+                }),
+                new TableCell({
+                  borders: {
+                    top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    bottom: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                    left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    right: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                  },
+
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: `${this.utils.getGenericName(
+                            this.bloodgroups(),
+                            driver.bloodgroupid
+                          )}`,
+                          bold: true,
+                        }),
+                      ],
+                      spacing: { before: 90, line: 300 },
+                    }),
+                  ],
+                  columnSpan: 1,
+                }),
+                new TableCell({
+                  borders: {
+                    top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    bottom: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                    left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    right: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                  },
+
+                  children: [
+                    new Paragraph({
+                      alignment: AlignmentType.CENTER,
+                      children: [
+                        new ImageRun({
+                          type: 'png',
+                          data: imageBuffer,
+                          transformation: { width: 80, height: 80 },
+                          altText: {
+                            title: 'QR Code',
+                            description: 'Generated QR Code',
+                            name: 'QRCode',
+                          },
+                        }),
+                      ],
+                      // spacing: { before: 90, line: 300 },
+                    }),
+                  ],
+                  columnSpan: 1,
+                  rowSpan: 3,
+                  verticalAlign: VerticalAlign.CENTER,
+                }),
+              ],
+            }),
+            new TableRow({
+              children: [
+                new TableCell({
+                  borders: {
+                    top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    bottom: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                    left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    right: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                  },
+
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: `Code:`,
+                        }),
+                      ],
+                      spacing: { before: 90, line: 300 },
+                    }),
+                  ],
+                  columnSpan: 1,
+                }),
+                new TableCell({
+                  borders: {
+                    top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    bottom: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                    left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    right: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                  },
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: `${driver.code}`,
+                          bold: true,
+                        }),
+                      ],
+                      spacing: { before: 90, line: 300 },
+                    }),
+                  ],
+                  columnSpan: 1,
+                }),
+              ],
+            }),
+            new TableRow({
+              children: [
+                new TableCell({
+                  borders: {
+                    top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    bottom: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                    left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                    right: {
+                      style: BorderStyle.NONE,
+                      size: 0,
+                      color: 'FFFFFF',
+                    },
+                  },
+
+                  children: [
+                    new Paragraph({
+                      alignment: AlignmentType.CENTER,
+                      children: [
+                        new TextRun({
+                          text: `Above particulars provided by the contractor`,
+                          size: 20,
+                          color: 'FF0000',
+                        }),
+                      ],
+                      spacing: { before: 90, line: 300 },
+                    }),
+                  ],
+                  columnSpan: 2,
+                }),
+              ],
+            }),
+          ],
+        }),
+      ],
+    });
+  }
+
+  /**
+   * This method will generate QR Code
+   * @param text string
+   * @returns QR code image
+   */
+  private async generateQRCode(text: string): Promise<string> {
+    if (!text) {
+      text = 'No Data'; // Fallback text
+    }
+    return new Promise((resolve, reject) => {
+      QRCode.toDataURL(text, (err, url) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(url); // Extract Base64 part
+        }
+      });
+    });
+  }
+
+  /**
+   * This method will download the exported file
+   * @param blob docx
+   * @param fileName string
+   */
+  private downloadBlob(blob: Blob, fileName: string) {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+
+  /**
+   * This method will load the c&t logo image
+   * @returns logo image
+   */
+  private async loadImage(): Promise<ArrayBuffer> {
+    return fetch('img/logo.png').then((response) => response.arrayBuffer());
   }
 }

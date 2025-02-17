@@ -31,11 +31,8 @@ import { AlltrainingsComponent } from './Pages/alltrainings/alltrainings.compone
 import { TrainingdetailComponent } from './Pages/trainingdetail/trainingdetail.component';
 import { AddtrainingComponent } from './Pages/addtraining/addtraining.component';
 import { TrainingsreportComponent } from './Pages/trainingsreport/trainingsreport.component';
-import { AddassessmentEXPComponent } from './Pages/addassessment-exp/addassessment-exp.component';
 import { CategoryComponent } from './Pages/category/category.component';
 import { CourseComponent } from './Pages/course/course.component';
-import { AssessmentdetailExpComponent } from './Pages/assessmentdetail-exp/assessmentdetail-exp.component';
-
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
@@ -85,15 +82,9 @@ export const routes: Routes = [
         canActivate: [authGuard],
         data: { roles: ['admin', 'manager', 'staff', 'member'] },
       },
-      // {
-      //   path: 'allassessments/:id',
-      //   component: AssessmentdetailComponent,
-      //   canActivate: [authGuard],
-      //   data: { roles: ['admin', 'manager', 'staff', 'member'] },
-      // },
       {
         path: 'allassessments/:id',
-        component: AssessmentdetailExpComponent,
+        component: AssessmentdetailComponent,
         canActivate: [authGuard],
         data: { roles: ['admin', 'manager', 'staff', 'member'] },
       },
@@ -102,12 +93,6 @@ export const routes: Routes = [
         component: AddassessmentComponent,
         canActivate: [authGuard],
         data: { roles: ['admin', 'manager', 'staff', 'member'] },
-      },
-      {
-        path: 'addassessmentEXP',
-        component: AddassessmentEXPComponent,
-        canActivate: [authGuard],
-        data: { roles: ['admin'] },
       },
       {
         path: 'assessmentsreport',

@@ -53,12 +53,6 @@ export const Menu = {
           icon: 'fa-solid fa-table me-1',
         },
         {
-          name: 'Add AssessmentEXP ',
-          path: '/addassessmentEXP',
-          roles: ['admin'],
-          icon: 'fa-solid fa-table me-1',
-        },
-        {
           name: 'Assessments Report',
           path: '/assessmentsreport',
           roles: ['admin', 'manager', 'staff'],

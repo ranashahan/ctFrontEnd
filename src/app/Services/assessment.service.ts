@@ -4,8 +4,6 @@ import { Observable } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import {
-  apiAssessmentFormModel,
-  apiAssessmentModel,
   apiSessionDriverReportModel,
   apiSessionModel,
   apiVSessionModel,
@@ -45,7 +43,7 @@ export class AssessmentService {
    * Assessment API call
    */
   private assessmentResponse = rxResource({
-    loader: () => this.http.get<MasterCategory[]>(this.apiURL + 'getAllExp'),
+    loader: () => this.http.get<MasterCategory[]>(this.apiURL + 'getAll'),
   });
 
   /**
@@ -301,11 +299,16 @@ export class AssessmentService {
    * @param id number sessionid
    * @returns response
    */
-  deleteSessionByID(id: number) {
+  public deleteSessionByID(id: number) {
     return this.http.delete(this.apiURL + id);
   }
 
-  createSessoinTraining(payload: any) {
+  /**
+   * This method will create session trainings
+   * @param payload payload
+   * @returns Observable
+   */
+  public createSessoinTraining(payload: any) {
     return this.http.post(this.apiURL + 'createst', {
       payload,
     });
@@ -316,7 +319,9 @@ export class AssessmentService {
    * @param trainingid training id
    * @returns Observable
    */
-  getSessoinTraining(trainingid: number): Observable<apiVSessionModel[]> {
+  public getSessoinTraining(
+    trainingid: number
+  ): Observable<apiVSessionModel[]> {
     let params = new HttpParams();
     params = params.set('trainingid', trainingid);
     return this.http.get<apiVSessionModel[]>(this.apiURL + 'getst', {
@@ -338,38 +343,13 @@ export class AssessmentService {
   }
 
   /**
-   * This method will create assessment form with driver and trainer information
-   * @param driverId Driver ID
-   * @param contractorid Contractor ID
-   * @param obj Complete form object with assessment scores
-   * @returns response
+   * This method will crate the assessment
+   * @param driverId driver id
+   * @param contractorid contractor id
+   * @param obj assessment object
+   * @returns Observable
    */
   public createAssessment(
-    driverId: number,
-    contractorid: number,
-    obj: apiAssessmentFormModel
-  ): Observable<apiAssessmentFormModel> {
-    var answerCategories = obj.categories;
-    var answerSessionDate = obj.sessionDate;
-
-    const jsonResult = this.convertCategoriesToJson(
-      answerCategories,
-      answerSessionDate
-    );
-    // Convert to JSON string if needed
-    //const jsonString = JSON.stringify(jsonResult, null, 2);
-    obj.totalScore = jsonResult.totalScore;
-    obj.assessmentData = jsonResult.data;
-
-    return this.http.post<apiAssessmentFormModel>(this.apiURL + 'create', {
-      driverId,
-      obj,
-      contractorid,
-      userid: this.authService.getUserID(),
-    });
-  }
-
-  public createAssessmentExp(
     driverId: number,
     contractorid: number,
     obj: AssessmentFormModel
@@ -377,7 +357,7 @@ export class AssessmentService {
     var answerCategories = obj.categories;
     var answerSessionDate = obj.sessionDate;
 
-    const jsonResult = this.convertCategoriesToJsonExp(
+    const jsonResult = this.convertCategoriesToJson(
       answerCategories,
       answerSessionDate
     );
@@ -391,66 +371,21 @@ export class AssessmentService {
       userid: this.authService.getUserID(),
     });
   }
+
   /**
-   * This method will update assessment form with driver and trainer information
-   * @param driverId Driver ID
-   * @param obj Complete form object with assessment scores
-   * @returns response
+   * This method will update the assessment
+   * @param id sesionid
+   * @param obj assessment object
+   * @returns Observable
    */
-  public updateAssessment(id: number, obj: apiAssessmentFormModel) {
-    var answerCategories = obj.categories;
-    var answerSessionDate = obj.sessionDate;
-
-    const jsonResult = this.convertCategoriesToJson(
-      answerCategories,
-      answerSessionDate
-    );
-
-    obj.totalScore = jsonResult.totalScore;
-    obj.assessmentData = jsonResult.data;
-
-    return this.http.put<apiAssessmentFormModel>(this.apiURL + id, {
-      obj,
-      userid: this.authService.getUserID(),
-    });
-    //   ,
-    //   { observe: 'response' }
-    // )
-    // .pipe(
-    //   map((response: HttpResponse<any>) => {
-    //     // console.log(`Status: ${response.status}`); // Access status code
-    //     return response.body; // Return response body
-    //   }),
-    //   catchError((error) => {
-    //     // console.log('Full error response:', error); // Log the full error object
-
-    //     // Extract the message from the error object.
-    //     let errorMessage = 'An unknown error occurred'; // Fallback message
-
-    //     // Check if the error has a response body with a message.
-    //     if (error.error && typeof error.error === 'object') {
-    //       if (error.error.message) {
-    //         errorMessage = error.error.message; // Check if error message exists in the error object
-    //       } else if (error.message) {
-    //         errorMessage = error.message; // Use general error message if available
-    //       }
-    //     } else if (error.message) {
-    //       errorMessage = error.message; // Use the top-level error message if no nested error object
-    //     }
-
-    //     return throwError(() => new Error(errorMessage)); // Pass the correct error message
-    //   })
-    // );
-  }
-
-  public updateAssessmentExp(
+  public updateAssessment(
     id: number,
     obj: AssessmentFormModel
   ): Observable<AssessmentFormModel> {
     var answerCategories = obj.categories;
     var answerSessionDate = obj.sessionDate;
 
-    const jsonResult = this.convertCategoriesToJsonExp(
+    const jsonResult = this.convertCategoriesToJson(
       answerCategories,
       answerSessionDate
     );
@@ -465,163 +400,12 @@ export class AssessmentService {
   }
 
   /**
-   * This method for match data
-   * @param originalSessionData orignalSession Data
-   * @param updatedFormValues Form values
-   * @returns Updated values (excluded orginal session values)
-   */
-  private matchData(originalSessionData: any, updatedFormValues: any) {
-    const filteredUpdatedValues = {
-      ...updatedFormValues,
-      categories: updatedFormValues.categories
-        ? updatedFormValues.categories.map((category: any) => ({
-            ...category,
-            assessments: category.assessments
-              ? category.assessments
-                  .map((assessment: any) => {
-                    // Check if any score in the current assessment is non-null
-                    const hasValidScores =
-                      assessment.scoreInitial !== null ||
-                      assessment.scoreMiddle !== null ||
-                      assessment.scoreFinal !== null;
-
-                    if (!hasValidScores) {
-                      // console.log(
-                      //   'Assessment with all null scores found:',
-                      //   assessment
-                      // );
-                      return null; // Mark as null for filtering out later
-                    }
-
-                    // Remove scores that are null, leaving only non-null values
-                    return {
-                      ...assessment,
-                      scoreInitial:
-                        assessment.scoreInitial !== null
-                          ? assessment.scoreInitial
-                          : undefined,
-                      scoreMiddle:
-                        assessment.scoreMiddle !== null
-                          ? assessment.scoreMiddle
-                          : undefined,
-                      scoreFinal:
-                        assessment.scoreFinal !== null
-                          ? assessment.scoreFinal
-                          : undefined,
-                    };
-                  })
-                  // Remove assessments that are null (i.e., had all null scores)
-                  .filter((assessment: any) => assessment !== null)
-              : [], // If 'assessments' is undefined, return an empty array
-          }))
-        : [], // If 'categories' is undefined, return an empty array
-    };
-
-    const originalAssessments = originalSessionData?.assessments;
-    const updatedAssessments = filteredUpdatedValues.categories.flatMap(
-      (category: any) => category.assessments
-    );
-    const assessmentsToUpdate = updatedAssessments.flatMap((updated: any) => {
-      // Find all original assessments with the same activityid
-      const matchingOriginals = originalAssessments.filter(
-        (original: any) => original.activityid === updated.id
-      );
-
-      let changes: any[] = [];
-
-      // Check each assessment type (Final, Middle, Initial) separately
-      matchingOriginals.forEach((original: any) => {
-        if (
-          original.assessment_type === 'Final' &&
-          original.score !== updated.scoreFinal
-        ) {
-          changes.push({ ...updated, assessment_type: 'Final' });
-        }
-        if (
-          original.assessment_type === 'Middle' &&
-          original.score !== updated.scoreMiddle
-        ) {
-          changes.push({ ...updated, assessment_type: 'Middle' });
-        }
-        if (
-          original.assessment_type === 'Initial' &&
-          original.score !== updated.scoreInitial
-        ) {
-          changes.push({ ...updated, assessment_type: 'Initial' });
-        }
-      });
-
-      // Return the changes for this assessment (can be Final, Middle, Initial, or all)
-      return changes;
-    });
-    const assessmentsToInsert = updatedAssessments.filter(
-      (updated: any) =>
-        !originalAssessments.some(
-          (original: any) => original.activityid === updated.id
-        )
-    );
-    const objReturn = { assessmentsToUpdate, assessmentsToInsert };
-    return objReturn;
-  }
-
-  /**
    * This method for covert data into json
    * @param categories category
    * @param sessionDate session date
    * @returns json
    */
   private convertCategoriesToJson(
-    categories: any[],
-    sessionDate: string
-  ): { data: any[]; totalScore: number } {
-    const result: any[] = [];
-    let totalScore = 0;
-    categories.forEach((category) => {
-      category.assessments.forEach((assessment: apiAssessmentModel) => {
-        if (assessment.scoreInitial != null) {
-          result.push({
-            slavecategoryid: category.id,
-            activityid: assessment.id,
-            assessmenttype: 'Initial',
-            score: assessment.scoreInitial,
-            assessmentdate: sessionDate,
-          });
-          totalScore += assessment.scoreInitial;
-        }
-
-        if (assessment.scoreMiddle != null) {
-          result.push({
-            slavecategoryid: category.id,
-            activityid: assessment.id,
-            assessmenttype: 'Middle',
-            score: assessment.scoreMiddle,
-            assessmentdate: sessionDate,
-          });
-          totalScore += assessment.scoreMiddle;
-        }
-
-        if (assessment.scoreFinal != null) {
-          result.push({
-            slavecategoryid: category.id,
-            activityid: assessment.id,
-            assessmenttype: 'Final',
-            score: assessment.scoreFinal,
-            assessmentdate: sessionDate,
-          });
-          totalScore += assessment.scoreFinal;
-        }
-      });
-    });
-    return { data: result, totalScore };
-  }
-
-  /**
-   * This method for covert data into json
-   * @param categories category
-   * @param sessionDate session date
-   * @returns json
-   */
-  private convertCategoriesToJsonExp(
     categories: MasterCategory[],
     sessionDate: string
   ): { data: any[]; totalScore: number } {
@@ -638,7 +422,7 @@ export class AssessmentService {
               score: activity.scoreInitial,
               assessmentdate: sessionDate,
             });
-            totalScore += activity.scoreInitial;
+            // totalScore += activity.scoreInitial;
           }
           if (activity.scoreMiddle != null) {
             result.push({
@@ -648,7 +432,7 @@ export class AssessmentService {
               score: activity.scoreMiddle,
               assessmentdate: sessionDate,
             });
-            totalScore += activity.scoreMiddle;
+            // totalScore += activity.scoreMiddle;
           }
 
           if (activity.scoreFinal != null) {

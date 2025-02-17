@@ -1,6 +1,12 @@
 <div class="container-fluid">
+  <app-toast />
+  <app-driversearch
+    #driverSearchModal
+    (driverSelected)="onDriverSelected($event)"
+  ></app-driversearch>
+
+  @if (isLoading()) {
   <div
-    *ngIf="isLoading"
     class="d-flex justify-content-center align-items-center"
     style="height: 100vh"
   >
@@ -8,641 +14,732 @@
       <span class="sr-only">Loading...</span>
     </div>
   </div>
-  <div *ngIf="!isLoading">
-    <div>
-      <app-toast></app-toast>
-    </div>
-    <app-driversearch
-      #driverSearchModal
-      (driverSelected)="onDriverSelected($event)"
-    ></app-driversearch>
+  } @if (!isLoading()) {
 
-    <div class="bg-success bg-opacity-50 fs-7 fw-medium mt-3">
-      <h6 class="ms-3">Driver Information</h6>
-
-      <form
-        [formGroup]="formDriver"
-        class="row row-cols-lg-auto g-3 align-items-end ms-1"
+  <div class="bg-success bg-opacity-50 fs-7 fw-medium mt-3">
+    <h6 class="ms-3">Driver Information</h6>
+    <div class="col-auto m-2">
+      <button
+        type="submit"
+        class="btn btn-warning btn-sm"
+        (click)="openSearchModal()"
+        title="Driver Search Modal"
       >
-        <div class="col-auto required">
-          <label class="label ms-1" for="inlineFormInputGroupid"
-            >Driver ID</label
-          >
-          <div class="input-group">
-            <input
-              type="text"
-              class="form-control form-control-sm my-input"
-              id="inlineFormInputGroupid"
-              placeholder="122323"
-              formControlName="id"
-            />
-          </div>
-        </div>
-        <div class="col-auto">
-          <label class="label ms-1" for="inlineFormInputGroupname"
-            >Driver Name</label
-          >
-          <div class="input-group">
-            <input
-              type="text"
-              class="form-control form-control-sm"
-              id="inlineFormInputGroupname"
-              placeholder="Muhammad Ahmed"
-              formControlName="name"
-            />
-          </div>
-        </div>
-        <div class="col-auto">
-          <label class="label ms-1" for="inlineFormInputGroupNic"
-            >Driver NIC</label
-          >
-          <div class="input-group">
-            <input
-              type="text"
-              class="form-control form-control-sm"
-              id="inlineFormInputGroupNic"
-              placeholder="xxxxx-xxxxxxx-x"
-              formControlName="nic"
-            />
-          </div>
-        </div>
-        <div class="col-auto">
-          <label class="label ms-1" for="inlineFormInputGroupNICExpiry"
-            >Driver NIC Expiry</label
-          >
-          <div class="input-group">
-            <input
-              type="text"
-              class="form-control form-control-sm my-input"
-              id="inlineFormInputGroupNICExpiry"
-              placeholder="mm/dd/yyyy"
-              formControlName="nicexpiry"
-            />
-          </div>
-        </div>
-        <div class="col-auto">
-          <label class="label ms-1" for="inlineFormInputGroupDOB"
-            >Driver DOB</label
-          >
-          <div class="input-group">
-            <input
-              type="text"
-              class="form-control form-control-sm my-input"
-              id="inlineFormInputGroupDOB"
-              placeholder="mm/dd/yyyy"
-              formControlName="dob"
-            />
-          </div>
-        </div>
-        <div class="col-auto">
-          <label class="label ms-1" for="inlineFormInputGroupAGE"
-            >Driver Age</label
-          >
-          <div class="input-group">
-            <input
-              type="text"
-              class="form-control form-control-sm my-input"
-              id="inlineFormInputGroupAGE"
-              placeholder="22"
-              formControlName="age"
-            />
-          </div>
-        </div>
-        <div class="col-auto">
-          <label class="label ms-1" for="inlineFormInputGroupLicense"
-            >License #</label
-          >
-          <div class="input-group">
-            <input
-              type="text"
-              class="form-control form-control-sm"
-              id="inlineFormInputGroupLicense"
-              placeholder="AA-xxxxx"
-              formControlName="licensenumber"
-            />
-          </div>
-        </div>
-        <div class="col-auto">
-          <label class="label ms-1" for="inlineFormInputGroupdltype"
-            >License Type</label
-          >
-          <div class="input-group">
-            <select
-              class="form-select form-select-sm"
-              id="inlineFormInputGroupdltype"
-              formControlName="licensetypeid"
-            >
-              @for (item of dltypes(); track $index) {
-              <option [value]="item.id">
-                {{ item.name }}
-              </option>
-              }
-            </select>
-          </div>
-        </div>
-        <div class="col-auto">
-          <label class="label ms-1" for="inlineFormInputGroupLicenseExpiry"
-            >License Expiry</label
-          >
-          <div class="input-group">
-            <input
-              type="text"
-              class="form-control form-control-sm my-input"
-              id="inlineFormInputGroupLicenseExpiry"
-              formControlName="licenseexpiry"
-              placeholder="mm/dd/yyyy"
-              [ngClass]="{ 'border-danger border-2': isLicenseExpired() }"
-            />
-          </div>
-        </div>
-        <div class="col-auto">
-          <label class="label ms-1" for="inlineFormInputGroupPermit"
-            >Permit #</label
-          >
-          <div class="input-group">
-            <input
-              type="text"
-              class="form-control form-control-sm"
-              id="inlineFormInputGroupPermit"
-              placeholder="CONT-xxxx"
-              formControlName="permitnumber"
-            />
-          </div>
-        </div>
-        <div class="col-auto">
-          <label class="label ms-1" for="inlineFormInputGroupPermitExpiry"
-            >Permit Expiry</label
-          >
-          <div class="input-group">
-            <input
-              type="text"
-              class="form-control form-control-sm"
-              id="inlineFormInputGroupPermitExpiry"
-              formControlName="permitexpiry"
-              placeholder="mm/dd/yyyy"
-            />
-          </div>
-        </div>
-        <div class="col-auto">
-          <label class="label ms-1" for="inlineFormInputGroupBlood"
-            >BloodGroup</label
-          >
-          <div class="input-group">
-            <select
-              class="form-select form-select-sm"
-              id="inlineFormInputGroupBlood"
-              formControlName="bloodgroupid"
-            >
-              @for (item of bloodGroups(); track $index) {
-              <option [value]="item.id">
-                {{ item.name }}
-              </option>
-              }
-            </select>
-          </div>
-        </div>
-        <div class="col-auto">
-          <label class="label ms-1" for="inlineFormInputGroupClient"
-            >Clients</label
-          >
-          <div class="input-group">
-            <input
-              type="text"
-              class="form-control form-control-sm"
-              id="inlineFormInputGroupClient"
-              placeholder="U.E.P."
-              formControlName="clientname"
-            />
-          </div>
-        </div>
-        <div class="col-auto required">
-          <label class="label ms-1" for="inlineFormInputGroupContractor"
-            >Contractor</label
-          >
-          <div class="input-group">
-            <select
-              class="form-select form-select-sm"
-              id="inlineFormInputGroupContractor"
-              formControlName="contractorid"
-              [ngClass]="{ 'border-danger border-2': isContractorExist() }"
-            >
-              @for (item of contractors(); track $index) {
-              <option [value]="item.id">
-                {{ item.name }}
-              </option>
-              }
-            </select>
-          </div>
-        </div>
-
-        <div class="col-auto">
-          <label class="label ms-1" for="inlineFormInputGroupvisual"
-            >Visual</label
-          >
-          <div class="input-group">
-            <select
-              class="form-select form-select-sm"
-              id="inlineFormInputGroupvisual"
-              formControlName="visualid"
-            >
-              @for (item of visuals(); track $index) {
-              <option [value]="item.id">
-                {{ item.name }}
-              </option>
-              }
-            </select>
-          </div>
-        </div>
-        <div class="col-auto">
-          <button
-            type="submit"
-            class="btn btn-warning btn-sm"
-            (click)="openSearchModal()"
-            title="Driver Search Modal"
-          >
-            <i class="fa-regular fa-circle-user me-1"></i>Select Driver
-          </button>
-        </div>
-      </form>
-      <hr />
+        <i class="fa-regular fa-circle-user me-1"></i>Select Driver
+      </button>
     </div>
-
+    @if (isDriverLoaded()) {
     <form
-      *ngIf="assessmentForm && categoriesArray"
-      [formGroup]="assessmentForm"
+      [formGroup]="driverForm"
+      class="row row-cols-lg-auto g-3 align-items-end ms-1"
     >
-      <div class="bg-warning bg-opacity-25 fs-7 fw-medium">
-        <div class="row row-cols-lg-auto g-3 justify-content-start ms-1">
-          <div class="col-auto required">
-            <label class="label ms-1" for="inlineFormInputGroupSessionName"
-              >SessionID</label
-            >
-            <div class="input-group">
-              <input
-                type="text"
-                class="form-control form-control-sm"
-                id="inlineFormInputGroupSessionName"
-                formControlName="sessionName"
-                placeholder="UEP-LPG-2308-01-01"
-                required
-              />
-            </div>
-          </div>
-          <div class="col-auto required">
-            <label class="label ms-1" for="inlineFormInputGroupSessionDate"
-              >Session/Road Test Date</label
-            >
-            <div class="input-group">
-              <input
-                type="date"
-                class="form-control form-control-sm"
-                id="inlineFormInputGroupSessionDate"
-                formControlName="sessionDate"
-                placeholder="mm/dd/yyyy"
-                required
-              />
-            </div>
-          </div>
-          <div class="col-auto">
-            <label class="label ms-1" for="inlineFormInputGroupClassDate"
-              >Class Room Date</label
-            >
-            <div class="input-group">
-              <input
-                type="date"
-                class="form-control form-control-sm"
-                id="inlineFormInputGroupClassDate"
-                formControlName="classdate"
-                placeholder="mm/dd/yyyy"
-              />
-            </div>
-          </div>
-          <div class="col-auto">
-            <label class="label ms-1" for="inlineFormInputGroupyardTestDate"
-              >Yard Test Date</label
-            >
-            <div class="input-group">
-              <input
-                type="date"
-                class="form-control form-control-sm"
-                id="inlineFormInputGroupyardTestDate"
-                formControlName="yarddate"
-                placeholder="mm/dd/yyyy"
-              />
-            </div>
-          </div>
-          <div class="col-auto">
-            <label class="label ms-1" for="inlineFormInputGroupRoute"
-              >Route</label
-            >
-            <div class="input-group">
-              <input
-                type="text"
-                class="form-control form-control-sm"
-                id="inlineFormInputGroupRoute"
-                formControlName="route"
-                placeholder="Malir Road"
-              />
-            </div>
-          </div>
-          <div class="col-auto">
-            <label class="label ms-1" for="inlineFormInputGroupRoadTraffic"
-              >Road Traffic</label
-            >
-            <div class="input-group">
-              <input
-                type="text"
-                class="form-control form-control-sm"
-                id="inlineFormInputGroupRoadTraffic"
-                formControlName="traffic"
-                placeholder="Highway"
-              />
-            </div>
-          </div>
-          <div class="col-auto">
-            <label class="label ms-1" for="inlineFormInputGroupWeather"
-              >Weather</label
-            >
-            <div class="input-group">
-              <input
-                type="text"
-                class="form-control form-control-sm"
-                id="inlineFormInputGroupWeather"
-                formControlName="weather"
-                placeholder="Sunny"
-              />
-            </div>
-          </div>
-          <div class="col-auto">
-            <label class="label ms-1" for="inlineFormInputGroupquizScore"
-              >Quiz Score</label
-            >
-            <div class="input-group">
-              <input
-                type="text"
-                class="form-control form-control-sm"
-                id="inlineFormInputGroupquizScore"
-                formControlName="quizscore"
-                placeholder="00"
-              />
-            </div>
-          </div>
-          <div class="col-auto">
-            <label class="label ms-1" for="inlineFormInputGroupResult"
-              >Result</label
-            >
-            <div class="input-group">
-              <select
-                class="form-select form-select-sm"
-                id="inlineFormInputGroupResult"
-                formControlName="resultId"
-              >
-                <option disabled value="null">-----Select-----</option>
-                @for (item of results(); track $index) {
-                <option [value]="item.id">{{ item.name }}</option>
-                }
-              </select>
-            </div>
-          </div>
-          <div class="col-auto">
-            <label class="label ms-1" for="inlineFormInputGroupLocation"
-              >Location</label
-            >
-            <div class="input-group">
-              <select
-                class="form-select form-select-sm"
-                id="inlineFormInputGroupLocation"
-                formControlName="locationId"
-              >
-                <option disabled value="null">-----Select-----</option>
-                @for (item of locations(); track $index) {
-                <option [value]="item.id">{{ item.name }}</option>
-                }
-              </select>
-            </div>
-          </div>
-          <div class="col-auto">
-            <label class="label ms-1" for="inlineFormInputGroupStage"
-              >Stage</label
-            >
-            <div class="input-group">
-              <select
-                class="form-select form-select-sm"
-                id="inlineFormInputGroupStage"
-                formControlName="stageId"
-              >
-                <option disabled value="null">-----Select-----</option>
-                @for (item of stages(); track $index) {
-                <option [value]="item.id">{{ item.name }}</option>
-                }
-              </select>
-            </div>
-          </div>
-          <div class="col-auto">
-            <label class="label ms-1" for="inlineFormInputGroupTitle"
-              >Title</label
-            >
-            <div class="input-group">
-              <select
-                class="form-select form-select-sm"
-                id="inlineFormInputGroupTitle"
-                formControlName="titleId"
-              >
-                <option disabled value="null">-----Select-----</option>
-                @for (item of titles(); track $index) {
-                <option [value]="item.id">{{ item.name }}</option>
-                }
-              </select>
-            </div>
-          </div>
-          <div class="col-auto">
-            <label class="label ms-1" for="inlineFormInputGroupVehicle"
-              >Vehicle</label
-            >
-            <div class="input-group">
-              <select
-                class="form-select form-select-sm"
-                id="inlineFormInputGroupVehicle"
-                formControlName="vehicleId"
-              >
-                <option disabled value="null">-----Select-----</option>
-                @for (item of vehicles(); track $index) {
-                <option [value]="item.id">{{ item.name }}</option>
-                }
-              </select>
-            </div>
-          </div>
+      <div class="col-auto required">
+        <label class="label ms-1" for="inlineFormInputGroupid">Driver ID</label>
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control form-control-sm my-input"
+            id="inlineFormInputGroupid"
+            placeholder="122323"
+            formControlName="id"
+            readonly
+          />
+        </div>
+      </div>
+      <div class="col-auto">
+        <label class="label ms-1" for="inlineFormInputGroupname"
+          >Driver Name</label
+        >
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            id="inlineFormInputGroupname"
+            placeholder="Muhammad Ahmed"
+            formControlName="name"
+          />
+        </div>
+      </div>
+      <div class="col-auto">
+        <label class="label ms-1" for="inlineFormInputGroupNic"
+          >Driver NIC</label
+        >
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            id="inlineFormInputGroupNic"
+            placeholder="xxxxx-xxxxxxx-x"
+            formControlName="nic"
+          />
+        </div>
+      </div>
+      <div class="col-auto">
+        <label class="label ms-1" for="inlineFormInputGroupNICExpiry"
+          >Driver NIC Expiry</label
+        >
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control form-control-sm my-input"
+            id="inlineFormInputGroupNICExpiry"
+            placeholder="mm/dd/yyyy"
+            formControlName="nicexpiry"
+          />
+        </div>
+      </div>
+      <div class="col-auto">
+        <label class="label ms-1" for="inlineFormInputGroupDOB"
+          >Driver DOB</label
+        >
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control form-control-sm my-input"
+            id="inlineFormInputGroupDOB"
+            placeholder="mm/dd/yyyy"
+            formControlName="dob"
+          />
+        </div>
+      </div>
+      <div class="col-auto">
+        <label class="label ms-1" for="inlineFormInputGroupAGE"
+          >Driver Age</label
+        >
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control form-control-sm my-input"
+            id="inlineFormInputGroupAGE"
+            placeholder="22"
+            formControlName="age"
+          />
+        </div>
+      </div>
+      <div class="col-auto">
+        <label class="label ms-1" for="inlineFormInputGroupLicense"
+          >License #</label
+        >
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            id="inlineFormInputGroupLicense"
+            placeholder="AA-xxxxx"
+            formControlName="licensenumber"
+          />
+        </div>
+      </div>
+      <div class="col-auto">
+        <label class="label ms-1" for="inlineFormInputGroupdltype"
+          >License Type</label
+        >
+        <div class="input-group">
+          <select
+            class="form-select form-select-sm"
+            id="inlineFormInputGroupdltype"
+            formControlName="licensetypeid"
+          >
+            @for (item of dltypes(); track $index) {
+            <option [value]="item.id">
+              {{ item.name }}
+            </option>
+            }
+          </select>
+        </div>
+      </div>
+      <div class="col-auto">
+        <label class="label ms-1" for="inlineFormInputGroupLicenseExpiry"
+          >License Expiry</label
+        >
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control form-control-sm my-input"
+            id="inlineFormInputGroupLicenseExpiry"
+            formControlName="licenseexpiry"
+            placeholder="mm/dd/yyyy"
+            [ngClass]="{ 'border-danger border-2': isLicenseExpired() }"
+          />
+        </div>
+      </div>
+      <div class="col-auto">
+        <label class="label ms-1" for="inlineFormInputGroupLicenseVerified"
+          >Verification</label
+        >
+        <div class="input-group">
+          <select
+            class="form-select form-select-sm"
+            id="inlineFormInputGroupLicenseVerified"
+            formControlName="licenseverified"
+          >
+            <option disabled selected value="null">-----Select-----</option>
+            @for (item of licenseVerification(); track $index) {
+            <option [value]="item.id">{{ item.name }}</option>
+            }
+          </select>
+        </div>
+      </div>
+      <div class="col-auto">
+        <label class="label ms-1" for="inlineFormInputGroupPermit"
+          >Permit #</label
+        >
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            id="inlineFormInputGroupPermit"
+            placeholder="CONT-xxxx"
+            formControlName="permitnumber"
+          />
+        </div>
+      </div>
+      <div class="col-auto">
+        <label class="label ms-1" for="inlineFormInputGroupPermitExpiry"
+          >Permit Expiry</label
+        >
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            id="inlineFormInputGroupPermitExpiry"
+            formControlName="permitexpiry"
+            placeholder="mm/dd/yyyy"
+          />
+        </div>
+      </div>
+      <div class="col-auto">
+        <label class="label ms-1" for="inlineFormInputGroupBlood"
+          >BloodGroup</label
+        >
+        <div class="input-group">
+          <select
+            class="form-select form-select-sm"
+            id="inlineFormInputGroupBlood"
+            formControlName="bloodgroupid"
+          >
+            @for (item of bloodGroups(); track $index) {
+            <option [value]="item.id">
+              {{ item.name }}
+            </option>
+            }
+          </select>
+        </div>
+      </div>
+      <div class="col-auto">
+        <label class="label ms-1" for="inlineFormInputGroupClient"
+          >Clients</label
+        >
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            id="inlineFormInputGroupClient"
+            placeholder="U.E.P."
+            formControlName="clientname"
+          />
+        </div>
+      </div>
+      <div class="col-auto required">
+        <label class="label ms-1" for="inlineFormInputGroupContractor"
+          >Contractor</label
+        >
+        <div class="input-group">
+          <select
+            class="form-select form-select-sm"
+            id="inlineFormInputGroupContractor"
+            formControlName="contractorid"
+            [ngClass]="{ 'border-danger border-2': isContractorExist() }"
+          >
+            @for (item of contractors(); track $index) {
+            <option [value]="item.id">
+              {{ item.name }}
+            </option>
+            }
+          </select>
+        </div>
+      </div>
+      <div class="col-auto">
+        <label class="label ms-1" for="inlineFormInputGroupvisual"
+          >Visual</label
+        >
+        <div class="input-group">
+          <select
+            class="form-select form-select-sm"
+            id="inlineFormInputGroupvisual"
+            formControlName="visualid"
+          >
+            @for (item of visuals(); track $index) {
+            <option [value]="item.id">
+              {{ item.name }}
+            </option>
+            }
+          </select>
+        </div>
+      </div>
+    </form>
+    }
+    <hr />
+  </div>
 
-          <div class="col-auto required">
-            <label class="label ms-1" for="inlineFormInputGroupTrainer"
-              >Trainer</label
-            >
-
+  <form [formGroup]="assessmentForm">
+    <div class="bg-warning bg-opacity-25 fs-7 fw-medium">
+      <div class="row row-cols-lg-auto g-3 justify-content-start ms-1">
+        <div class="col-auto required">
+          <label class="label ms-1" for="inlineFormInputGroupSessionName"
+            >SessionID</label
+          >
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              id="inlineFormInputGroupSessionName"
+              formControlName="sessionName"
+              placeholder="UEP-LPG-2308-01-01"
+              required
+            />
+          </div>
+        </div>
+        <div class="col-auto required">
+          <label class="label ms-1" for="inlineFormInputGroupSessionDate"
+            >Session/Road Test Date</label
+          >
+          <div class="input-group">
+            <input
+              type="date"
+              class="form-control form-control-sm"
+              id="inlineFormInputGroupSessionDate"
+              formControlName="sessionDate"
+              placeholder="mm/dd/yyyy"
+              required
+            />
+          </div>
+        </div>
+        <div class="col-auto">
+          <label class="label ms-1" for="inlineFormInputGroupClassDate"
+            >Class Room Date</label
+          >
+          <div class="input-group">
+            <input
+              type="date"
+              class="form-control form-control-sm"
+              id="inlineFormInputGroupClassDate"
+              formControlName="classdate"
+              placeholder="mm/dd/yyyy"
+            />
+          </div>
+        </div>
+        <div class="col-auto">
+          <label class="label ms-1" for="inlineFormInputGroupyardTestDate"
+            >Yard Test Date</label
+          >
+          <div class="input-group">
+            <input
+              type="date"
+              class="form-control form-control-sm"
+              id="inlineFormInputGroupyardTestDate"
+              formControlName="yarddate"
+              placeholder="mm/dd/yyyy"
+            />
+          </div>
+        </div>
+        <div class="col-auto">
+          <label class="label ms-1" for="inlineFormInputGroupRoute"
+            >Route</label
+          >
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              id="inlineFormInputGroupRoute"
+              formControlName="route"
+              placeholder="Malir Road"
+            />
+          </div>
+        </div>
+        <div class="col-auto">
+          <label class="label ms-1" for="inlineFormInputGroupRoadTraffic"
+            >Road Traffic</label
+          >
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              id="inlineFormInputGroupRoadTraffic"
+              formControlName="traffic"
+              placeholder="Highway"
+            />
+          </div>
+        </div>
+        <div class="col-auto">
+          <label class="label ms-1" for="inlineFormInputGroupWeather"
+            >Weather</label
+          >
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              id="inlineFormInputGroupWeather"
+              formControlName="weather"
+              placeholder="Sunny"
+            />
+          </div>
+        </div>
+        <div class="col-auto">
+          <label class="label ms-1" for="inlineFormInputGroupquizScore"
+            >Quiz Score</label
+          >
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              id="inlineFormInputGroupquizScore"
+              formControlName="quizscore"
+              placeholder="00"
+            />
+          </div>
+        </div>
+        <div class="col-auto">
+          <label class="label ms-1" for="inlineFormInputGroupResult"
+            >Result</label
+          >
+          <div class="input-group">
             <select
               class="form-select form-select-sm"
-              id="inlineFormInputGroupTrainer"
-              formControlName="trainerid"
+              id="inlineFormInputGroupResult"
+              formControlName="resultId"
             >
               <option disabled value="null">-----Select-----</option>
-              @for (item of trainers(); track $index) {
+              @for (item of results(); track $index) {
               <option [value]="item.id">{{ item.name }}</option>
               }
             </select>
           </div>
         </div>
-        <div class="row row-cols-lg-12 justify-content-start ms-1">
-          <div class="col-11 mt-2">
-            <label class="label ms-1" for="scomment">Comments</label>
-            <textarea
-              class="form-control"
-              id="scomment"
-              formControlName="comment"
-            ></textarea>
+        <div class="col-auto">
+          <label class="label ms-1" for="inlineFormInputGroupLocation"
+            >Location</label
+          >
+          <div class="input-group">
+            <select
+              class="form-select form-select-sm"
+              id="inlineFormInputGroupLocation"
+              formControlName="locationId"
+            >
+              <option disabled value="null">-----Select-----</option>
+              @for (item of locations(); track $index) {
+              <option [value]="item.id">{{ item.name }}</option>
+              }
+            </select>
           </div>
         </div>
-        <hr />
-      </div>
-      <div
-        *ngFor="let category of categoriesArray.controls; let i = index"
-        [formGroup]="$any(category)"
-        class="border"
-      >
-        <div class="form-check bg-warning bg-opacity-50">
-          <input
-            type="checkbox"
-            class="form-check-input"
-            [id]="'category' + i"
-            formControlName="selected"
-          />
-          <label [for]="'category' + i" class="form-check-label">
-            {{ categories()[i].name }}
-          </label>
+        <div class="col-auto">
+          <label class="label ms-1" for="inlineFormInputGroupStage"
+            >Stage</label
+          >
+          <div class="input-group">
+            <select
+              class="form-select form-select-sm"
+              id="inlineFormInputGroupStage"
+              formControlName="stageId"
+            >
+              <option disabled value="null">-----Select-----</option>
+              @for (item of stages(); track $index) {
+              <option [value]="item.id">{{ item.name }}</option>
+              }
+            </select>
+          </div>
+        </div>
+        <div class="col-auto">
+          <label class="label ms-1" for="inlineFormInputGroupTitle"
+            >Title</label
+          >
+          <div class="input-group">
+            <select
+              class="form-select form-select-sm"
+              id="inlineFormInputGroupTitle"
+              formControlName="titleId"
+            >
+              <option disabled value="null">-----Select-----</option>
+              @for (item of titles(); track $index) {
+              <option [value]="item.id">{{ item.name }}</option>
+              }
+            </select>
+          </div>
+        </div>
+        <div class="col-auto">
+          <label class="label ms-1" for="inlineFormInputGroupVehicle"
+            >Vehicle</label
+          >
+          <div class="input-group">
+            <select
+              class="form-select form-select-sm"
+              id="inlineFormInputGroupVehicle"
+              formControlName="vehicleId"
+            >
+              <option disabled value="null">-----Select-----</option>
+              @for (item of vehicles(); track $index) {
+              <option [value]="item.id">{{ item.name }}</option>
+              }
+            </select>
+          </div>
         </div>
 
-        <!-- Show assessments if the category is selected -->
-        <div
-          *ngIf="category.get('selected')?.value"
-          class="table-responsive mt-2"
-        >
-          <table class="table table-sm table-hover table-bordered fs-7">
-            <thead class="table-warning">
-              <tr>
-                <th>Assessment</th>
-                <th>Ini</th>
-                <th>Initial Assessment</th>
-                <th>Middle Assessment</th>
-                <th>Final Assessment</th>
-              </tr>
-            </thead>
-            <tbody class="table-group-divider" formArrayName="assessments">
-              <tr
-                *ngFor="
-                  let assessmentControl of getAssessments(category).controls;
-                  let j = index
-                "
-                [formGroup]="$any(assessmentControl)"
-              >
-                <td class="text-sm-end">
-                  {{ assessmentControl.get("name")?.value }}
-                </td>
-                <td class="text-sm-end" style="width: 30px">
-                  {{ categories()[i].initials
-                  }}{{ assessmentControl.get("initials")?.value }}
-                </td>
-                <td style="width: 150px">
-                  <div
-                    class="form-check form-check-inline radio-group"
-                    *ngFor="let score of [0, 1, 2, 3]; let idx = index"
-                  >
-                    <input
-                      type="radio"
-                      class="form-check-input"
-                      [id]="'scoreInitial' + j + idx"
-                      [value]="score"
-                      formControlName="scoreInitial"
-                    />
-                    <label
-                      [for]="'scoreInitial' + j + idx"
-                      class="form-check-label"
-                    >
-                      {{ score }}
-                    </label>
-                  </div>
-                </td>
-                <td style="width: 150px">
-                  <div
-                    class="form-check form-check-inline radio-group"
-                    *ngFor="let score of [0, 1, 2, 3]; let idx = index"
-                  >
-                    <input
-                      type="radio"
-                      class="form-check-input"
-                      [id]="'scoreMiddle' + j + idx"
-                      [value]="score"
-                      formControlName="scoreMiddle"
-                    />
-                    <label
-                      [for]="'scoreInitial' + j + idx"
-                      class="form-check-label"
-                    >
-                      {{ score }}
-                    </label>
-                  </div>
-                </td>
-                <td style="width: 150px">
-                  <div
-                    class="form-check form-check-inline radio-group"
-                    *ngFor="let score of [0, 1, 2, 3]; let idx = index"
-                  >
-                    <input
-                      type="radio"
-                      class="form-check-input"
-                      [id]="'scoreFinal' + j + idx"
-                      [value]="score"
-                      formControlName="scoreFinal"
-                    />
-                    <label
-                      [for]="'scoreFinal' + j + idx"
-                      class="form-check-label"
-                    >
-                      {{ score }}
-                    </label>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="col-auto required">
+          <label class="label ms-1" for="inlineFormInputGroupTrainer"
+            >Trainer</label
+          >
+
+          <select
+            class="form-select form-select-sm"
+            id="inlineFormInputGroupTrainer"
+            formControlName="trainerid"
+          >
+            <option disabled value="null">-----Select-----</option>
+            @for (item of trainers(); track $index) {
+            <option [value]="item.id">{{ item.name }}</option>
+            }
+          </select>
         </div>
       </div>
-      <div class="row">
-        <div class="col-12 text-center">
-          <div class="btn-group" role="group" aria-label="Default button group">
-            <button
-              type="submit"
-              class="btn btn-outline-warning"
-              [disabled]="assessmentForm.invalid"
-              (click)="insertAssessment()"
-              title="Save Assessment"
+      <div class="row row-cols-lg-12 justify-content-start ms-1">
+        <div class="col-11 mt-2">
+          <label class="label ms-1" for="scomment">Comments</label>
+          <textarea
+            class="form-control"
+            id="scomment"
+            formControlName="comment"
+          ></textarea>
+        </div>
+      </div>
+      <hr />
+    </div>
+    <div class="row">
+      <div class="col-12">
+        @if (!showInitial()) {
+        <button
+          (click)="toggleInitial()"
+          class="btn btn-sm btn-outline-secondary float-end"
+          title="Add Initial Assessment Column"
+        >
+          <i class="fa-solid fa-circle-plus"></i> Initial Assessment
+        </button>
+        } @if (showInitial() && !showMiddle()) {
+        <button
+          (click)="toggleMiddle()"
+          class="btn btn-sm btn-outline-secondary float-end"
+          title="Add Middle Assessment Column"
+        >
+          <i class="fa-solid fa-circle-plus"></i> Middle Assessment
+        </button>
+        } @if (showMiddle()) {<button
+          (click)="toggleMiddle()"
+          class="btn btn-sm btn-outline-secondary float-end"
+          title="Remove Middle Assessment Column"
+        >
+          <i class="fa-solid fa-xmark"></i> Remove Middle</button
+        >} @if (showInitial()) {<button
+          (click)="toggleInitial()"
+          class="btn btn-sm btn-outline-secondary float-end"
+          title="Remove All Assessment Columns"
+        >
+          <i class="fa-solid fa-xmark"></i> Remove All</button
+        >}
+      </div>
+    </div>
+    <div formArrayName="categories">
+      @for (category of categories.controls; track $index;let i = $index) {
+      <div [formGroupName]="i">
+        <div class="accordion" id="masterAccordion">
+          <div class="accordion-item">
+            <h2
+              class="accordion-header"
+              id="heading{{ category.get('id')?.value }}"
             >
-              @if (isAPICallInProgress()) {
-              <span
-                class="spinner-border spinner-border-sm"
-                aria-hidden="true"
-              ></span>
-              <span role="status">Loading...</span>
-              } Save
-            </button>
-            <button
-              type="button"
-              class="btn btn-outline-secondary"
-              (click)="resetForm()"
-              title="Reset Assessment Form"
+              <button
+                class="accordion-button collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                attr.data-bs-target="#collapse{{ category.get('id')?.value }}"
+                aria-expanded="false"
+                attr.aria-controls="collapse{{ category.get('id')?.value }}"
+              >
+                {{ category.get("name")?.value }}
+              </button>
+            </h2>
+            <div
+              id="collapse{{ category.get('id')?.value }}"
+              class="accordion-collapse collapse"
+              attr.aria-labelledby="heading{{ category.get('id')?.value }}"
             >
-              Reset
-            </button>
+              <div class="accordion-body">
+                <div
+                  class="accordion"
+                  id="slaveAccordion{{ category.get('id')?.value }}"
+                >
+                  <div formArrayName="slavecategories">
+                    @for (slavecategory of getSlaveCategories(i).controls; track
+                    $index;let j = $index) {
+                    <div [formGroupName]="j">
+                      <div class="accordion-item">
+                        <h2
+                          class="accordion-header"
+                          id="headingSlave{{ slavecategory.get('id')?.value }}"
+                        >
+                          <button
+                            class="accordion-button collapsed"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            attr.data-bs-target="#collapseSlave{{
+                              slavecategory.get('id')?.value
+                            }}"
+                            aria-expanded="false"
+                            attr.aria-controls="collapseSlave{{
+                              slavecategory.get('id')?.value
+                            }}"
+                          >
+                            {{ slavecategory.get("name")?.value }}
+                            <span class="text-muted ms-2">
+                              ({{
+                                getFinalScoreTotal(
+                                  category,
+                                  slavecategory.get("id")?.value
+                                )
+                              }}/{{
+                                getTotalScore(
+                                  category,
+                                  slavecategory.get("id")?.value
+                                )
+                              }})
+                            </span>
+                          </button>
+                        </h2>
+                        <div
+                          id="collapseSlave{{ slavecategory.get('id')?.value }}"
+                          class="accordion-collapse collapse"
+                          attr.aria-labelledby="headingSlave{{
+                            slavecategory.get('id')?.value
+                          }}"
+                        >
+                          <div class="accordion-body">
+                            <div formArrayName="activities">
+                              <table
+                                class="table table-sm table-hover table-bordered fs-7"
+                              >
+                                <thead class="table-warning">
+                                  <tr>
+                                    <th>Assessment Description</th>
+                                    <th>Ini</th>
+                                    @if (showInitial()) {
+                                    <th>Initial Score</th>
+                                    } @if (showMiddle()) {
+                                    <th>Middle Score</th>
+                                    }
+                                    <th>Final Score</th>
+                                  </tr>
+                                </thead>
+
+                                <tbody class="table-group-divider">
+                                  @for (activity of getActivities(i,
+                                  j).controls; track $index;let k = $index) {
+
+                                  <tr [formGroupName]="k">
+                                    <td class="text-end">
+                                      <strong>{{
+                                        activity.get("name")?.value
+                                      }}</strong>
+                                    </td>
+                                    <td class="text-sm-end" style="width: 30px">
+                                      {{ slavecategory.get("initials")?.value
+                                      }}{{ activity.get("initials")?.value }}
+                                    </td>
+                                    @if (showInitial()) {
+                                    <td style="width: 80px">
+                                      <input
+                                        type="number"
+                                        min="0"
+                                        max="1"
+                                        class="score-input"
+                                        name="initial"
+                                        formControlName="scoreInitial"
+                                        (input)="restrictToSingleDigit($event)"
+                                      />
+                                    </td>
+                                    } @if (showMiddle()) {
+                                    <td style="width: 80px">
+                                      <input
+                                        type="number"
+                                        min="0"
+                                        max="1"
+                                        maxlength="1"
+                                        class="score-input"
+                                        name="middle"
+                                        formControlName="scoreMiddle"
+                                        (input)="restrictToSingleDigit($event)"
+                                      />
+                                    </td>
+                                    }
+
+                                    <td style="width: 80px">
+                                      <input
+                                        type="number"
+                                        min="0"
+                                        max="5"
+                                        maxlength="1"
+                                        class="score-input"
+                                        name="final"
+                                        formControlName="scoreFinal"
+                                        (input)="restrictToSingleDigit($event)"
+                                      />
+                                    </td>
+                                  </tr>
+
+                                  }
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </form>
-  </div>
+      }
+    </div>
+    <div class="row">
+      <div class="col-12 text-center">
+        <div class="btn-group" role="group" aria-label="Default button group">
+          <button
+            type="submit"
+            class="btn btn-outline-warning"
+            (click)="saveAssessment()"
+            title="Save Assessment"
+          >
+            @if (isAPICallInProgress()) {
+            <span
+              class="spinner-border spinner-border-sm"
+              aria-hidden="true"
+            ></span>
+            <span role="status">Loading...</span>
+            } Save
+          </button>
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            (click)="formRest()"
+            title="Reset Assessment Form"
+          >
+            Reset
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+  }
 </div>

@@ -351,8 +351,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
           },
           xaxis: {
             categories: [
-              'Nov',
-              'Dec',
               'Jan',
               'Feb',
               'Mar',
@@ -362,6 +360,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
               'Jul',
               'Aug',
               'Sep',
+              'Oct',
+              'Nov',
+              'Dec',
             ],
           },
           yaxis: {
