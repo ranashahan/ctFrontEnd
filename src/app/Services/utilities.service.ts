@@ -147,6 +147,22 @@ export class UtilitiesService {
     return date.toLocaleDateString('en-US', options);
   }
 
+  public formatStringDate(dateStr: string): string {
+    if (!dateStr) return '';
+
+    // Try parsing with different known formats
+    const parsedDate = new Date(dateStr);
+
+    // Check if parsedDate is valid
+    if (isNaN(parsedDate.getTime())) {
+      console.error('Invalid date:', dateStr);
+      return ''; // Return empty or handle invalid dates
+    }
+
+    // Convert to YYYY-MM-DD format
+    return parsedDate.toISOString().split('T')[0];
+  }
+
   /**
    * This is the generic method for date conversion
    * @param date {string} date wanted to be coverted

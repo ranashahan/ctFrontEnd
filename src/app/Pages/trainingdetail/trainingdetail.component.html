@@ -26,7 +26,7 @@
               <i class="fa-solid fa-file-pen me-1"></i
               >{{ formTraining.get("name")?.value }}
             </h3>
-            <p>
+            <p class="mb-1">
               @if (formTraining.get('status')?.value==='New') {
               <i class="fa-regular fa-envelope me-1"></i>
               }@else if (formTraining.get('status')?.value==='Open') {
@@ -41,13 +41,21 @@
 
               {{ formTraining.get("status")?.value }}
             </p>
-            <p>
+            <p class="mb-1">
               <i class="fa-regular fa-id-badge me-1"></i
               >{{ formTraining.get("id")?.value }}
             </p>
-            <p>
-              <i class="fa-solid fa-user-tie me-1"></i
+            <p class="mb-1">
+              <i title="Created By" class="fa-solid fa-user-tie me-2"></i
               >{{ formTraining.get("createdby")?.value }}
+              <i title="Created Date" class="fa-solid fa-thumbtack me-1"></i
+              >{{ formTraining.get("created_at")?.value | date }}
+            </p>
+            <p class="mb-1">
+              <i title="Modified By" class="fa-solid fa-user-pen me-1"></i
+              >{{ formTraining.get("modifiedby")?.value }}
+              <i title="Modified Date" class="fa-solid fa-thumbtack me-1"></i
+              >{{ formTraining.get("modified_at")?.value | date }}
             </p>
           </div>
           <div class="mb-3 col-auto">

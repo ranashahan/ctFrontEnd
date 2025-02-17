@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -8,47 +7,44 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
+import { AssessmentService } from '../../Services/assessment.service';
+import { UtilitiesService } from '../../Services/utilities.service';
 import {
   AbstractControl,
   FormArray,
   FormBuilder,
-  FormControl,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ToastComponent } from '../../Widgets/toast/toast.component';
-import { ActivatedRoute, RouterLink } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { apiAssessmentModel, apiSessionModel } from '../../Models/Assessment';
-import { apiContractorModel } from '../../Models/Contractor';
-import { apiTrainerModel } from '../../Models/Trainer';
-import { apiGenericModel } from '../../Models/Generic';
-import { apiCategoryModel } from '../../Models/Category';
-import { UtilitiesService } from '../../Services/utilities.service';
+import { MasterCategory } from '../../Models/AssessmentEXP';
+import { BloodgroupService } from '../../Services/bloodgroup.service';
+import { DltypeService } from '../../Services/dltype.service';
 import { ContractorService } from '../../Services/contractor.service';
-import { AssessmentService } from '../../Services/assessment.service';
+import { VisualService } from '../../Services/visual.service';
 import { TrainerService } from '../../Services/trainer.service';
 import { LocationService } from '../../Services/location.service';
 import { ResultService } from '../../Services/result.service';
 import { TitleService } from '../../Services/title.service';
 import { StageService } from '../../Services/stage.service';
 import { VehicleService } from '../../Services/vehicle.service';
-import { DriverService } from '../../Services/driver.service';
-import { apiClientModel } from '../../Models/Client';
 import { ClientService } from '../../Services/client.service';
-import { DltypeService } from '../../Services/dltype.service';
-import { BloodgroupService } from '../../Services/bloodgroup.service';
-import { VisualService } from '../../Services/visual.service';
+import { Subscription } from 'rxjs';
+import { apiContractorModel } from '../../Models/Contractor';
+import { ToastComponent } from '../../Widgets/toast/toast.component';
+import { CommonModule } from '@angular/common';
+import { apiSessionModel, DATA } from '../../Models/Assessment';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { DriverService } from '../../Services/driver.service';
 
 @Component({
   selector: 'app-assessmentdetail',
   imports: [
     ReactiveFormsModule,
-    FormsModule,
-    CommonModule,
     ToastComponent,
+    CommonModule,
+    FormsModule,
     RouterLink,
   ],
   templateUrl: './assessmentdetail.component.html',
@@ -56,82 +52,97 @@ import { VisualService } from '../../Services/visual.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AssessmentdetailComponent implements OnInit, OnDestroy {
-  sessionID: number = 0;
-  sessionDetail = signal<apiSessionModel | null>(null);
-  assessmentForm: FormGroup;
-  formDriver: FormGroup;
-
-  private driverService = inject(DriverService);
-  private clientService = inject(ClientService);
-  private utils = inject(UtilitiesService);
-  private cService = inject(ContractorService);
+  /**
+   * Injection
+   */
   private assessmentService = inject(AssessmentService);
+  private utils = inject(UtilitiesService);
+  private bgService = inject(BloodgroupService);
+  private dltypeService = inject(DltypeService);
+  private cService = inject(ContractorService);
+  private visualService = inject(VisualService);
   private trainerService = inject(TrainerService);
   private locationService = inject(LocationService);
   private resultService = inject(ResultService);
   private titleService = inject(TitleService);
   private stageService = inject(StageService);
   private vehicleService = inject(VehicleService);
-  private dltypeService = inject(DltypeService);
-  private bgService = inject(BloodgroupService);
-  private visualService = inject(VisualService);
-
+  private clientService = inject(ClientService);
+  private driverService = inject(DriverService);
+  /**
+   * Variables / Signals
+   */
+  sessionID: number = 0;
+  sessionDetail = signal<apiSessionModel | null>(null);
+  isLoading = signal<boolean>(true);
+  bloodGroups = this.bgService.bloodGroups;
+  visuals = this.visualService.visuals;
+  dltypes = this.dltypeService.dltypes;
   contractors = this.cService.contractors;
   clients = this.clientService.clients;
   trainers = this.trainerService.trainers;
-  selectedTrainerIds = new FormControl({ value: [''], disabled: true });
   titles = this.titleService.titles;
   locations = this.locationService.locations;
   stages = this.stageService.stages;
   results = this.resultService.results;
   vehicles = this.vehicleService.vehicles;
-  dltypes = this.dltypeService.dltypes;
-  bloodgroups = this.bgService.bloodGroups;
-  visuals = this.visualService.visuals;
-
-  isLoading = true;
+  assessments = this.assessmentService.assessments;
+  isLicenseExpired = signal<boolean>(false);
+  isContractorExist = signal<boolean>(false);
+  isDriverLoaded = signal<boolean>(false);
   isAPICallInProgress = signal<boolean>(false);
-  initialFormData: any;
-  initialSessionData: any;
-  categories = signal<apiCategoryModel[]>([]);
-  isEdit = false;
-
-  /**
-   * Subscriptionlist so ngondestory will destory all registered subscriptions.
-   */
+  licenseVerification = signal<any[]>([]);
+  assessmentForm: FormGroup;
+  driverForm: FormGroup;
+  isEdit = signal<boolean>(false);
   subscriptionList: Subscription[] = [];
 
-  /**
-   * Constructor
-   * @param fb form builder
-   * @param cdRef Change detector Reference
-   * @param route route reference
-
-   */
   constructor(
     private fb: FormBuilder,
     private cdRef: ChangeDetectorRef,
     private route: ActivatedRoute
   ) {
     this.sessionID = parseInt(this.route.snapshot.paramMap.get('id') ?? '0');
-    this.utils.setTitle('Assessment Details');
-    this.assessmentForm = this.fb.group({});
-    this.formDriver = this.fb.group({
+
+    this.assessmentForm = this.fb.group({
+      sessionName: [{ value: '', disabled: true }, Validators.required],
+      sessionDate: [
+        { value: null, disabled: !this.isEdit() },
+        Validators.required,
+      ],
+      classdate: [{ value: null, disabled: !this.isEdit() }],
+      yarddate: [{ value: null, disabled: !this.isEdit() }],
+      trainerid: [{ value: 0, disabled: !this.isEdit() }, Validators.required],
+      stageId: [{ value: 0, disabled: !this.isEdit() }],
+      titleId: [{ value: 0, disabled: !this.isEdit() }],
+      resultId: [{ value: 0, disabled: !this.isEdit() }],
+      locationId: [{ value: 0, disabled: !this.isEdit() }],
+      vehicleId: [{ value: 0, disabled: !this.isEdit() }],
+      route: [{ value: '', disabled: !this.isEdit() }],
+      quizscore: [{ value: '', disabled: !this.isEdit() }],
+      comment: [{ value: '', disabled: !this.isEdit() }],
+      traffic: [{ value: '', disabled: !this.isEdit() }],
+      weather: [{ value: '', disabled: !this.isEdit() }],
+      categories: this.fb.array([]), // Initialize categories array
+    });
+
+    this.driverForm = this.fb.group({
       id: [{ value: '', disabled: true }, Validators.required],
-      name: [{ value: '', disabled: true }, Validators.required],
-      nic: [{ value: '', disabled: true }, Validators.required],
-      nicexpiry: [{ value: '', disabled: true }, Validators.required],
-      dob: [{ value: '', disabled: true }, Validators.required],
-      age: [{ value: '', disabled: true }, Validators.required],
-      permitnumber: [{ value: '', disabled: true }, Validators.required],
-      permitexpiry: [{ value: '', disabled: true }, Validators.required],
-      licensenumber: [{ value: '', disabled: true }, Validators.required],
-      licensetypeid: [{ value: '', disabled: true }, Validators.required],
-      licenseexpiry: [{ value: '', disabled: true }, Validators.required],
-      bloodgroupid: [{ value: '', disabled: true }, Validators.required],
-      contractorid: [{ value: '', disabled: true }, Validators.required],
-      clientName: [{ value: '', disabled: true }, Validators.required],
-      visualid: [{ value: '', disabled: true }, Validators.required],
+      name: [{ value: '', disabled: true }],
+      nic: [{ value: '', disabled: true }],
+      nicexpiry: [{ value: '', disabled: true }],
+      dob: [{ value: '', disabled: true }],
+      age: [{ value: '', disabled: true }],
+      permitnumber: [{ value: '', disabled: true }],
+      permitexpiry: [{ value: '', disabled: true }],
+      licensenumber: [{ value: '', disabled: true }],
+      licenseexpiry: [{ value: '', disabled: true }],
+      licensetypeid: [{ value: '', disabled: true }],
+      licenseverified: [{ value: '', disabled: true }],
+      contractorid: [{ value: '', disabled: true }],
+      bloodgroupid: [{ value: '', disabled: true }],
+      visualid: [{ value: '', disabled: true }],
+      clientname: [{ value: '', disabled: true }],
     });
   }
 
@@ -139,56 +150,300 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
    * This method will invoke all the methods while rendering the page
    */
   ngOnInit(): void {
-    this.getAllAssessments();
+    this.utils.setTitle('Assessment Detail');
+    this.licenseVerification.set(this.utils.verificationStatus());
+    const scores = this.assessments(); // Assuming this fetches scores
+    if (!scores || scores.length === 0) {
+    }
+    this.getSessionByID();
+  }
+
+  /**
+   * This method will restrict user to type only 1 digit
+   * @param event event
+   */
+  public restrictToSingleDigit(event: any): void {
+    const input = event.target;
+    if (input.value.length > 1) {
+      input.value = input.value.slice(0, 1);
+    }
+  }
+
+  /**
+   * This method will setup assessment Form
+   * @param categories
+   */
+  private setCategories(categories: MasterCategory[], scores: DATA[]): void {
+    const categoryFGs = categories.map((category) =>
+      this.fb.group({
+        id: category.id,
+        name: category.name,
+        slavecategories: this.fb.array(
+          category.slavecategories?.map((slavecategory) =>
+            this.fb.group({
+              id: slavecategory.id,
+              name: slavecategory.name,
+              initials: slavecategory.initials,
+              activities: this.fb.array(
+                slavecategory.activities?.map((activity) => {
+                  // Find saved scores for this activity
+                  const assessments = scores.filter(
+                    (a) => a.activityid === activity.id
+                  );
+
+                  // Assign scores based on assessment_type
+                  const scoreInitial =
+                    assessments.find((a) => a.assessment_type === 'Initial')
+                      ?.score ?? null;
+                  const scoreMiddle =
+                    assessments.find((a) => a.assessment_type === 'Middle')
+                      ?.score ?? null;
+                  const scoreFinal =
+                    assessments.find((a) => a.assessment_type === 'Final')
+                      ?.score ?? null;
+
+                  return this.fb.group({
+                    id: activity.id,
+                    name: activity.name,
+                    initials: activity.initials,
+                    scoreInitial: [
+                      { value: scoreInitial, disabled: !this.isEdit() },
+                    ], // Set Initial score
+                    scoreMiddle: [
+                      { value: scoreMiddle, disabled: !this.isEdit() },
+                    ], // Set Middle score
+                    scoreFinal: [
+                      { value: scoreFinal, disabled: !this.isEdit() },
+                    ], // Set Final score
+                  });
+                })
+                // slavecategory.activities?.map((activity) =>
+                //   this.fb.group({
+                //     id: activity.id,
+                //     name: activity.name,
+                //     initials: activity.initials,
+                //     scoreInitial: [activity.scoreInitial],
+                //     scoreMiddle: [activity.scoreMiddle],
+                //     scoreFinal: [activity.scoreFinal],
+                //   })
+                // )
+              ),
+            })
+          )
+        ),
+      })
+    );
+    const categoryFormArray = this.fb.array(categoryFGs);
+    this.assessmentForm.setControl('categories', categoryFormArray);
+  }
+
+  /**
+   * This method will return all the categories
+   */
+  public get categories() {
+    return this.assessmentForm.get('categories') as FormArray;
+  }
+
+  /**
+   * This method will get slavecategories against category
+   * @param categoryIndex category index number
+   * @returns slavecategories
+   */
+  public getSlaveCategories(categoryIndex: number): FormArray {
+    return this.categories
+      .at(categoryIndex)
+      .get('slavecategories') as FormArray;
+  }
+
+  /**
+   * This method will get activities against category & slavecategory
+   * @param categoryIndex category index number
+   * @param slaveIndex slavecategory index number
+   * @returns activities
+   */
+  public getActivities(categoryIndex: number, slaveIndex: number): FormArray {
+    return this.getSlaveCategories(categoryIndex)
+      .at(slaveIndex)
+      .get('activities') as FormArray;
+  }
+
+  /**
+   * This method will save the assessment into database
+   */
+  public saveAssessment(): void {
+    //console.log(this.assessmentForm.getRawValue());
+    var vCategories: MasterCategory[] = this.assessmentForm.value.categories;
+    var checkAssessment: boolean = this.checkAssessments(vCategories);
+    var sessionDate: string = this.assessmentForm.get('sessionDate')?.value;
+    if (!sessionDate) {
+      this.utils.showToast(
+        'Assessment could not be submitted without Session Date, Please select date first!',
+        'error'
+      );
+    } else if (!checkAssessment) {
+      this.utils.showToast(
+        'Assessment data are mandatory, please submit at least one score',
+        'error'
+      );
+    } else {
+      if (!this.isAPICallInProgress()) {
+        this.isAPICallInProgress.set(true);
+        this.subscriptionList.push(
+          this.assessmentService
+            .updateAssessment(
+              this.sessionDetail()?.id ?? 0,
+              this.assessmentForm.value
+            )
+            .subscribe({
+              next: (data) => {
+                this.utils.showToast(
+                  'DDC form has been updated successfully!',
+                  'success'
+                );
+                this.isAPICallInProgress.set(false);
+              },
+              error: (err) => {
+                this.utils.showToast(err.message, 'error');
+                this.isAPICallInProgress.set(false);
+              },
+            })
+        );
+      }
+    }
+  }
+
+  /**
+   * This method will verify assessments are not null
+   * @param categories MasterCategory
+   * @returns boolean
+   */
+  checkAssessments(categories: MasterCategory[]): boolean {
+    return categories.some((category) =>
+      category.slavecategories.some((slavecategory) =>
+        slavecategory.activities.some(
+          (activity) =>
+            activity.scoreInitial !== null ||
+            activity.scoreMiddle !== null ||
+            activity.scoreFinal !== null
+        )
+      )
+    );
+  }
+
+  /**
+   * This method will calculate final Score as per given activities
+   * @param category category
+   * @param slaveCategoryId slavecategoryid
+   * @returns final number
+   */
+  public getFinalScoreTotal(
+    category: AbstractControl,
+    slaveCategoryId: number
+  ): number {
+    const formGroup = category as FormGroup;
+    const slaveCategoriesArray = formGroup.get('slavecategories') as FormArray;
+    if (!slaveCategoriesArray) return 0;
+
+    let totalScore = 0;
+
+    (slaveCategoriesArray.controls as FormGroup[]).forEach(
+      (slaveCategoryFG) => {
+        if (slaveCategoryFG.get('id')?.value === slaveCategoryId) {
+          const activitiesArray = slaveCategoryFG.get(
+            'activities'
+          ) as FormArray;
+
+          (activitiesArray.controls as FormGroup[]).forEach((activityFG) => {
+            totalScore += Number(activityFG.get('scoreFinal')?.value) || 0;
+          });
+        }
+      }
+    );
+    return totalScore;
+  }
+
+  /**
+   * This method will calculate total Score as per activities length
+   * @param category category
+   * @param slaveCategoryId slavecategoryid
+   * @returns totalscore number
+   */
+  public getTotalScore(
+    category: AbstractControl,
+    slaveCategoryId: number
+  ): number {
+    const formGroup = category as FormGroup;
+    const masterCategoryName = formGroup.get('name')?.value || ''; // Get Master Category name
+    const slaveCategories = formGroup.get('slavecategories')?.value || [];
+    let totalActivities = 0;
+
+    // Find the specific slavecategory by its ID
+    const slaveCategory = slaveCategories.find(
+      (sc: any) => sc.id === slaveCategoryId
+    );
+    if (slaveCategory) {
+      const activities = slaveCategory.activities || [];
+      totalActivities = activities.length;
+    }
+
+    return masterCategoryName === 'General'
+      ? totalActivities * 5
+      : totalActivities * 3;
   }
 
   /**
    * This method for fetch session from database against sessionid
    */
   getSessionByID() {
-    this.subscriptionList.push(
-      this.assessmentService
-        .getSessionbyID(this.sessionID)
-        .subscribe((res: any) => {
-          this.sessionDetail.set(res[0]);
-          this.initialSessionData = this.sessionDetail();
-          this.getDriver(res[0].driverid);
-          const data = this.updatedCategories();
-          this.categories.set(data);
+    setTimeout(() => {
+      this.subscriptionList.push(
+        this.assessmentService
+          .getSessionbyID(this.sessionID)
+          .subscribe((res: any) => {
+            this.sessionDetail.set(res[0]);
+            this.getDriver(res[0].driverid);
+            const formattedSessionDate = this.utils.convertToMySQLDate(
+              res[0].sessiondate
+            );
+            const formattedClassDate = this.utils.convertToMySQLDate(
+              res[0].classdate
+            );
+            const formattedYardDate = this.utils.convertToMySQLDate(
+              res[0].yarddate
+            );
 
-          const formattedSessionDate = this.utils.convertToMySQLDate(
-            res[0].sessiondate
-          );
+            this.assessmentForm.patchValue({
+              sessionName: res[0].name,
+              sessionDate: formattedSessionDate,
+              classdate: formattedClassDate,
+              yarddate: formattedYardDate,
+              trainerid: res[0].trainerid,
+              stageId: res[0].stageid,
+              titleId: res[0].titleid,
+              resultId: res[0].resultid,
+              locationId: res[0].locationid,
+              vehicleId: res[0].vehicleid,
+              route: res[0].route,
+              quizscore: res[0].quizscore,
+              comment: res[0].comment,
+              traffic: res[0].traffic,
+              weather: res[0].weather,
+            });
 
-          const formattedClassDate = this.utils.convertToMySQLDate(
-            res[0].classdate
-          );
-          const formattedYardDate = this.utils.convertToMySQLDate(
-            res[0].yarddate
-          );
+            // Step 5: Fetch categories and set categories once
+            const categories = this.assessments(); // Assuming this is your computed categories logic
+            this.setCategories(
+              categories,
+              this.sessionDetail()?.assessments || []
+            );
 
-          this.assessmentForm.patchValue({
-            sessionName: res[0].name,
-            sessionDate: formattedSessionDate,
-            classdate: formattedClassDate,
-            yarddate: formattedYardDate,
-            trainerid: res[0].trainerid,
-            stageId: res[0].stageid,
-            titleId: res[0].titleid,
-            resultId: res[0].resultid,
-            locationId: res[0].locationid,
-            vehicleId: res[0].vehicleid,
-            route: res[0].route,
-            quizscore: res[0].quizscore,
-            comment: res[0].comment,
-            traffic: res[0].traffic,
-            weather: res[0].weather,
-            categories: this.categories(),
-          });
+            // Step 6: Stop loader once everything is set
+            this.isLoading.set(false);
 
-          this.cdRef.detectChanges();
-        })
-    );
+            // this.cdRef.detectChanges();
+          })
+      );
+    }, 100);
   }
 
   /**
@@ -198,46 +453,14 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
     this.subscriptionList.push(
       this.driverService.getDriverByID(id).subscribe((driverData: any) => {
         // this.driver = driverData[0];
-        this.formDriver.patchValue(driverData[0]);
+        this.driverForm.patchValue(driverData[0]);
         const clientid = this.getClientID(driverData[0].contractorid) || 0;
         const clietname = this.getClientName(clientid);
-        this.formDriver.patchValue({
-          clientName: clietname,
+        this.driverForm.patchValue({
+          clientname: clietname,
         });
       })
     );
-  }
-
-  /**
-   * This method for fetch all the assessment data
-   */
-  getAllAssessments(): void {
-    this.subscriptionList.push(
-      this.assessmentService.getAllAssessments().subscribe((res: any) => {
-        this.getSessionByID();
-        this.categories.set(res);
-        this.createForm();
-        //this.initialFormData = this.assessmentForm.value;
-      })
-    );
-  }
-
-  /**
-   * This method for selected trainer
-   * @param trainerIds string array trainer Ids
-   */
-  Selected(trainerIds: string[]) {
-    this.selectedTrainerIds.setValue(trainerIds);
-  }
-
-  /**
-   * This method for fetch contractors
-   */
-  getClientID(itemID: number) {
-    const contractor = this.contractors().find(
-      (c: apiContractorModel) => c.id === itemID
-    );
-    return contractor?.clientid;
   }
 
   /**
@@ -245,216 +468,18 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
    * @param itemId blood group ID
    * @returns string blood group name
    */
-  getClientName(itemId: number): string {
+  private getClientName(itemId: number): string {
     return this.utils.getGenericName(this.clients(), itemId);
   }
 
   /**
-   * This method for create assessment for with initial values
+   * This method for fetch contractors
    */
-  createForm(): void {
-    this.assessmentForm = this.fb.group({
-      sessionName: [{ value: '', disabled: true }, Validators.required],
-      sessionDate: [
-        { value: null, disabled: !this.isEdit },
-        Validators.required,
-      ],
-      classdate: [{ value: null, disabled: !this.isEdit }],
-      yarddate: [{ value: null, disabled: !this.isEdit }],
-      trainerid: [{ value: 0, disabled: true }, Validators.required],
-      stageId: [{ value: '', disabled: !this.isEdit }],
-      titleId: [{ value: '', disabled: !this.isEdit }],
-      resultId: [{ value: '', disabled: !this.isEdit }],
-      locationId: [{ value: '', disabled: !this.isEdit }],
-      vehicleId: [{ value: '', disabled: !this.isEdit }],
-      route: [{ value: '', disabled: !this.isEdit }],
-      quizscore: [{ value: '', disabled: !this.isEdit }],
-      comment: [{ value: '', disabled: !this.isEdit }],
-      traffic: [{ value: '', disabled: !this.isEdit }],
-      weather: [{ value: '', disabled: !this.isEdit }],
-      categories: this.fb.array(
-        this.categories().map((category: apiCategoryModel) =>
-          this.fb.group({
-            id: [category.id],
-            selected: [false],
-            assessments: this.fb.array(
-              // Ensure the 'assessments' FormArray is initialized
-              category.assessments.map((assessment: apiAssessmentModel) =>
-                this.fb.group({
-                  id: [assessment.id || 0],
-                  name: [assessment.name || ''],
-                  initials: [assessment.initials || ''],
-                  scoreInitial: [
-                    {
-                      value: assessment.scoreInitial || null,
-                      disabled: !this.isEdit,
-                    },
-                  ],
-                  scoreMiddle: [
-                    {
-                      value: assessment.scoreMiddle || null,
-                      disabled: !this.isEdit,
-                    },
-                  ],
-                  scoreFinal: [
-                    {
-                      value: assessment.scoreFinal || null,
-                      disabled: !this.isEdit,
-                    },
-                  ],
-                })
-              )
-            ),
-          })
-        )
-      ),
-    });
-    setTimeout(() => {
-      this.isLoading = false; // Hide loader when data is loaded
-      this.cdRef.detectChanges();
-    }, 1000);
-  }
-
-  /**
-   * This method for create category form
-   * @param category assessment category
-   * @returns form
-   */
-  createCategoryForm(category: any): FormGroup {
-    return this.fb.group({
-      selected: [category.selected],
-      assessments: this.fb.array(
-        category.assessments.map((assessment: any) =>
-          this.createAssessmentForm(assessment)
-        )
-      ),
-    });
-  }
-
-  /**
-   * This method for get assessments from categories
-   * @param category assessment category
-   * @returns assessments
-   */
-  getAssessments(category: AbstractControl) {
-    return category.get('assessments') as FormArray;
-  }
-
-  /**
-   * This method for create assessment form
-   * @param assessment
-   * @returns assessments
-   */
-  createAssessmentForm(assessment: any): FormGroup {
-    return this.fb.group({
-      name: [assessment.name],
-      scoreInitial: [assessment.scoreInitial],
-      scoreMiddle: [assessment.scoreMiddle],
-      scoreFinal: [assessment.scoreFinal],
-    });
-  }
-
-  /**
-   * This method for get controls
-   */
-  get controls() {
-    return (this.assessmentForm.get('categories') as FormArray)?.controls;
-  }
-
-  /**
-   * This method for get categories array
-   */
-  get categoriesArray(): FormArray {
-    return this.assessmentForm.get('categories') as FormArray;
-  }
-
-  /**
-   * This method for fetch saved scores
-   * @param categoryId number category id
-   * @param activityId number activity id
-   * @param assessmentType string assessmenttype
-   * @returns assessment
-   */
-  getSavedScores(
-    categoryId: number,
-    activityId: number,
-    assessmentType: string
-  ) {
-    const scores = this.sessionDetail()?.assessments;
-    if (!scores) {
-      return null; // Handle the case where scores are not available
-    }
-    return scores.find(
-      (assessment) =>
-        assessment.slavecategoryid === categoryId &&
-        assessment.activityid === activityId &&
-        assessment.assessment_type === assessmentType
-    )?.score;
-  }
-
-  /**
-   * This method for update categories
-   * @returns categories
-   */
-  updatedCategories() {
-    return this.categories().map((category) => {
-      const updatedAssessments = category.assessments.map((assessment) => {
-        return {
-          ...assessment,
-          scoreInitial:
-            this.getSavedScores(category.id, assessment.id, 'Initial') ?? null,
-          scoreMiddle:
-            this.getSavedScores(category.id, assessment.id, 'Middle') ?? null,
-          scoreFinal:
-            this.getSavedScores(category.id, assessment.id, 'Final') ?? null,
-        };
-      });
-
-      return {
-        ...category,
-        assessments: updatedAssessments,
-      };
-    });
-  }
-
-  /**
-   * This method for update assessment form into database
-   */
-  updateAssessmentForm() {
-    const originalSessionData = JSON.parse(
-      JSON.stringify(this.sessionDetail())
+  private getClientID(itemID: number): number {
+    const contractor = this.contractors().find(
+      (c: apiContractorModel) => c.id === itemID
     );
-
-    if (!this.isAPICallInProgress()) {
-      this.isAPICallInProgress.set(true);
-      this.subscriptionList.push(
-        this.assessmentService
-          .updateAssessment(originalSessionData.id, this.assessmentForm.value)
-          .subscribe({
-            next: (data) => {
-              this.utils.showToast(
-                'DDC form has been Updated successfully',
-                'success'
-              );
-              this.resetForm();
-              this.isAPICallInProgress.set(false);
-              this.cdRef.detectChanges();
-            },
-            error: (err) => {
-              this.utils.showToast(err.message, 'error');
-              this.isAPICallInProgress.set(false);
-              this.cdRef.detectChanges();
-            },
-          })
-      );
-    }
-  }
-
-  /**
-   * This method for reset form
-   */
-  resetForm() {
-    this.getAllAssessments();
+    return contractor?.clientid || 0;
   }
 
   /**
@@ -465,32 +490,28 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * This method for track
-   * @param index number
-   * @param _ any
-   * @returns track
-   */
-  trackByIndex(index: number, _: any) {
-    return index;
-  }
-
-  /**
    * This method will toggel the edit button
    */
   toggleEdit(): void {
-    this.isEdit = !this.isEdit;
-    // Enable or disable all fields except 'id'
+    this.isEdit.set(!this.isEdit());
     Object.keys(this.assessmentForm.controls).forEach((field) => {
       if (field !== 'sessionName' && field !== 'trainerid') {
         const control = this.assessmentForm.get(field);
 
-        if (this.isEdit) {
+        if (this.isEdit()) {
           control?.enable(); // Enable fields when in edit mode
         } else {
           control?.disable(); // Disable fields when not in edit mode
         }
       }
     });
+  }
+
+  /**
+   * This method will reset the form value to blank
+   */
+  public formRest(): void {
+    this.getSessionByID();
   }
 
   /**

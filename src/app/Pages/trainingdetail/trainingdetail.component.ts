@@ -157,6 +157,9 @@ export class TrainingdetailComponent implements OnInit, OnDestroy {
       assessment: [{ value: null, disabled: !this.isEdit }],
       commentry: [{ value: null, disabled: !this.isEdit }],
       createdby: [{ value: '', disabled: true }],
+      created_at: [{ value: null, disabled: true }],
+      modifiedby: [{ value: '', disabled: true }],
+      modified_at: [{ value: null, disabled: true }],
     });
 
     this.setupTotalCalculation();

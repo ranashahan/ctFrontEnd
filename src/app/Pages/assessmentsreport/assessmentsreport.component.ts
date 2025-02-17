@@ -8,10 +8,7 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
-import {
-  apiSessionDriverReportModel,
-  apiSessionModel,
-} from '../../Models/Assessment';
+import { apiSessionDriverReportModel } from '../../Models/Assessment';
 import {
   FormBuilder,
   FormGroup,
@@ -271,11 +268,33 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
    * @param session session array
    */
   public async downloadSessionReport() {
-    await this.reportService.generatePdfReportSession(this.session());
+    if (this.session().length > 0) {
+      await this.reportService.generatePdfReportSession(this.session());
+    } else {
+      this.utils.showToast('Did not find any records', 'warning');
+    }
   }
 
+  /**
+   * This method will generate driver card report PDF
+   */
   public async downloadDriverReport() {
-    await this.reportService.generateCardPDF(this.session());
+    if (this.session().length > 0) {
+      await this.reportService.generateCardPDF(this.session());
+    } else {
+      this.utils.showToast('Did not find any records', 'warning');
+    }
+  }
+
+  /**
+   * This method will generate card report in Docx (MsWord)
+   */
+  public downloadWordReport() {
+    if (this.session().length > 0) {
+      this.reportService.generateWordFile(this.session());
+    } else {
+      this.utils.showToast('Did not find any records', 'warning');
+    }
   }
 
   /**
