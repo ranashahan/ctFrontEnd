@@ -33,6 +33,7 @@ import { AddtrainingComponent } from './Pages/addtraining/addtraining.component'
 import { TrainingsreportComponent } from './Pages/trainingsreport/trainingsreport.component';
 import { CategoryComponent } from './Pages/category/category.component';
 import { CourseComponent } from './Pages/course/course.component';
+import { IndustriesComponent } from './Pages/industries/industries.component';
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
@@ -169,6 +170,12 @@ export const routes: Routes = [
       {
         path: 'dltype',
         component: DltypeComponent,
+        canActivate: [authGuard],
+        data: { roles: ['admin', 'manager'] },
+      },
+      {
+        path: 'industries',
+        component: IndustriesComponent,
         canActivate: [authGuard],
         data: { roles: ['admin', 'manager'] },
       },

@@ -18,7 +18,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { MasterCategory } from '../../Models/AssessmentEXP';
+import { MasterCategory, SuperCategory } from '../../Models/Assessment';
 import { BloodgroupService } from '../../Services/bloodgroup.service';
 import { DltypeService } from '../../Services/dltype.service';
 import { ContractorService } from '../../Services/contractor.service';
@@ -86,7 +86,7 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
   stages = this.stageService.stages;
   results = this.resultService.results;
   vehicles = this.vehicleService.vehicles;
-  assessments = this.assessmentService.assessments;
+  assessments = this.assessmentService.assessmentsfilter;
   isLicenseExpired = signal<boolean>(false);
   isContractorExist = signal<boolean>(false);
   isDriverLoaded = signal<boolean>(false);
@@ -105,6 +105,7 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
     this.sessionID = parseInt(this.route.snapshot.paramMap.get('id') ?? '0');
 
     this.assessmentForm = this.fb.group({
+      formid: [{ value: 0, disable: true }, Validators.required],
       sessionName: [{ value: '', disabled: true }, Validators.required],
       sessionDate: [
         { value: null, disabled: !this.isEdit() },
@@ -400,6 +401,7 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
         this.assessmentService
           .getSessionbyID(this.sessionID)
           .subscribe((res: any) => {
+            this.assessmentService.selectedSuperCategoryId.set(res[0].formid);
             this.sessionDetail.set(res[0]);
             this.getDriver(res[0].driverid);
             const formattedSessionDate = this.utils.convertToMySQLDate(
@@ -413,6 +415,7 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
             );
 
             this.assessmentForm.patchValue({
+              formid: res[0].formid,
               sessionName: res[0].name,
               sessionDate: formattedSessionDate,
               classdate: formattedClassDate,
@@ -495,7 +498,11 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
   toggleEdit(): void {
     this.isEdit.set(!this.isEdit());
     Object.keys(this.assessmentForm.controls).forEach((field) => {
-      if (field !== 'sessionName' && field !== 'trainerid') {
+      if (
+        field !== 'sessionName' &&
+        field !== 'formid' &&
+        field !== 'trainerid'
+      ) {
         const control = this.assessmentForm.get(field);
 
         if (this.isEdit()) {

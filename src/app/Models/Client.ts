@@ -7,6 +7,7 @@ export interface apiClientModel {
   website: string;
   agentname: string;
   agentnumber: string;
+  industriesid: number;
   createdby: number;
   modifiedby: number;
   created_at: string;

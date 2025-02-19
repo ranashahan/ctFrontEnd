@@ -2,11 +2,12 @@ import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { AuthService } from './auth.service';
-import { BehaviorSubject, catchError, map, Observable, throwError } from 'rxjs';
+import { catchError, map, Observable, throwError } from 'rxjs';
 import { apiActivityModel } from '../Models/Activity';
 import {
   apiMasterCategoryModel,
   apiSlaveCategoryModel,
+  apiSuperCategoryModel,
 } from '../Models/Category';
 
 @Injectable({
@@ -14,6 +15,7 @@ import {
 })
 export class ActivityService {
   private readonly apiURL = `${environment.apiUrl}activity/`;
+  private readonly apiSuperURL = `${environment.apiUrl}activity/super/`;
   private readonly apiMasterURL = `${environment.apiUrl}activity/master/`;
   private readonly apiSlaveURL = `${environment.apiUrl}activity/slave/`;
   private http = inject(HttpClient);
@@ -110,6 +112,90 @@ export class ActivityService {
   }
 
   /**
+   * This method will fetch all the super categories
+   * @returns Observable
+   */
+  getSuperCategoriesAll(): Observable<apiSuperCategoryModel[]> {
+    return this.http.get<apiSuperCategoryModel[]>(this.apiSuperURL + 'getAll');
+  }
+
+  /**
+   * This method will update master category
+   * @param id number master category id
+   * @param name string name
+   * @param description string description
+   * @returns Observable
+   */
+  updateSuperCategory(
+    id: number,
+    name: string,
+    description: string
+  ): Observable<apiSuperCategoryModel> {
+    return this.http.put<apiSuperCategoryModel>(this.apiSuperURL + id, {
+      name,
+      description,
+      userid: this.authService.getUserID(),
+    });
+  }
+
+  /**
+   * This method will create master category
+   * @param name string name
+   * @param description string description
+   * @returns Observable
+   */
+  createSuperCategory(
+    name: string,
+    description: string
+  ): Observable<apiSuperCategoryModel> {
+    return this.http.post<apiSuperCategoryModel>(this.apiSuperURL + 'create', {
+      name,
+      description,
+      userid: this.authService.getUserID(),
+    });
+  }
+
+  /**
+   * This method will deactivate slave category
+   * @param id number slave category id
+   * @returns Observable
+   */
+  deleteSuperCategory(id: number): Observable<apiSuperCategoryModel> {
+    return this.http
+      .post<apiSuperCategoryModel>(
+        this.apiSuperURL + id,
+        {
+          userid: this.authService.getUserID(),
+        },
+        { observe: 'response' }
+      )
+      .pipe(
+        map((response: HttpResponse<any>) => {
+          // console.log(`Status: ${response.status}`); // Access status code
+          return response.body; // Return response body
+        }),
+        catchError((error) => {
+          // console.log('Full error response:', error); // Log the full error object
+
+          // Extract the message from the error object.
+          let errorMessage = 'An unknown error occurred'; // Fallback message
+
+          // Check if the error has a response body with a message.
+          if (error.error && typeof error.error === 'object') {
+            if (error.error.message) {
+              errorMessage = error.error.message; // Check if error message exists in the error object
+            } else if (error.message) {
+              errorMessage = error.message; // Use general error message if available
+            }
+          } else if (error.message) {
+            errorMessage = error.message; // Use the top-level error message if no nested error object
+          }
+
+          return throwError(() => new Error(errorMessage)); // Pass the correct error message
+        })
+      );
+  }
+  /**
    * This method will fetch all the master categories
    * @returns Observable
    */
@@ -124,16 +210,22 @@ export class ActivityService {
    * @param id number master category id
    * @param name string name
    * @param description string description
+   * @param supercategoryid supercategory id
+   * @param orderid orderid
    * @returns Observable
    */
   updateMasterCategory(
     id: number,
     name: string,
-    description: string
+    description: string,
+    supercategoryid: number,
+    orderid: number
   ): Observable<apiMasterCategoryModel> {
     return this.http.put<apiMasterCategoryModel>(this.apiMasterURL + id, {
       name,
       description,
+      supercategoryid,
+      orderid,
       userid: this.authService.getUserID(),
     });
   }
@@ -146,13 +238,17 @@ export class ActivityService {
    */
   createMasterCategory(
     name: string,
-    description: string
+    description: string,
+    supercategoryid: number,
+    orderid: number
   ): Observable<apiMasterCategoryModel> {
     return this.http.post<apiMasterCategoryModel>(
       this.apiMasterURL + 'create',
       {
         name,
         description,
+        supercategoryid,
+        orderid,
         userid: this.authService.getUserID(),
       }
     );

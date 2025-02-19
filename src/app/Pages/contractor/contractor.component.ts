@@ -16,11 +16,11 @@ import {
 } from '@angular/forms';
 import { ToastComponent } from '../../Widgets/toast/toast.component';
 import { apiContractorModel } from '../../Models/Contractor';
-import { apiClientModel } from '../../Models/Client';
 import { Subscription } from 'rxjs';
 import { UtilitiesService } from '../../Services/utilities.service';
 import { ContractorService } from '../../Services/contractor.service';
 import { ClientService } from '../../Services/client.service';
+import { IndustriesService } from '../../Services/industries.service';
 
 @Component({
   selector: 'app-contractor',
@@ -33,7 +33,7 @@ export class ContractorComponent implements OnInit, OnDestroy {
   private cService = inject(ContractorService);
   private clientService = inject(ClientService);
   private utils = inject(UtilitiesService);
-
+  private industriesService = inject(IndustriesService);
   /**
    * contractor signal
    */
@@ -42,40 +42,11 @@ export class ContractorComponent implements OnInit, OnDestroy {
    * client signal
    */
   clients = this.clientService.clients;
-  /**
-   * paginated contractors signal
-   */
-  paginatedContractors = signal<any[]>([]);
-  /**
-   * current page
-   */
-  currentPage: number = 1;
-  /**
-   * itemPerPage
-   */
-  itemsPerPage: number = 25;
-  /**
-   * total pages
-   */
-  totalPages: number = 0;
-  /**
-   * Pages
-   */
-  pages = signal<number[]>([]);
-  /**
-   * filtered Contractors
-   */
-  filteredContractors = signal<any[]>([]);
-  /**
-   * Search query
-   */
-  searchTerm: string = '';
 
   /**
-   * Form client selected
+   * Industries signal
    */
-  selectedClientIds = new FormControl();
-
+  industries = this.industriesService.Industriess;
   /**
    * Subscriptionlist so ngondestory will destory all registered subscriptions.
    */
@@ -94,6 +65,7 @@ export class ContractorComponent implements OnInit, OnDestroy {
     initials: new FormControl(),
     clientid: new FormControl(),
     clientnames: new FormControl(),
+    industriesid: new FormControl(),
   });
 
   /**
@@ -101,7 +73,6 @@ export class ContractorComponent implements OnInit, OnDestroy {
    */
   ngOnInit(): void {
     this.utils.setTitle('Contractor');
-    this.paginatedContractors.set(this.contractors());
   }
 
   /**
@@ -111,6 +82,14 @@ export class ContractorComponent implements OnInit, OnDestroy {
    */
   getClientName(itemId: number): string {
     return this.utils.getGenericName(this.clients(), itemId);
+  }
+  /**
+   * This method will set blood group name against blood group ID
+   * @param itemId blood group ID
+   * @returns string blood group name
+   */
+  getIndustriesName(itemId: number): string {
+    return this.utils.getGenericName(this.industries(), itemId);
   }
 
   /**
@@ -136,7 +115,8 @@ export class ContractorComponent implements OnInit, OnDestroy {
     contactdepartment: string,
     address: string,
     initials: string,
-    clientid: number
+    clientid: number,
+    industriesid: number
   ) {
     if (!clientid) {
       this.utils.showToast(
@@ -156,7 +136,8 @@ export class ContractorComponent implements OnInit, OnDestroy {
             contactdepartment,
             address,
             initials,
-            clientid
+            clientid,
+            industriesid
           )
           .subscribe({
             next: (res: any) => {
@@ -211,67 +192,6 @@ export class ContractorComponent implements OnInit, OnDestroy {
    */
   executeExport() {
     this.utils.exportToExcel('contractor-table', 'Consult-contractor-export');
-  }
-
-  /**
-   * This method will filter the contractors by name
-   */
-  filterContractors(): void {
-    if (this.searchTerm) {
-      this.filteredContractors.set(
-        this.contractors().filter((contractor) =>
-          contractor.name.toLowerCase().includes(this.searchTerm.toLowerCase())
-        )
-      );
-    } else {
-      this.filteredContractors.set(this.contractors());
-    }
-    this.currentPage = 1; // Reset to the first page
-    this.totalPages = Math.ceil(
-      this.filteredContractors.length / this.itemsPerPage
-    );
-    this.pages.set(Array.from({ length: this.totalPages }, (_, i) => i + 1));
-    this.updatePaginatedContractors();
-  }
-
-  /**
-   * This method will update the paginated contractors
-   */
-  updatePaginatedContractors(): void {
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    this.paginatedContractors.set(
-      this.filteredContractors().slice(
-        startIndex,
-        startIndex + this.itemsPerPage
-      )
-    );
-  }
-  /**
-   * This method will work with pagination previous button
-   */
-  previousPage() {
-    if (this.currentPage > 1) {
-      this.currentPage--;
-      this.updatePaginatedContractors();
-    }
-  }
-
-  /**
-   * This methid will work with pagination next button
-   */
-  nextPage() {
-    if (this.currentPage < this.totalPages) {
-      this.currentPage++;
-      this.updatePaginatedContractors();
-    }
-  }
-  /**
-   * This method will navigate to page number
-   * @param page number page
-   */
-  goToPage(page: number) {
-    this.currentPage = page;
-    this.updatePaginatedContractors();
   }
 
   /**

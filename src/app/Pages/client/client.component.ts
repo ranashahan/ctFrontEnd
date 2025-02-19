@@ -18,6 +18,7 @@ import { Subscription } from 'rxjs';
 import { apiClientModel } from '../../Models/Client';
 import { ClientService } from '../../Services/client.service';
 import { UtilitiesService } from '../../Services/utilities.service';
+import { IndustriesService } from '../../Services/industries.service';
 
 @Component({
   selector: 'app-client',
@@ -28,11 +29,13 @@ import { UtilitiesService } from '../../Services/utilities.service';
 })
 export class ClientComponent implements OnInit, OnDestroy {
   private clientService = inject(ClientService);
+  private industriesService = inject(IndustriesService);
   private utils = inject(UtilitiesService);
   /**
    * client signal
    */
   clients = this.clientService.clients;
+  industries = this.industriesService.Industriess;
   /**
    * Form for creating new client
    */
@@ -44,6 +47,7 @@ export class ClientComponent implements OnInit, OnDestroy {
     website: new FormControl(),
     agentname: new FormControl(),
     agentnumber: new FormControl(),
+    industriesid: new FormControl(),
   });
   /**
    * Subscriptionlist so ngondestory will destory all registered subscriptions.
@@ -55,6 +59,15 @@ export class ClientComponent implements OnInit, OnDestroy {
    */
   ngOnInit(): void {
     this.utils.setTitle('Clients');
+  }
+
+  /**
+   * This method will set industry name against industries ID
+   * @param itemId industries ID
+   * @returns string industry name
+   */
+  getIndustriesName(itemId: number): string {
+    return this.utils.getGenericName(this.industries(), itemId);
   }
 
   /**
@@ -76,7 +89,8 @@ export class ClientComponent implements OnInit, OnDestroy {
     address: string,
     website: string,
     agentname: string,
-    agentnumber: string
+    agentnumber: string,
+    industriesid: number
   ) {
     this.subscriptionList.push(
       this.clientService
@@ -88,6 +102,7 @@ export class ClientComponent implements OnInit, OnDestroy {
           website,
           agentname,
           agentnumber,
+          industriesid,
           id
         )
         .subscribe({
@@ -120,7 +135,8 @@ export class ClientComponent implements OnInit, OnDestroy {
     address: string,
     website: string,
     agentname: string,
-    agentnumber: string
+    agentnumber: string,
+    industriesid: number
   ) {
     this.subscriptionList.push(
       this.clientService
@@ -131,7 +147,8 @@ export class ClientComponent implements OnInit, OnDestroy {
           address,
           website,
           agentname,
-          agentnumber
+          agentnumber,
+          industriesid
         )
         .subscribe({
           next: (res: any) => {

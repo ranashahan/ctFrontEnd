@@ -6,48 +6,38 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
-import { Subscription } from 'rxjs';
-import {
-  apiMasterCategoryModel,
-  apiSuperCategoryModel,
-} from '../../Models/Category';
 import {
   FormControl,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { UtilitiesService } from '../../Services/utilities.service';
-import { ActivityService } from '../../Services/activity.service';
 import { ToastComponent } from '../toast/toast.component';
 import { CommonModule } from '@angular/common';
+import { apiSuperCategoryModel } from '../../Models/Category';
+import { Subscription } from 'rxjs';
+import { UtilitiesService } from '../../Services/utilities.service';
+import { ActivityService } from '../../Services/activity.service';
 
 @Component({
-  selector: 'app-mastercategory',
+  selector: 'app-supercategory',
   imports: [ReactiveFormsModule, ToastComponent, CommonModule, FormsModule],
-  templateUrl: './mastercategory.component.html',
-  styleUrl: './mastercategory.component.css',
+  templateUrl: './supercategory.component.html',
+  styleUrl: './supercategory.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MastercategoryComponent implements OnInit, OnDestroy {
+export class SupercategoryComponent implements OnInit, OnDestroy {
   /**
    * Primary category Signal
-   */
-  primaryCategories = signal<apiMasterCategoryModel[]>([]);
-
-  /**
-   * Super Category Signal
    */
   superCategories = signal<apiSuperCategoryModel[]>([]);
 
   /**
    * Primary category form
    */
-  formPrimaryCategory = new FormGroup({
+  formSuperCategory = new FormGroup({
     name: new FormControl(),
     description: new FormControl(),
-    supercategoryid: new FormControl(),
-    orderid: new FormControl(),
   });
 
   /**
@@ -71,38 +61,14 @@ export class MastercategoryComponent implements OnInit, OnDestroy {
    */
   ngOnInit(): void {
     this.getAll();
-    this.getAllSuper();
   }
-
-  /**
-   * This method will fetch all the master category from database
-   */
-  getAllSuper(): void {
-    this.subscriptionList.push(
-      this.activityService.getSuperCategoriesAll().subscribe((res: any) => {
-        this.superCategories.set(res);
-      })
-    );
-  }
-  /**
-   * This method will fetch master category name against its ID
-   * @param mastercategoryid number master category Id
-   * @returns string mastercategory name
-   */
-  getSuperCategoryName(supercategoryid: number): string {
-    const foundCategory = this.superCategories().find(
-      (category) => category.id === supercategoryid
-    );
-    return foundCategory ? foundCategory.name : '';
-  }
-
   /**
    * This method will fetch all the records from database.
    */
   getAll(): void {
     this.subscriptionList.push(
-      this.activityService.getMasterCategoriesAll().subscribe((res: any) => {
-        this.primaryCategories.set(res);
+      this.activityService.getSuperCategoriesAll().subscribe((res: any) => {
+        this.superCategories.set(res);
       })
     );
   }
@@ -113,22 +79,13 @@ export class MastercategoryComponent implements OnInit, OnDestroy {
    * @param name string category name
    * @param description string category description
    */
-  update(
-    id: number,
-    name: string,
-    description: string,
-    supercategoryid: number,
-    orderid: number
-  ) {
+  update(id: number, name: string, description: string) {
     this.subscriptionList.push(
       this.activityService
-        .updateMasterCategory(id, name, description, supercategoryid, orderid)
+        .updateSuperCategory(id, name, description)
         .subscribe({
           next: (res: any) => {
-            this.utils.showToast(
-              'Primary Category Updated Successfully',
-              'success'
-            );
+            this.utils.showToast('Form Updated Successfully', 'success');
           },
           error: (err: any) => {
             const errorMessage = err?.message || 'An unexpected error occurred';
@@ -143,25 +100,18 @@ export class MastercategoryComponent implements OnInit, OnDestroy {
    * @param name string category name
    * @param description string category description
    */
-  create(
-    name: string,
-    description: string,
-    supercategoryid: number,
-    orderid: number
-  ) {
+  create(name: string, description: string) {
     this.subscriptionList.push(
-      this.activityService
-        .createMasterCategory(name, description, supercategoryid, orderid)
-        .subscribe({
-          next: (res: any) => {
-            this.utils.showToast(res.message, 'success');
-            this.getAll();
-          },
-          error: (err: any) => {
-            const errorMessage = err?.message || 'An unexpected error occurred';
-            this.utils.showToast(errorMessage, 'error');
-          },
-        })
+      this.activityService.createSuperCategory(name, description).subscribe({
+        next: (res: any) => {
+          this.utils.showToast(res.message, 'success');
+          this.getAll();
+        },
+        error: (err: any) => {
+          const errorMessage = err?.message || 'An unexpected error occurred';
+          this.utils.showToast(errorMessage, 'error');
+        },
+      })
     );
   }
 
@@ -175,13 +125,13 @@ export class MastercategoryComponent implements OnInit, OnDestroy {
     );
     if (isConfirmed) {
       this.subscriptionList.push(
-        this.activityService.deleteMasterCategory(id).subscribe({
+        this.activityService.deleteSuperCategory(id).subscribe({
           next: (data) => {
             this.utils.showToast(
               'Primary Category has been deleted successfully',
               'success'
             );
-            this.primaryCategories.update((activity) =>
+            this.superCategories.update((activity) =>
               activity.filter((act) => act.id !== id)
             );
           },
@@ -198,7 +148,7 @@ export class MastercategoryComponent implements OnInit, OnDestroy {
    * @param item primarycategory
    */
   onEdit(item: any) {
-    this.primaryCategories().forEach((element: apiMasterCategoryModel) => {
+    this.superCategories().forEach((element: apiSuperCategoryModel) => {
       element.isEdit = false;
     });
     item.isEdit = true;
@@ -216,7 +166,7 @@ export class MastercategoryComponent implements OnInit, OnDestroy {
    * This method to reset the user profile form
    */
   formReset() {
-    this.formPrimaryCategory.reset();
+    this.formSuperCategory.reset();
   }
 
   /**

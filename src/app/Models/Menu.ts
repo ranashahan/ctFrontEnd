@@ -141,6 +141,12 @@ export const Menu = {
           icon: 'fa-solid fa-id-badge me-1',
         },
         {
+          name: 'Industries',
+          path: '/industries',
+          roles: ['admin', 'manager'],
+          icon: 'fa-solid fa-industry me-1',
+        },
+        {
           name: 'Locations',
           path: '/location',
           roles: ['admin', 'manager'],
