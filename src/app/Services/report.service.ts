@@ -691,15 +691,63 @@ export class ReportService {
     const tableRows: TableRow[] = [];
 
     for (let i = 0; i < drivers.length; i++) {
-      const driver1 = drivers[i];
-      const qrcodeString = `Name: ${driver1.drivername} NIC: ${driver1.nic} License: ${driver1.licensenumber} Permit: ${driver1.permitnumber} Expiry: ${driver1.permitexpiry} SessionID: ${driver1.sessioname}`;
+      const driver = drivers[i];
+      const qrcodeString = `Name: ${driver.drivername} NIC: ${driver.nic} License: ${driver.licensenumber} Permit: ${driver.permitnumber} Expiry: ${driver.permitexpiry} SessionID: ${driver.sessioname}`;
+      let cardColor: string;
+      let cardWording: string;
+      let cardTitle: string;
+      switch (driver.formid) {
+        case 1:
+          if (driver.sessioncontractorid == 1) {
+            cardColor = '#DE3163';
+          } else {
+            cardColor = '11a53c';
+          }
+          cardWording = 'Trained and Assessed on UEPL ADDT Protocol';
+          break;
+        case 2:
+          cardColor = 'FF7F50';
+          cardWording = 'Trained and Assessed on DDT Protocol';
+          break;
+        case 3:
+          cardColor = '999999';
+          cardWording = 'Trained and Assessed on Client Company ADDT Protocol';
+          break;
+        // case 4:
+        //   cardColor = '11a53c';
+        //   cardWording = 'Trained and Assessed on UEPL ADDT Protocol';
+        //   break;
+        default:
+          cardColor = '11a53c';
+          cardWording = 'Trained and Assessed on UEPL ADDT Protocol';
+          break;
+      }
+
+      switch (driver.titleid) {
+        case 1:
+          cardTitle = 'Defensive Driving HV Permit';
+          break;
+        case 2:
+          cardTitle = 'Defensive Driving LV Permit';
+          break;
+        default:
+          cardTitle = 'Defensive Driving HV Permit';
+          break;
+      }
 
       // Generate QR Codes
       const qrCode1 = await this.generateQRCode(qrcodeString);
       const logo = await this.loadImage();
       //console.log(qrCode1);
       // Create driver cards
-      const driverCard1 = this.createDriverCard(driver1, qrCode1, logo);
+      const driverCard1 = this.createDriverCard(
+        driver,
+        qrCode1,
+        logo,
+        cardTitle,
+        cardColor,
+        cardWording
+      );
 
       tableRows.push(new TableRow({ children: [driverCard1] }));
     }
@@ -742,7 +790,14 @@ export class ReportService {
    * @param logo C&T Logo
    * @returns TableCell
    */
-  private createDriverCard(driver: any, qrCodeBase64: string, logo: any) {
+  private createDriverCard(
+    driver: apiSessionDriverReportModel,
+    qrCodeBase64: string,
+    logo: any,
+    cardTitle: string,
+    cardColor: string,
+    cardwording: string
+  ) {
     const base64Data = qrCodeBase64.replace(/^data:image\/png;base64,/, '');
     const imageBuffer = new Uint8Array(
       atob(base64Data)
@@ -805,7 +860,7 @@ export class ReportService {
                       // alignment: AlignmentType.CENTER,
                       children: [
                         new TextRun({
-                          text: 'Defensive Driving HV Permit',
+                          text: `${cardTitle}`,
                           bold: true,
                           size: 32,
                         }),
@@ -880,7 +935,7 @@ export class ReportService {
                 new TableCell({
                   shading: {
                     type: ShadingType.SOLID,
-                    color: '11a53c', // Green background
+                    color: `${cardColor}`, // Green background
                   },
                   borders: {
                     top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
@@ -902,7 +957,7 @@ export class ReportService {
                       alignment: AlignmentType.CENTER,
                       children: [
                         new TextRun({
-                          text: 'Trained and Assessed on UEPL ADDT Protocol',
+                          text: `${cardwording}`,
                           bold: true,
                           color: 'FFFFFF',
                         }),
@@ -1420,7 +1475,7 @@ export class ReportService {
                     new Paragraph({
                       children: [
                         new TextRun({
-                          text: `${driver.code}`,
+                          text: `${driver.code ?? ''}`,
                           bold: true,
                         }),
                       ],

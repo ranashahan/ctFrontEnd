@@ -46,7 +46,7 @@ export class ContractorComponent implements OnInit, OnDestroy {
   /**
    * Industries signal
    */
-  industries = this.industriesService.Industriess;
+  industries = this.industriesService.industries;
   /**
    * Subscriptionlist so ngondestory will destory all registered subscriptions.
    */

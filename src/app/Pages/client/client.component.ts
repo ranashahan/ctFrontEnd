@@ -35,7 +35,7 @@ export class ClientComponent implements OnInit, OnDestroy {
    * client signal
    */
   clients = this.clientService.clients;
-  industries = this.industriesService.Industriess;
+  industries = this.industriesService.industries;
   /**
    * Form for creating new client
    */

@@ -4,10 +4,9 @@ export interface apiTrainerModel {
   initials: string;
   mobile: string;
   address: string;
+  active: number;
   createdby: number;
   modifiedby: number;
-  createdDate: string;
-  modifiedDate: string;
   isEdit: boolean;
   description: string;
   created_at: string;

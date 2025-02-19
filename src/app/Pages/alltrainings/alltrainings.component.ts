@@ -377,13 +377,13 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
    */
   public getRowStyle = (params: any) => {
     switch (params.data.status) {
-      case 'New': // Red Theme
+      case 'Tentative': // Red Theme
         return { background: '#f8d7da', color: '#842029' };
-      case 'Open': // Yellow Theme
+      case 'Planned': // Yellow Theme
         return { background: '#fff3cd', color: '#856404' };
-      case 'Plan':
+      case 'Conducted': // Blue Theme
         return { background: '#cfe2ff', color: '#084298' };
-      case 'InProgress': // Green Theme
+      case 'Billed': // Green Theme
         return { background: '#d1e7dd', color: '#0f5132' };
       default: // Return undefined for other cases
         return undefined;

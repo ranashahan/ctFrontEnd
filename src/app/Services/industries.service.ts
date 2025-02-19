@@ -23,7 +23,7 @@ export class IndustriesService {
   /**
    * Readonly Computed Industriess
    */
-  public Industriess = computed(
+  public industries = computed(
     () => this.IndustriesResponse.value() ?? ([] as apiGenericModel[])
   );
 

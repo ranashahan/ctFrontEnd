@@ -129,6 +129,14 @@
               save
             </button>
             <button
+              class="btn btn-sm btn-outline-danger ms-1"
+              (click)="deleteTrainer(trainer.id)"
+              title="Delete Trainer"
+            >
+              <i class="fa-solid fa-trash-can"></i>
+              Delete
+            </button>
+            <button
               class="btn btn-sm btn-outline-primary ms-1"
               (click)="trainer.isEdit = false"
               title="Cancel"

@@ -92,6 +92,17 @@ export class TrainerService {
   }
 
   /**
+   * This method will deactivate trainer
+   * @param id number trainer id
+   * @returns Observable
+   */
+  deleteTrainer(id: number): Observable<apiTrainerModel> {
+    return this.http.post<apiTrainerModel>(this.apiURL + id, {
+      userid: this.authService.getUserID(),
+    });
+  }
+
+  /**
    * This method will fetch trainer count for dashboard
    * @returns Observable
    */

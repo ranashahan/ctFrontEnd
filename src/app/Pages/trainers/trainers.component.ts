@@ -116,6 +116,33 @@ export class TrainersComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * This method will diactive the trainer
+   * @param id trainerid
+   */
+  deleteTrainer(id: number) {
+    const isConfirmed = confirm(
+      'Are you sure you want to delete this trainer:' + id
+    );
+
+    if (isConfirmed) {
+      this.subscriptionList.push(
+        this.trainerService.deleteTrainer(id).subscribe({
+          next: (data) => {
+            this.utils.showToast(
+              'Trainer has been deleted successfully',
+              'success'
+            );
+            this.trainerService.refreshTrainers();
+          },
+          error: (err) => {
+            this.utils.showToast(err.message, 'error');
+          },
+        })
+      );
+    }
+  }
+
+  /**
    * This method will enable editalble fields.
    * @param trainer trainer
    */
