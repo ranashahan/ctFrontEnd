@@ -4,6 +4,8 @@ export interface apiActivityModel {
   description: string;
   initials: string;
   orderid: number;
+  mastercategoryid: number;
+  supercategoryid: number;
   slavecategoryid: number;
   active: number;
   createdby: number;

@@ -1,16 +1,22 @@
-import { apiAssessmentModel } from './Assessment';
-
-export interface apiCategoryModel {
+export interface apiSuperCategoryModel {
   id: number;
   name: string;
-  initials: string;
-  assessments: apiAssessmentModel[];
+  description: string;
+  active: number;
+  createdby: number;
+  modifiedby: number;
+  created_at: string;
+  modified_at: string;
+  isEdit: boolean;
+  message: string;
 }
 
 export interface apiMasterCategoryModel {
   id: number;
   name: string;
   description: string;
+  supercategoryid: number;
+  orderid: number;
   active: number;
   createdby: number;
   modifiedby: number;

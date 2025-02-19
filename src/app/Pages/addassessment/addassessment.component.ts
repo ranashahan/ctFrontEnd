@@ -19,7 +19,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { MasterCategory } from '../../Models/AssessmentEXP';
+import { MasterCategory } from '../../Models/Assessment';
 import { BloodgroupService } from '../../Services/bloodgroup.service';
 import { DltypeService } from '../../Services/dltype.service';
 import { ContractorService } from '../../Services/contractor.service';
@@ -84,7 +84,8 @@ export class AddassessmentComponent implements OnInit, OnDestroy {
   stages = this.stageService.stages;
   results = this.resultService.results;
   vehicles = this.vehicleService.vehicles;
-  assessments = this.assessmentService.assessments;
+  assessments = this.assessmentService.assessmentsfilter;
+  forms = this.assessmentService.forms;
   isLicenseExpired = signal<boolean>(false);
   isContractorExist = signal<boolean>(false);
   isDriverLoaded = signal<boolean>(false);
@@ -99,7 +100,9 @@ export class AddassessmentComponent implements OnInit, OnDestroy {
   driverSearchComponent!: DriversearchComponent;
 
   constructor(private fb: FormBuilder) {
+    this.assessmentService.selectedSuperCategoryId.set(1);
     this.assessmentForm = this.fb.group({
+      formid: [1, Validators.required],
       sessionName: ['', Validators.required],
       sessionDate: [null, Validators.required],
       classdate: [null],
@@ -116,6 +119,9 @@ export class AddassessmentComponent implements OnInit, OnDestroy {
       traffic: [],
       weather: [],
       categories: this.fb.array([]), // Initialize categories array
+    });
+    this.assessmentForm.get('formid')?.valueChanges.subscribe((formid) => {
+      this.assessmentService.selectedSuperCategoryId.set(formid);
     });
 
     effect(() => {

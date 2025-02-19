@@ -1,4 +1,4 @@
-import { computed, inject, Injectable, Signal } from '@angular/core';
+import { computed, inject, Injectable, signal, Signal } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
@@ -17,16 +17,19 @@ import { apiGenericModel } from '../Models/Generic';
 import { rxResource } from '@angular/core/rxjs-interop';
 import {
   Activity,
+  apiForm,
   AssessmentFormModel,
   MasterCategory,
   Slavecategory,
-} from '../Models/AssessmentEXP';
+  SuperCategory,
+} from '../Models/Assessment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AssessmentService {
   private readonly apiURL = `${environment.apiUrl}assessment/`;
+  private readonly apiURLForm = `${environment.apiUrl}activity/super/`;
   private http = inject(HttpClient);
   private authService = inject(AuthService);
   private cService = inject(ContractorService);
@@ -43,15 +46,45 @@ export class AssessmentService {
    * Assessment API call
    */
   private assessmentResponse = rxResource({
-    loader: () => this.http.get<MasterCategory[]>(this.apiURL + 'getAll'),
+    loader: () => this.http.get<SuperCategory[]>(this.apiURL + 'getAll'),
   });
 
   /**
    * Readonly Computed assessments
    */
   public assessments = computed(
-    () => this.assessmentResponse.value() ?? ([] as MasterCategory[])
+    () => this.assessmentResponse.value() ?? ([] as SuperCategory[])
   );
+
+  /**
+   * Form API call
+   */
+  private formResponse = rxResource({
+    loader: () => this.http.get<apiForm[]>(this.apiURLForm + 'getAll'),
+  });
+  /**
+   * Form signal
+   */
+  public forms = computed(() => this.formResponse.value() ?? ([] as apiForm[]));
+
+  /**
+   * Selected Category
+   */
+  public selectedSuperCategoryId = signal<number | null>(1); // Signal to track selected ID
+
+  /**
+   * Filter computed signal
+   */
+  public assessmentsfilter = computed(() => {
+    const supercategoryid = this.selectedSuperCategoryId();
+    return supercategoryid
+      ? this.assessments().flatMap((superCategory) =>
+          Number(superCategory.id) === Number(supercategoryid)
+            ? superCategory.mastercategories
+            : []
+        )
+      : ([] as MasterCategory[]);
+  });
 
   /**
    * Refresh Assessment API call

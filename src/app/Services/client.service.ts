@@ -12,7 +12,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
 export class ClientService {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
-  private readonly apiURL = `${environment.apiUrl}client/`;
+  private readonly apiURL = `${environment.apiUrl}sponsor/client/`;
   /**
    * Client API call
    */
@@ -52,7 +52,8 @@ export class ClientService {
     address: string,
     website: string,
     agentname: string,
-    agentnumber: string
+    agentnumber: string,
+    industriesid: number
   ): Observable<apiClientModel> {
     return this.http.post<apiClientModel>(this.apiURL + 'create', {
       name,
@@ -62,6 +63,7 @@ export class ClientService {
       website,
       agentname,
       agentnumber,
+      industriesid,
       userid: this.authService.getUserID(),
     });
   }
@@ -86,6 +88,7 @@ export class ClientService {
     website: string,
     agentname: string,
     agentnumber: string,
+    industriesid: number,
     id: number
   ): Observable<apiClientModel> {
     return this.http.put<apiClientModel>(this.apiURL + id, {
@@ -96,6 +99,7 @@ export class ClientService {
       website,
       agentname,
       agentnumber,
+      industriesid,
       userid: this.authService.getUserID(),
     });
   }

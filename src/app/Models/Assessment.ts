@@ -1,21 +1,11 @@
-import { apiCategoryModel } from './Category';
-
-export interface apiAssessmentModel {
+export interface sessionEXP {
   id: number;
   name: string;
-  initials: string;
-  scoreInitial: number | null;
-  scoreMiddle: number | null;
-  scoreFinal: number | null;
+  mastercategories: MasterCategory[];
 }
 
-export interface ExtendedAssessmentModel extends apiAssessmentModel {
-  scoreInitial: number | null;
-  scoreMiddle: number | null;
-  scoreFinal: number | null;
-}
-
-export interface apiAssessmentFormModel {
+export interface AssessmentFormModel {
+  formid: number;
   sessionName: string;
   sessionDate: string;
   locationId: number;
@@ -35,15 +25,16 @@ export interface apiAssessmentFormModel {
   driverId: number;
   trainerid: number;
   contractorid: number;
-  categories: apiCategoryModel[];
+  categories: MasterCategory[];
   assessmentData: AssessmentData[];
   message: string;
 }
+
 interface AssessmentData {
   data: Datum[];
   totalScore: number;
 }
-export interface Datum {
+interface Datum {
   slavecategoryid: number;
   activityid: number;
   assessmenttype: string;
@@ -51,44 +42,82 @@ export interface Datum {
   assessmentdate: string;
 }
 
-export interface apiSessionModel {
+export interface SuperCategory {
   id: number;
   name: string;
-  sessiondate: Date;
-  locationid: any;
-  resultid: any;
-  stageid: any;
-  titleid: any;
-  vehicleid: any;
-  totalscore: number;
-  classdate: any;
-  yarddate: any;
-  weather: any;
-  traffic: any;
-  route: any;
-  quizscore: any;
-  comment: any;
-  active: number;
-  createdby: number;
-  modifiedby: number;
-  created_at: string;
-  modified_at: string;
-  contractorid: number;
-  message: string;
-  nic: string;
-  drivername: string;
-  driverid: number;
-  trainers: string;
-  assessments: DATA[];
+  mastercategories: MasterCategory[];
 }
-export interface DATA {
-  slavecategoryid: number;
-  slavecategoryname: string;
-  activityid: number;
-  activityname: string;
-  assessment_type: string;
-  score: number;
-  assessmentdate: string;
+
+export interface apiForm {
+  id: number;
+  name: string;
+  active: number;
+  message: string;
+}
+
+export interface MasterCategory {
+  id: number;
+  name: string;
+  slavecategories: Slavecategory[];
+}
+
+export interface Slavecategory {
+  id: number;
+  name: string;
+  initials?: string;
+  activities: Activity[];
+}
+
+export interface Activity {
+  id: number;
+  name: string;
+  initials?: string;
+  scoreInitial: any;
+  scoreMiddle: any;
+  scoreFinal: any;
+}
+
+export interface apiSessionDriverReportModel {
+  driverid: number;
+  drivername: string;
+  gender: string;
+  dob: Date;
+  nic: string;
+  nicexpiry: Date;
+  licensenumber: string;
+  licensetypeid: number;
+  licenseexpiry: Date;
+  licenseverified: number;
+  designation: string;
+  department: string;
+  permitnumber: string;
+  permitissue: Date;
+  permitexpiry: Date;
+  medicalexpiry: Date;
+  bloodgroupid: number;
+  drivercontractorid: number;
+  visualid: number;
+  ddccount: number;
+  experience: number;
+  code: string;
+  drivercomment: string;
+  sessionid: number;
+  sessioname: string;
+  sessiondate: Date;
+  locationid: number;
+  resultid: number;
+  stageid: number;
+  titleid: number;
+  vehicleid: number;
+  classdate: Date;
+  yarddate: Date;
+  weather: string;
+  traffic: string;
+  route: string;
+  quizscore: number;
+  sessioncomment: Text;
+  sessioncontractorid: number;
+  trainerid: number;
 }
 
 export interface apiVSessionModel {
@@ -136,46 +165,42 @@ export interface apiVSessionModel {
   isEdit: boolean;
   message: string;
 }
-
-export interface apiSessionDriverReportModel {
-  driverid: number;
-  drivername: string;
-  gender: string;
-  dob: Date;
-  nic: string;
-  nicexpiry: Date;
-  licensenumber: string;
-  licensetypeid: number;
-  licenseexpiry: Date;
-  licenseverified: number;
-  designation: string;
-  department: string;
-  permitnumber: string;
-  permitissue: Date;
-  permitexpiry: Date;
-  medicalexpiry: Date;
-  bloodgroupid: number;
-  drivercontractorid: number;
-  visualid: number;
-  ddccount: number;
-  experience: number;
-  code: string;
-  drivercomment: string;
-  sessionid: number;
-  sessioname: string;
+export interface apiSessionModel {
+  id: number;
+  name: string;
   sessiondate: Date;
-  locationid: number;
-  resultid: number;
-  stageid: number;
-  titleid: number;
-  vehicleid: number;
-  classdate: Date;
-  yarddate: Date;
-  weather: string;
-  traffic: string;
-  route: string;
-  quizscore: number;
-  sessioncomment: Text;
-  sessioncontractorid: number;
-  trainerid: number;
+  locationid: any;
+  resultid: any;
+  stageid: any;
+  titleid: any;
+  vehicleid: any;
+  totalscore: number;
+  classdate: any;
+  yarddate: any;
+  weather: any;
+  traffic: any;
+  route: any;
+  quizscore: any;
+  comment: any;
+  active: number;
+  createdby: number;
+  modifiedby: number;
+  created_at: string;
+  modified_at: string;
+  contractorid: number;
+  message: string;
+  nic: string;
+  drivername: string;
+  driverid: number;
+  trainers: string;
+  assessments: DATA[];
+}
+export interface DATA {
+  slavecategoryid: number;
+  slavecategoryname: string;
+  activityid: number;
+  activityname: string;
+  assessment_type: string;
+  score: number;
+  assessmentdate: string;
 }

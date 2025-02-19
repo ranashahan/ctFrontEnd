@@ -10,6 +10,7 @@ export interface apiContractorModel {
   address: string;
   initials: string;
   clientid: number;
+  industriesid: number;
   active: number;
   createdby: number;
   modifiedby: number;

@@ -5,17 +5,6 @@
     (driverSelected)="onDriverSelected($event)"
   ></app-driversearch>
 
-  @if (isLoading()) {
-  <div
-    class="d-flex justify-content-center align-items-center"
-    style="height: 100vh"
-  >
-    <div class="spinner-border text-primary" role="status">
-      <span class="sr-only">Loading...</span>
-    </div>
-  </div>
-  } @if (!isLoading()) {
-
   <div class="bg-success bg-opacity-50 fs-7 fw-medium mt-3">
     <h6 class="ms-3">Driver Information</h6>
     <div class="col-auto m-2">
@@ -286,6 +275,21 @@
     <div class="bg-warning bg-opacity-25 fs-7 fw-medium">
       <div class="row row-cols-lg-auto g-3 justify-content-start ms-1">
         <div class="col-auto required">
+          <label class="label ms-1" for="inlineFormInputGroupForm">Form</label>
+          <div class="input-group">
+            <select
+              class="form-select form-select-sm"
+              id="inlineFormInputGroupForm"
+              formControlName="formid"
+            >
+              <option disabled value="null">-----Select-----</option>
+              @for (item of forms(); track $index) {
+              <option [value]="item.id">{{ item.name }}</option>
+              }
+            </select>
+          </div>
+        </div>
+        <div class="col-auto required">
           <label class="label ms-1" for="inlineFormInputGroupSessionName"
             >SessionID</label
           >
@@ -322,7 +326,7 @@
           <div class="input-group">
             <input
               type="date"
-              class="form-control form-control-sm"
+              class="form-control form-control-sm my-input"
               id="inlineFormInputGroupClassDate"
               formControlName="classdate"
               placeholder="mm/dd/yyyy"
@@ -336,7 +340,7 @@
           <div class="input-group">
             <input
               type="date"
-              class="form-control form-control-sm"
+              class="form-control form-control-sm my-input"
               id="inlineFormInputGroupyardTestDate"
               formControlName="yarddate"
               placeholder="mm/dd/yyyy"
@@ -350,7 +354,7 @@
           <div class="input-group">
             <input
               type="text"
-              class="form-control form-control-sm"
+              class="form-control form-control-sm my-input"
               id="inlineFormInputGroupRoute"
               formControlName="route"
               placeholder="Malir Road"
@@ -364,7 +368,7 @@
           <div class="input-group">
             <input
               type="text"
-              class="form-control form-control-sm"
+              class="form-control form-control-sm my-input"
               id="inlineFormInputGroupRoadTraffic"
               formControlName="traffic"
               placeholder="Highway"
@@ -514,6 +518,16 @@
       </div>
       <hr />
     </div>
+    @if (isLoading()) {
+    <div
+      class="d-flex justify-content-center align-items-center"
+      style="height: 100vh"
+    >
+      <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+    </div>
+    } @if (!isLoading()) {
     <div class="row">
       <div class="col-12">
         @if (!showInitial()) {
@@ -599,7 +613,7 @@
                             }}"
                           >
                             {{ slavecategory.get("name")?.value }}
-                            <span class="text-muted ms-2">
+                            <span class="ms-2">
                               ({{
                                 getFinalScoreTotal(
                                   category,
@@ -740,6 +754,6 @@
         </div>
       </div>
     </div>
+    }
   </form>
-  }
 </div>

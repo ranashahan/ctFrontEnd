@@ -12,7 +12,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
 export class ContractorService {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
-  private readonly apiURL = `${environment.apiUrl}contractor/`;
+  private readonly apiURL = `${environment.apiUrl}sponsor/contractor/`;
   /**
    * Contractor API call
    */
@@ -52,7 +52,8 @@ export class ContractorService {
     contactdepartment: string,
     address: string,
     initials: string,
-    clientid: number
+    clientid: number,
+    industriesid: number
   ): Observable<apiContractorModel> {
     return this.http.put<apiContractorModel>(this.apiURL + id, {
       name,
@@ -64,6 +65,7 @@ export class ContractorService {
       address,
       initials,
       clientid,
+      industriesid,
       userid: this.authService.getUserID(),
     });
   }

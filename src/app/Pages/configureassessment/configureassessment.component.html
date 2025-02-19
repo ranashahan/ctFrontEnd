@@ -29,9 +29,9 @@
         role="tab"
         aria-controls="tab1"
         aria-selected="true"
-        title="Primary Category"
+        title="Form Category"
       >
-        Primary Category
+        Form
       </button>
     </li>
     <li class="nav-item" role="presentation">
@@ -43,10 +43,10 @@
         type="button"
         role="tab"
         aria-controls="tab2"
-        aria-selected="false"
-        title="Secondary Category"
+        aria-selected="true"
+        title="Primary Category"
       >
-        Secondary Category
+        Primary Category
       </button>
     </li>
     <li class="nav-item" role="presentation">
@@ -58,6 +58,21 @@
         type="button"
         role="tab"
         aria-controls="tab3"
+        aria-selected="false"
+        title="Secondary Category"
+      >
+        Secondary Category
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button
+        class="nav-link"
+        id="tab4-tab"
+        data-bs-toggle="tab"
+        data-bs-target="#tab4"
+        type="button"
+        role="tab"
+        aria-controls="tab4"
         aria-selected="false"
         title="Activities"
       >
@@ -74,7 +89,7 @@
       aria-labelledby="tab1-tab"
     >
       <!-- Content for Tab 1 -->
-      <app-mastercategory></app-mastercategory>
+      <app-supercategory></app-supercategory>
     </div>
     <div
       class="tab-pane fade"
@@ -82,14 +97,23 @@
       role="tabpanel"
       aria-labelledby="tab2-tab"
     >
-      <!-- Content for Tab 2 -->
-      <app-slavecategory></app-slavecategory>
+      <!-- Content for Tab 1 -->
+      <app-mastercategory></app-mastercategory>
     </div>
     <div
       class="tab-pane fade"
       id="tab3"
       role="tabpanel"
       aria-labelledby="tab3-tab"
+    >
+      <!-- Content for Tab 2 -->
+      <app-slavecategory></app-slavecategory>
+    </div>
+    <div
+      class="tab-pane fade"
+      id="tab4"
+      role="tabpanel"
+      aria-labelledby="tab4-tab"
     >
       <!-- Content for Tab 3 -->
       <app-activities></app-activities>

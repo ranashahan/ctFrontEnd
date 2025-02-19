@@ -2,11 +2,21 @@
   <hr />
   <div class="row">
     <div class="col-auto">
-      <img src="img/stages.jpg" alt="Stages" width="230px" height="150px" />
+      <img
+        src="img/industry.jpg"
+        alt="Industries"
+        width="230px"
+        height="150px"
+      />
     </div>
     <div class="col-auto">
-      <h2>Stages</h2>
-      <p>You can select it by navigating one by one and edit it (if needed):</p>
+      <h2>Industries</h2>
+      <p>
+        <i
+          >You can select it by navigating one by one and edit it (if
+          needed):</i
+        >
+      </p>
     </div>
   </div>
   <hr />
@@ -22,71 +32,71 @@
     class="btn btn-sm btn-outline-secondary float-end me-1"
     title="Add new"
     data-bs-toggle="modal"
-    data-bs-target="#stageSaveModal"
+    data-bs-target="#industriesSaveModal"
     (click)="formRest()"
   >
     <i class="fa-solid fa-plus me-1"></i>Add
   </button>
   <table
     class="table table-hover table-bordered table-responsive-md"
-    id="stage-table"
+    id="industries-table"
   >
     <thead class="table-info">
       <tr>
         <th>#</th>
         <th>ID</th>
-        <th>Stage Name</th>
-        <th>Stage Description</th>
+        <th>Title Name</th>
+        <th>Title Description</th>
         <th>Created By</th>
         <th>Created Date</th>
         <th>Action</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let stage of stages(); let i = index">
+      <tr *ngFor="let item of industries(); let i = index">
         <td class="col-auto">{{ i + 1 }}</td>
         <td>
           <div>
-            {{ stage.id }}
+            {{ item.id }}
           </div>
         </td>
         <td>
-          <div *ngIf="stage.isEdit">
-            <input type="text" [(ngModel)]="stage.name" class="form-control" />
+          <div *ngIf="item.isEdit">
+            <input type="text" [(ngModel)]="item.name" class="form-control" />
           </div>
-          <div *ngIf="!stage.isEdit">
-            {{ stage.name }}
+          <div *ngIf="!item.isEdit">
+            {{ item.name }}
           </div>
         </td>
         <td>
-          <div *ngIf="stage.isEdit">
+          <div *ngIf="item.isEdit">
             <input
               type="text"
-              [(ngModel)]="stage.description"
+              [(ngModel)]="item.description"
               class="form-control"
             />
           </div>
-          <div *ngIf="!stage.isEdit">
-            {{ stage.description }}
+          <div *ngIf="!item.isEdit">
+            {{ item.description }}
           </div>
         </td>
         <td>
           <div>
-            {{ stage.createdby }}
+            {{ item.createdby }}
           </div>
         </td>
         <td>
           <div>
-            {{ stage.created_at | date }}
+            {{ item.created_at | date }}
           </div>
         </td>
         <td class="col col-lg-2">
-          <div *ngIf="stage.isEdit">
+          <div *ngIf="item.isEdit">
             <button
               class="btn btn-sm btn-outline-primary"
               (click)="
-                update(stage.id, stage.name, stage.description);
-                stage.isEdit = false
+                update(item.id, item.name, item.description);
+                item.isEdit = false
               "
               title="Update Changes"
             >
@@ -95,17 +105,17 @@
             </button>
             <button
               class="btn btn-sm btn-outline-primary ms-1"
-              (click)="stage.isEdit = false"
+              (click)="item.isEdit = false"
               title="Cancel"
             >
               <i class="fa-regular fa-rectangle-xmark"></i>
               cancel
             </button>
           </div>
-          <div *ngIf="!stage.isEdit">
+          <div *ngIf="!item.isEdit">
             <button
               class="btn btn-sm btn-outline-primary"
-              (click)="onEdit(stage)"
+              (click)="onEdit(item)"
               title="Edit"
             >
               <i class="far fa-edit"></i>
@@ -121,7 +131,7 @@
   <!-- Modal -->
   <div
     class="modal fade"
-    id="stageSaveModal"
+    id="industriesSaveModal"
     tabindex="-1"
     aria-labelledby="exampleModalLabel"
     aria-hidden="true"
@@ -129,7 +139,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header bg-info-subtle">
-          <h6 class="modal-title" id="exampleModalLabel">Add New Stage</h6>
+          <h6 class="modal-title" id="exampleModalLabel">Add New Industry</h6>
           <button
             type="button"
             class="btn-close"
@@ -138,32 +148,32 @@
           ></button>
         </div>
         <div class="modal-body">
-          <form [formGroup]="formSaveStage">
+          <form [formGroup]="formSaveIndustries">
             <div class="row">
               <div class="col-12">
-                <label for="stage" class="form-label required"
-                  >Stage Name</label
+                <label for="industryname" class="form-label required"
+                  >Industry Name</label
                 >
                 <input
                   type="text"
-                  name="stage"
+                  name="industryname"
                   class="form-control"
-                  id="stage"
-                  placeholder="Assessment"
+                  id="industryname"
+                  placeholder="Tobacco Industry"
                   formControlName="name"
                   required
                 />
               </div>
               <div class="col-12">
-                <label for="description" class="form-label"
-                  >Stage Description</label
+                <label for="industrydescription" class="form-label"
+                  >Industry Description</label
                 >
                 <input
                   type="text"
-                  name="description"
+                  name="industrydescription"
                   class="form-control"
-                  id="description"
-                  placeholder="Stage description"
+                  id="industrydescription"
+                  placeholder="Manufacturing of tobacco products"
                   formControlName="description"
                 />
               </div>
@@ -183,11 +193,14 @@
             type="submit"
             class="btn btn-primary"
             (click)="
-              create(formSaveStage.value.name, formSaveStage.value.description)
+              create(
+                formSaveIndustries.value.name,
+                formSaveIndustries.value.description
+              )
             "
-            title="Save Form"
-            [disabled]="formSaveStage.invalid"
+            [disabled]="formSaveIndustries.invalid"
             data-bs-dismiss="modal"
+            title="Save Form"
           >
             Save changes
           </button>

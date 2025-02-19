@@ -16,16 +16,6 @@
   </div>
   <hr />
   <app-toast />
-  <div class="form-group">
-    <input
-      id="filterbyname"
-      type="text"
-      class="form-control"
-      placeholder="Filter by name..."
-      [(ngModel)]="searchTerm"
-      (input)="filterContractors()"
-    />
-  </div>
   <hr />
   <button
     class="btn btn-sm btn-outline-secondary float-end"
@@ -51,6 +41,7 @@
     <thead class="table-info">
       <tr>
         <th>#</th>
+        <th>ID</th>
         <th>Name</th>
         <th>NTN Number</th>
         <th>Contact Person Name</th>
@@ -60,13 +51,15 @@
         <th>Address</th>
         <th>Initials</th>
         <th>ClientName</th>
+        <th>Industry</th>
         <th>Action</th>
       </tr>
     </thead>
     <tbody>
-      @for (contractor of paginatedContractors(); track contractor.id) {
+      @for (contractor of contractors(); track contractor.id) {
       <tr>
         <td class="col-auto">{{ $index + 1 }}</td>
+        <td class="col-auto">{{ contractor.id }}</td>
         <td class="col-auto">
           <div *ngIf="contractor.isEdit">
             <input
@@ -177,6 +170,20 @@
           }@else { {{ getClientName(contractor.clientid) }}
           }
         </td>
+        <td class="col-auto">
+          @if(contractor.isEdit){
+          <select
+            class="form-select form-select-sm"
+            id="industriesid"
+            [(ngModel)]="contractor.industriesid"
+          >
+            @for (item of industries(); track $index) {
+            <option [value]="item.id">{{ item.name }}</option>
+            }
+          </select>
+          }@else { {{ getIndustriesName(contractor.industriesid) }}
+          }
+        </td>
 
         <td class="col-auto">
           <div *ngIf="contractor.isEdit">
@@ -193,7 +200,8 @@
                   contractor.contactdepartment,
                   contractor.address,
                   contractor.initials,
-                  contractor.clientid
+                  contractor.clientid,
+                  contractor.industriesid
                 );
                 contractor.isEdit = false
               "
@@ -230,7 +238,7 @@
       }
     </tbody>
   </table>
-  <nav>
+  <!-- <nav>
     <ul class="pagination justify-content-center">
       <li class="page-item" [class.disabled]="currentPage === 1">
         <a
@@ -260,7 +268,7 @@
         >
       </li>
     </ul>
-  </nav>
+  </nav> -->
   <hr />
 
   <!-- Modal -->
@@ -398,7 +406,7 @@
               </div>
             </div>
             <div class="row mt-1">
-              <div class="col-12 required">
+              <div class="col-md-6 ms-auto required">
                 <label for="clients" class="form-label">Clients</label>
                 <select
                   id="clients"
@@ -410,6 +418,21 @@
                     -----Select-----
                   </option>
                   @for (item of clients(); track item.id) {
+                  <option [value]="item.id">{{ item.name }}</option>
+                  }
+                </select>
+              </div>
+              <div class="col-md-6 ms-auto">
+                <label for="industries" class="form-label">Industries</label>
+                <select
+                  id="industries"
+                  formControlName="industriesid"
+                  class="form-select form-select-sm"
+                >
+                  <option disabled selected value="null">
+                    -----Select-----
+                  </option>
+                  @for (item of industries(); track item.id) {
                   <option [value]="item.id">{{ item.name }}</option>
                   }
                 </select>

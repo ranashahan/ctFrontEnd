@@ -10,7 +10,7 @@
   class="btn btn-sm btn-outline-secondary float-end me-1 mt-2"
   title="Add new"
   data-bs-toggle="modal"
-  data-bs-target="#PrimarySaveModal"
+  data-bs-target="#FormSaveModal"
   (click)="formReset()"
 >
   <i class="fa-solid fa-plus me-1"></i>Add
@@ -25,15 +25,13 @@
       <th>ID</th>
       <th>Name</th>
       <th>Description</th>
-      <th>Order</th>
-      <th>Form</th>
       <th>Created By</th>
       <th>Created Date</th>
       <th>Action</th>
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let item of primaryCategories(); let i = index">
+    <tr *ngFor="let item of superCategories(); let i = index">
       <td>{{ i + 1 }}</td>
       <td>
         <div>
@@ -67,37 +65,6 @@
         </div>
       </td>
       <td>
-        <div *ngIf="item.isEdit">
-          <input
-            type="number"
-            min="0"
-            [(ngModel)]="item.orderid"
-            class="form-control form-select-sm"
-          />
-        </div>
-        <div *ngIf="!item.isEdit">
-          {{ item.orderid }}
-        </div>
-      </td>
-      <td>
-        <div *ngIf="item.isEdit">
-          <select
-            class="form-select form-select-sm"
-            [(ngModel)]="item.supercategoryid"
-          >
-            <option
-              *ngFor="let category of superCategories()"
-              [value]="category.id"
-            >
-              {{ category.name }}
-            </option>
-          </select>
-        </div>
-        <div *ngIf="!item.isEdit">
-          {{ getSuperCategoryName(item.supercategoryid) }}
-        </div>
-      </td>
-      <td>
         <div>
           {{ item.createdby }}
         </div>
@@ -113,14 +80,7 @@
           <button
             class="btn btn-sm btn-outline-primary"
             (click)="
-              update(
-                item.id,
-                item.name,
-                item.description,
-                item.supercategoryid,
-                item.orderid
-              );
-              item.isEdit = false
+              update(item.id, item.name, item.description); item.isEdit = false
             "
             title="Update Changes"
           >
@@ -163,7 +123,7 @@
 <!-- Modal -->
 <div
   class="modal fade"
-  id="PrimarySaveModal"
+  id="FormSaveModal"
   tabindex="-1"
   aria-labelledby="exampleModalLabel"
   aria-hidden="true"
@@ -171,9 +131,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header bg-info-subtle">
-        <h6 class="modal-title" id="exampleModalLabel">
-          Add New Primary Category
-        </h6>
+        <h6 class="modal-title" id="exampleModalLabel">Add New Form</h6>
         <button
           type="button"
           class="btn-close"
@@ -182,7 +140,7 @@
         ></button>
       </div>
       <div class="modal-body">
-        <form [formGroup]="formPrimaryCategory">
+        <form [formGroup]="formSuperCategory">
           <div class="row">
             <div class="col-12">
               <label for="mastername" class="form-label required">Name</label>
@@ -191,7 +149,7 @@
                 name="mastername"
                 class="form-control form-control-sm"
                 id="mastername"
-                placeholder="Commentary Driving"
+                placeholder="U.E.P"
                 formControlName="name"
                 required
               />
@@ -205,38 +163,9 @@
                 name="masterdescription"
                 class="form-control form-control-sm"
                 id="masterdescription"
-                placeholder="Commentary Driving Description"
+                placeholder="United Energy Pakistan Limited"
                 formControlName="description"
               />
-            </div>
-            <div class="col-12">
-              <label for="masterorderid" class="form-label mt-1">Order</label>
-              <input
-                type="number"
-                min="0"
-                name="masterorderid"
-                class="form-control form-control-sm"
-                id="masterorderid"
-                placeholder="1"
-                formControlName="orderid"
-              />
-            </div>
-            <div class="col-12">
-              <label for="mastersupercategory" class="form-label mt-1 required"
-                >Form</label
-              >
-              <select
-                name="mastersupercategory"
-                class="form-select form-select-sm"
-                id="mastersupercategory"
-                formControlName="supercategoryid"
-                required
-              >
-                <option disabled value="null">Select Form</option>
-                @for (item of superCategories(); track $index) {
-                <option [value]="item.id">{{ item.name }}</option>
-                }
-              </select>
             </div>
           </div>
         </form>
@@ -255,13 +184,11 @@
           class="btn btn-primary"
           (click)="
             create(
-              formPrimaryCategory.value.name,
-              formPrimaryCategory.value.description,
-              formPrimaryCategory.value.supercategoryid,
-              formPrimaryCategory.value.orderid
+              formSuperCategory.value.name,
+              formSuperCategory.value.description
             )
           "
-          [disabled]="formPrimaryCategory.invalid"
+          [disabled]="formSuperCategory.invalid"
           data-bs-dismiss="modal"
           title="Save Form"
         >
