@@ -27,13 +27,13 @@
               >{{ formTraining.get("name")?.value }}
             </h3>
             <p class="mb-1">
-              @if (formTraining.get('status')?.value==='New') {
+              @if (formTraining.get('status')?.value==='Tentative') {
               <i class="fa-regular fa-envelope me-1"></i>
-              }@else if (formTraining.get('status')?.value==='Open') {
+              }@else if (formTraining.get('status')?.value==='Planned') {
               <i class="fa-regular fa-envelope-open me-1"></i>
-              }@else if (formTraining.get('status')?.value==='Plan') {
+              }@else if (formTraining.get('status')?.value==='Conducted') {
               <i class="fa-solid fa-envelope-open me-1"></i>
-              }@else if (formTraining.get('status')?.value==='InProgress') {
+              }@else if (formTraining.get('status')?.value==='Billed') {
               <i class="fa-solid fa-envelope-open-text me-1"></i>
               } @else {
               <i class="fa-solid fa-envelope me-1"></i>

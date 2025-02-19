@@ -13,6 +13,11 @@ import { ResultService } from './result.service';
 import { apiSessionDriverReportModel } from '../Models/Assessment';
 import { ContractorService } from './contractor.service';
 import { TrainerService } from './trainer.service';
+import { apiTrainingModel } from '../Models/Training';
+import { CourseService } from './course.service';
+import { CategoryService } from './category.service';
+import { ClientService } from './client.service';
+import { IndustriesService } from './industries.service';
 @Injectable({
   providedIn: 'root',
 })
@@ -28,6 +33,10 @@ export class ExcelreportService {
   private resultService = inject(ResultService);
   private cService = inject(ContractorService);
   private trainerService = inject(TrainerService);
+  private courseService = inject(CourseService);
+  private categoryService = inject(CategoryService);
+  private clientService = inject(ClientService);
+  private industryService = inject(IndustriesService);
 
   locations = this.locationService.locations;
   visuals = this.visualService.visuals;
@@ -39,6 +48,10 @@ export class ExcelreportService {
   results = this.resultService.results;
   contractors = this.cService.contractors;
   trainers = this.trainerService.trainers;
+  courses = this.courseService.courses;
+  categories = this.categoryService.categories;
+  clients = this.clientService.clients;
+  industries = this.industryService.industries;
 
   exportJson(param: any, fileName: string) {
     //console.log(param);
@@ -110,6 +123,41 @@ export class ExcelreportService {
           item.sessioncontractorid
         ),
         Trainer: this.convertGeneric(this.trainers(), item.trainerid),
+      };
+      return row;
+    });
+    const ws = XLSX.utils.json_to_sheet(flattenedData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+    XLSX.writeFile(wb, `${fileName + new Date().getTime()}.xlsx`);
+  }
+
+  /**
+   * This method will download all the drivers & session info except assessment scores
+   * @param param SessionDriver report data
+   * @param fileName file name
+   */
+  exportTrainingReportAll(param: apiTrainingModel[], fileName: string) {
+    const flattenedData = param.map((item: apiTrainingModel) => {
+      const row: any = {
+        TrainingDBID: item.id,
+        TrainingName: item.name,
+        PlanDate: item.plandate,
+        StartDate: item.startdate,
+        EndDate: item.enddate,
+        Course: this.convertGeneric(this.courses(), item.courseid),
+        Category: this.convertGeneric(this.categories(), item.categoryid),
+        Program: this.convertGeneric(this.titles(), item.titleid),
+        Sponsor: this.convertGeneric(this.clients(), item.clientid),
+        Contractor: this.convertGeneric(this.contractors(), item.contractorid),
+        Trainer: this.convertGeneric(this.trainers(), item.trainerid),
+        Location: this.convertGeneric(this.locations(), item.locationid),
+        Total: item.total,
+        Received: item.amountreceived,
+        Status: item.status,
+        Source: item.source,
+        Sessions: item.sessioncount,
+        Industry: this.convertGeneric(this.industries(), item.industriesid),
       };
       return row;
     });

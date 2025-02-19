@@ -31,7 +31,7 @@ export class IndustriesComponent implements OnInit, OnDestroy {
   /**
    * Industries Signal
    */
-  industries = this.industriesService.Industriess;
+  industries = this.industriesService.industries;
 
   /**
    * Form for creating new Industries

@@ -118,6 +118,7 @@ export interface apiSessionDriverReportModel {
   sessioncomment: Text;
   sessioncontractorid: number;
   trainerid: number;
+  formid: number;
 }
 
 export interface apiVSessionModel {

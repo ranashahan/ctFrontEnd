@@ -32,6 +32,7 @@ export interface apiTrainingModel {
   assessment: number;
   commentry: number;
   sessioncount: number;
+  industriesid: number;
   active: number;
   createdby: number;
   modifiedby: number;

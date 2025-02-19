@@ -20,10 +20,6 @@ import { UtilitiesService } from '../../Services/utilities.service';
 import { ClientService } from '../../Services/client.service';
 import { ContractorService } from '../../Services/contractor.service';
 import { TitleService } from '../../Services/title.service';
-import { apiContractorModel } from '../../Models/Contractor';
-import { apiClientModel } from '../../Models/Client';
-import { apiTrainerModel } from '../../Models/Trainer';
-import { apiGenericModel } from '../../Models/Generic';
 import { LocationService } from '../../Services/location.service';
 import { TrainerService } from '../../Services/trainer.service';
 import { TrainingService } from '../../Services/training.service';
@@ -51,6 +47,7 @@ export class AddtrainingComponent implements OnInit, OnDestroy {
   private trainingService = inject(TrainingService);
   private courseService = inject(CourseService);
   private categoryService = inject(CategoryService);
+  private utils = inject(UtilitiesService);
 
   categories = this.categoryService.categories;
   courses = this.courseService.courses;
@@ -76,14 +73,12 @@ export class AddtrainingComponent implements OnInit, OnDestroy {
 
   formTraining: FormGroup;
 
-  constructor(
-    private utils: UtilitiesService,
-    private fb: FormBuilder,
-
-    private cdRef: ChangeDetectorRef
-  ) {
-    this.utils.setTitle('Add Training');
-
+  /**
+   * Constructor
+   * @param fb Form builder
+   * @param cdRef change detection
+   */
+  constructor(private fb: FormBuilder, private cdRef: ChangeDetectorRef) {
     this.formTraining = this.fb.group({
       name: ['', Validators.required],
       plandate: [],
@@ -100,7 +95,7 @@ export class AddtrainingComponent implements OnInit, OnDestroy {
       trainerid: [null, Validators.required],
       locationid: [],
       requestedby: [],
-      source: [],
+      source: ['Internal'],
       contactnumber: [],
       invoicenumber: [],
       invoicedate: [],
@@ -112,7 +107,7 @@ export class AddtrainingComponent implements OnInit, OnDestroy {
       bank: [],
       cheque: [],
       amountreceived: [],
-      status: ['New'],
+      status: ['Tentative'],
       classroom: [],
       assessment: [],
       commentry: [],
@@ -127,6 +122,7 @@ export class AddtrainingComponent implements OnInit, OnDestroy {
    * This method will invoke all the methods while rendering the page
    */
   ngOnInit(): void {
+    this.utils.setTitle('Add Training');
     this.statuses.set(this.utils.statuses());
     this.sources.set(this.utils.sources());
     this.generateKey();
@@ -137,7 +133,6 @@ export class AddtrainingComponent implements OnInit, OnDestroy {
    */
   generateKey() {
     const generatedKey = this.trainingService.generateKey();
-    console.log('this is my key', generatedKey);
     this.formTraining.get('name')?.setValue(generatedKey);
   }
 
@@ -206,9 +201,11 @@ export class AddtrainingComponent implements OnInit, OnDestroy {
     this.formTraining.get('total')?.setValue(total, { emitEvent: false });
   }
 
+  /**
+   * This method will create the new training
+   */
   createTraining() {
     const formValues = this.formTraining.getRawValue();
-    //console.log(formValues);
     let classroom = 1;
     if (formValues.classroom) {
       classroom = 2;
@@ -277,7 +274,8 @@ export class AddtrainingComponent implements OnInit, OnDestroy {
     this.formTraining.reset();
     this.generateKey();
     this.formTraining.patchValue({
-      status: 'New',
+      source: 'Internal',
+      status: 'Tentative',
     });
     this.formTraining.get('status')?.updateValueAndValidity();
   }

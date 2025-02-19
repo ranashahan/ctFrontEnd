@@ -229,7 +229,7 @@ export class UtilitiesService {
    * @returns array of string
    */
   public statuses(): string[] {
-    return ['New', 'Open', 'Plan', 'InProgress', 'Completed'];
+    return ['Tentative', 'Planned', 'Conducted', 'Billed', 'Completed'];
   }
 
   /**

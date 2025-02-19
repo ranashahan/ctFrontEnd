@@ -417,4 +417,60 @@ export class TrainingService {
     this.keys.add(key);
     return key;
   }
+
+  public getTrainingReportAll(
+    name?: string,
+    courseid?: number,
+    categoryid?: number,
+    clientid?: number,
+    contractorid?: number,
+    titleid?: number,
+    trainerid?: number,
+    locationid?: number,
+    source?: string,
+    status?: string,
+    startDate?: string,
+    endDate?: string
+  ): Observable<apiTrainingModel[]> {
+    let params = new HttpParams();
+    if (name) {
+      params = params.set('name', name);
+    }
+    if (courseid) {
+      params = params.set('courseid', courseid);
+    }
+    if (categoryid) {
+      params = params.set('categoryid', categoryid);
+    }
+    if (clientid) {
+      params = params.set('clientid', clientid);
+    }
+    if (contractorid) {
+      params = params.set('contractorid', contractorid);
+    }
+    if (titleid) {
+      params = params.set('titleid', titleid);
+    }
+    if (trainerid) {
+      params = params.set('trainerid', trainerid);
+    }
+    if (locationid) {
+      params = params.set('locationid', locationid);
+    }
+    if (source) {
+      params = params.set('source', source);
+    }
+    if (status) {
+      params = params.set('status', status);
+    }
+    if (startDate) {
+      params = params.set('startDate', startDate);
+    }
+    if (endDate) {
+      params = params.set('endDate', endDate);
+    }
+    return this.http.get<apiTrainingModel[]>(this.apiURL + 'getReportAll', {
+      params,
+    });
+  }
 }

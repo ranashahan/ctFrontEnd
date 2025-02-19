@@ -15,10 +15,6 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { apiTrainerModel } from '../../Models/Trainer';
-import { apiContractorModel } from '../../Models/Contractor';
-import { apiClientModel } from '../../Models/Client';
-import { apiGenericModel } from '../../Models/Generic';
 import { Subscription } from 'rxjs';
 import { UtilitiesService } from '../../Services/utilities.service';
 import { ClientService } from '../../Services/client.service';
@@ -101,28 +97,15 @@ export class TrainingdetailComponent implements OnInit, OnDestroy {
 
   /**
    * Constructor
-   * @param utils utility service
    * @param fb form builder
-   * @param clientService client service
-   * @param cService contractor service
-   * @param titleService title service
-   * @param vehicleService vehicle service
-   * @param resultService result service
-   * @param locationService location service
-   * @param trainerService trainer service
-   * @param trainingService training service
    * @param route route
-   * @param assessmentService assessment service
    * @param cdRef change detection
    */
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
-
     private cdRef: ChangeDetectorRef
   ) {
-    this.utils.setTitle('Training Detail');
-
     this.formTraining = this.fb.group({
       id: [{ value: '', disabled: true }], // Always disabled
       name: [{ value: '', disabled: !this.isEdit }, Validators.required],
@@ -161,7 +144,6 @@ export class TrainingdetailComponent implements OnInit, OnDestroy {
       modifiedby: [{ value: '', disabled: true }],
       modified_at: [{ value: null, disabled: true }],
     });
-
     this.setupTotalCalculation();
   }
 
@@ -169,6 +151,7 @@ export class TrainingdetailComponent implements OnInit, OnDestroy {
    * This method will invoke all the methods while rendering the page
    */
   ngOnInit(): void {
+    this.utils.setTitle('Training Detail');
     this.route.paramMap.subscribe((param) => {
       const trainingid = parseInt(param.get('id') ?? '0');
       this.trainingId.set(trainingid);
@@ -379,7 +362,6 @@ export class TrainingdetailComponent implements OnInit, OnDestroy {
    */
   updateTraining() {
     const training = this.formTraining.getRawValue();
-    console.log(training);
 
     let classroom = 1;
     if (training.classroom) {
