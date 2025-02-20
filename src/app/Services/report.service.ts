@@ -725,10 +725,10 @@ export class ReportService {
       }
 
       switch (driver.titleid) {
-        case 1:
+        case 9002:
           cardTitle = 'Defensive Driving HV Permit';
           break;
-        case 2:
+        case 9001:
           cardTitle = 'Defensive Driving LV Permit';
           break;
         default:
