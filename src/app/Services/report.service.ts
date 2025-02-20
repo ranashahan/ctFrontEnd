@@ -697,26 +697,27 @@ export class ReportService {
       let cardWording: string;
       let cardTitle: string;
       switch (driver.formid) {
-        case 1:
-          if (driver.sessioncontractorid == 1) {
+        case 16001:
+          if (driver.sessioncontractorid === 5001) {
             cardColor = '#DE3163';
           } else {
             cardColor = '11a53c';
           }
           cardWording = 'Trained and Assessed on UEPL ADDT Protocol';
           break;
-        case 2:
+        case 16002:
           cardColor = 'FF7F50';
           cardWording = 'Trained and Assessed on DDT Protocol';
           break;
-        case 3:
+        case 16003:
           cardColor = '999999';
           cardWording = 'Trained and Assessed on Client Company ADDT Protocol';
           break;
-        // case 4:
-        //   cardColor = '11a53c';
-        //   cardWording = 'Trained and Assessed on UEPL ADDT Protocol';
-        //   break;
+        case 16004:
+          cardColor = 'FFFF00';
+          cardWording =
+            'Trained and Assessed on Defensive Driving Training Protocol';
+          break;
         default:
           cardColor = '11a53c';
           cardWording = 'Trained and Assessed on UEPL ADDT Protocol';
