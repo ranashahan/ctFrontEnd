@@ -418,6 +418,22 @@ export class TrainingService {
     return key;
   }
 
+  /**
+   * This method will generate report
+   * @param name {string} training name
+   * @param courseid {number} training course id
+   * @param categoryid {number} training category id
+   * @param clientid {number} training client id
+   * @param contractorid {number} training contractor id
+   * @param titleid {number} training title id
+   * @param trainerid {number} training trainer id
+   * @param locationid {number} training location id
+   * @param source {string} training source
+   * @param status {string} training status
+   * @param startDate {date} training start date
+   * @param endDate {date} training end
+   * @returns Observable
+   */
   public getTrainingReportAll(
     name?: string,
     courseid?: number,
@@ -470,6 +486,28 @@ export class TrainingService {
       params = params.set('endDate', endDate);
     }
     return this.http.get<apiTrainingModel[]>(this.apiURL + 'getReportAll', {
+      params,
+    });
+  }
+
+  /**
+   * This method will get finance report
+   * @param month {number} month in number
+   * @param year {year} year in number
+   * @returns Observable
+   */
+  public getTrainingFinanceReport(
+    month?: number,
+    year?: number
+  ): Observable<apiTrainingModel[]> {
+    let params = new HttpParams();
+    if (month) {
+      params = params.set('month', month);
+    }
+    if (year) {
+      params = params.set('year', year);
+    }
+    return this.http.get<apiTrainingModel[]>(this.apiURL + 'getFinanceReport', {
       params,
     });
   }

@@ -84,13 +84,14 @@ export class AddassessmentComponent implements OnInit, OnDestroy {
   stages = this.stageService.stages;
   results = this.resultService.results;
   vehicles = this.vehicleService.vehicles;
+  risks = signal<string[]>(this.utils.risk());
   assessments = this.assessmentService.assessmentsfilter;
   forms = this.assessmentService.forms;
   isLicenseExpired = signal<boolean>(false);
   isContractorExist = signal<boolean>(false);
   isDriverLoaded = signal<boolean>(false);
   isAPICallInProgress = signal<boolean>(false);
-  licenseVerification = signal<any[]>([]);
+  licenseVerification = signal<any[]>(this.utils.verificationStatus());
   assessmentForm: FormGroup;
   driverForm: FormGroup;
   initialFormData: any;
@@ -114,6 +115,7 @@ export class AddassessmentComponent implements OnInit, OnDestroy {
       locationId: [],
       vehicleId: [],
       route: [],
+      riskrating: [null],
       quizscore: [],
       comment: [],
       traffic: [],
@@ -157,7 +159,7 @@ export class AddassessmentComponent implements OnInit, OnDestroy {
    */
   ngOnInit(): void {
     this.utils.setTitle('Add Assessment');
-    this.licenseVerification.set(this.utils.verificationStatus());
+    // this.licenseVerification.set(this.utils.verificationStatus());
     // this.setCategories(this.assessments());
   }
 

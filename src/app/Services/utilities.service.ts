@@ -252,6 +252,43 @@ export class UtilitiesService {
   }
 
   /**
+   * This method for static months
+   * @returns months
+   */
+  public months() {
+    return [
+      { id: 1, name: 'January' },
+      { id: 2, name: 'February' },
+      { id: 3, name: 'March' },
+      { id: 4, name: 'April' },
+      { id: 5, name: 'May' },
+      { id: 6, name: 'June' },
+      { id: 7, name: 'July' },
+      { id: 8, name: 'August' },
+      { id: 9, name: 'September' },
+      { id: 10, name: 'October' },
+      { id: 11, name: 'November' },
+      { id: 12, name: 'December' },
+    ];
+  }
+
+  /**
+   * This method only for get Years
+   * @returns array of number
+   */
+  public years(): number[] {
+    return [2025, 2026, 2027, 2028, 2029, 2030];
+  }
+
+  /**
+   * This method only for get risk
+   * @returns array of string
+   */
+  public risk(): string[] {
+    return ['Average', 'High', 'Low', 'Medium', 'Safe Driver'];
+  }
+
+  /**
    * This method will use for license Verification
    * @param item {number} licensenumber
    * @returns {string} status

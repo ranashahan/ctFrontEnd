@@ -91,7 +91,8 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
   isContractorExist = signal<boolean>(false);
   isDriverLoaded = signal<boolean>(false);
   isAPICallInProgress = signal<boolean>(false);
-  licenseVerification = signal<any[]>([]);
+  licenseVerification = signal<any[]>(this.utils.verificationStatus());
+  risks = signal<string[]>(this.utils.risk());
   assessmentForm: FormGroup;
   driverForm: FormGroup;
   isEdit = signal<boolean>(false);
@@ -120,6 +121,7 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
       locationId: [{ value: 0, disabled: !this.isEdit() }],
       vehicleId: [{ value: 0, disabled: !this.isEdit() }],
       route: [{ value: '', disabled: !this.isEdit() }],
+      riskrating: [{ value: '', disabled: !this.isEdit() }],
       quizscore: [{ value: '', disabled: !this.isEdit() }],
       comment: [{ value: '', disabled: !this.isEdit() }],
       traffic: [{ value: '', disabled: !this.isEdit() }],
@@ -152,7 +154,6 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
    */
   ngOnInit(): void {
     this.utils.setTitle('Assessment Detail');
-    this.licenseVerification.set(this.utils.verificationStatus());
     const scores = this.assessments(); // Assuming this fetches scores
     if (!scores || scores.length === 0) {
     }
@@ -272,7 +273,6 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
    * This method will save the assessment into database
    */
   public saveAssessment(): void {
-    //console.log(this.assessmentForm.getRawValue());
     var vCategories: MasterCategory[] = this.assessmentForm.value.categories;
     var checkAssessment: boolean = this.checkAssessments(vCategories);
     var sessionDate: string = this.assessmentForm.get('sessionDate')?.value;
@@ -427,6 +427,7 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
               locationId: res[0].locationid,
               vehicleId: res[0].vehicleid,
               route: res[0].route,
+              riskrating: res[0].riskrating,
               quizscore: res[0].quizscore,
               comment: res[0].comment,
               traffic: res[0].traffic,

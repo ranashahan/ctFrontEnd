@@ -12,7 +12,12 @@ import { TrainingService } from '../../Services/training.service';
 import { TrainerService } from '../../Services/trainer.service';
 import { apiTrainingModel } from '../../Models/Training';
 import { Subscription } from 'rxjs';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { ContractorService } from '../../Services/contractor.service';
 import { ClientService } from '../../Services/client.service';
 import { LocationService } from '../../Services/location.service';
@@ -53,8 +58,11 @@ export class TrainingsreportComponent implements OnInit, OnDestroy {
   statuses = signal(this.utils.statuses());
   sources = signal(this.utils.sources());
   formAll: FormGroup;
+  formFinance: FormGroup;
   apiCallInProgress = signal<boolean>(false);
   selectedClient = signal<number | null>(null);
+  years = signal(this.utils.years());
+  months = signal(this.utils.months());
 
   filteredContractors = computed(() => {
     const clientid = this.selectedClient();
@@ -82,6 +90,11 @@ export class TrainingsreportComponent implements OnInit, OnDestroy {
 
     this.formAll.get('clientid')?.valueChanges.subscribe((clientid) => {
       this.selectedClient.set(clientid);
+    });
+
+    this.formFinance = fb.group({
+      month: [null],
+      year: [null, Validators.required],
     });
   }
 
@@ -133,10 +146,45 @@ export class TrainingsreportComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * This method will export finance report
+   */
+  public exportFinance(): void {
+    this.apiCallInProgress.set(true);
+    this.formFinance.getRawValue();
+
+    this.subscriptionList.push(
+      this.trainingService
+        .getTrainingFinanceReport(
+          this.formFinance.value.month,
+          this.formFinance.value.year
+        )
+        .subscribe({
+          next: (data) => {
+            if (!data) {
+              this.utils.showToast(
+                'Did not fetch any record, please update criteria',
+                'warning'
+              );
+              this.apiCallInProgress.set(false);
+            } else {
+              console.log(data);
+              this.excelReport.exportTrainingFinanceReport(data, 'CNTTF');
+              this.apiCallInProgress.set(false);
+            }
+          },
+          error: (err: any) => {
+            this.utils.showToast(err.message, 'error');
+            this.apiCallInProgress.set(false);
+          },
+        })
+    );
+  }
+  /**
    * This method will reset the form value to blank
    */
   resetForm(): void {
     this.formAll.reset();
+    this.formFinance.reset();
   }
 
   /**

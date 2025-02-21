@@ -132,10 +132,8 @@ export class AllassessmentsComponent implements OnInit, OnDestroy {
           this.formSession.value.startDate,
           this.formSession.value.endDate
         )
-
         .subscribe((res: any) => {
           this.sessions.set(res);
-          // console.log(this.sessions());
           this.initialValues = res;
           this.isLoading.set(false);
         })
