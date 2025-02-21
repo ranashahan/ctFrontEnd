@@ -116,6 +116,7 @@ export class ExcelreportService {
         Weather: item.weather,
         Traffic: item.traffic,
         Route: item.route,
+        OverAllRisk: item.riskrating,
         QuizScore: item.quizscore,
         Comment: item.sessioncomment,
         SessionContractor: this.convertGeneric(
@@ -133,8 +134,8 @@ export class ExcelreportService {
   }
 
   /**
-   * This method will download all the drivers & session info except assessment scores
-   * @param param SessionDriver report data
+   * This method will download training data
+   * @param param training report data
    * @param fileName file name
    */
   exportTrainingReportAll(param: apiTrainingModel[], fileName: string) {
@@ -164,6 +165,37 @@ export class ExcelreportService {
     const ws = XLSX.utils.json_to_sheet(flattenedData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+    XLSX.writeFile(wb, `${fileName + new Date().getTime()}.xlsx`);
+  }
+
+  /**
+   * This method will download training finance data
+   * @param param training report data
+   * @param fileName file name
+   */
+  exportTrainingFinanceReport(param: apiTrainingModel[], fileName: string) {
+    const flattenedData = param.map((item: apiTrainingModel) => {
+      const row: any = {
+        PlanDate: item.plandate,
+        TrainingName: item.name,
+        Sponsor: this.convertGeneric(this.clients(), item.clientid),
+        Contractor: this.convertGeneric(this.contractors(), item.contractorid),
+        ChargedAmount: item.charges,
+        TransportationExpense: item.transportation,
+        MiscExpense: item.miscexpense,
+        Tax: item.tax,
+        TotalAmount: item.total,
+        ReceivedAmount: item.amountreceived,
+        Invoice: item.invoicenumber,
+        InvoiceDate: item.invoicedate,
+        BankName: item.bank,
+        Cheque: item.cheque,
+      };
+      return row;
+    });
+    const ws = XLSX.utils.json_to_sheet(flattenedData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Financial');
     XLSX.writeFile(wb, `${fileName + new Date().getTime()}.xlsx`);
   }
 

@@ -1,9 +1,3 @@
-export interface sessionEXP {
-  id: number;
-  name: string;
-  mastercategories: MasterCategory[];
-}
-
 export interface AssessmentFormModel {
   formid: number;
   sessionName: string;
@@ -19,6 +13,7 @@ export interface AssessmentFormModel {
   weather: string;
   traffic: string;
   route: string;
+  riskrating: string;
   quizscore: string;
   comment: string;
   userid: number;
@@ -114,6 +109,7 @@ export interface apiSessionDriverReportModel {
   weather: string;
   traffic: string;
   route: string;
+  riskrating: string;
   quizscore: number;
   sessioncomment: Text;
   sessioncontractorid: number;
@@ -136,6 +132,7 @@ export interface apiVSessionModel {
   weather: string;
   traffic: string;
   route: string;
+  riskrating: string;
   quizscore: string;
   comment: any;
   active: number;
@@ -181,6 +178,7 @@ export interface apiSessionModel {
   weather: any;
   traffic: any;
   route: any;
+  riskrating: string;
   quizscore: any;
   comment: any;
   active: number;

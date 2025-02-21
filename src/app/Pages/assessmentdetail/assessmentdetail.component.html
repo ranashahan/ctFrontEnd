@@ -385,6 +385,23 @@
           </div>
         </div>
         <div class="col-auto">
+          <label class="label ms-1" for="inlineFormInputGroupRisk"
+            >Overall Risk Rating</label
+          >
+          <div class="input-group">
+            <select
+              class="form-select form-select-sm"
+              id="inlineFormInputGroupRisk"
+              formControlName="riskrating"
+            >
+              <option disabled value="null">-----Select-----</option>
+              @for (item of risks(); track $index) {
+              <option [value]="item">{{ item }}</option>
+              }
+            </select>
+          </div>
+        </div>
+        <div class="col-auto">
           <label class="label ms-1" for="inlineFormInputGroupResult"
             >Result</label
           >

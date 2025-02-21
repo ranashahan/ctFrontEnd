@@ -147,7 +147,7 @@ export const routes: Routes = [
         path: 'category',
         component: CategoryComponent,
         canActivate: [authGuard],
-        data: { roles: ['admin'] },
+        data: { roles: ['admin', 'manager'] },
       },
       {
         path: 'client',
@@ -165,7 +165,7 @@ export const routes: Routes = [
         path: 'course',
         component: CourseComponent,
         canActivate: [authGuard],
-        data: { roles: ['admin'] },
+        data: { roles: ['admin', 'manager'] },
       },
       {
         path: 'dltype',

@@ -42,6 +42,7 @@ import { TrainerService } from '../../Services/trainer.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AssessmentsreportComponent implements OnInit, OnDestroy {
+  private utils = inject(UtilitiesService);
   private cService = inject(ContractorService);
   private clientService = inject(ClientService);
   private dlTypeService = inject(DltypeService);
@@ -90,7 +91,6 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
   subscriptionList: Subscription[] = [];
 
   constructor(
-    private utils: UtilitiesService,
     private fb: FormBuilder,
     private assessmentService: AssessmentService,
     private reportService: ReportService,
@@ -185,8 +185,6 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
               );
               this.apiCallInProgress.set(false);
             } else {
-              console.log(data);
-
               this.excelReport.exportToExcel(data, 'CNTA');
               this.apiCallInProgress.set(false);
             }
@@ -230,8 +228,6 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
               );
               this.apiCallInProgress.set(false);
             } else {
-              console.log(data);
-
               this.excelReport.exportReportAll(data, 'CNTA');
               this.apiCallInProgress.set(false);
             }
