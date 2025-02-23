@@ -79,7 +79,7 @@ export class SessionsearchComponent implements OnDestroy {
         .getSessionbydate(null, searchCriteria)
         .subscribe((data: any) => {
           this.sessions.set(data);
-          console.log(this.sessions());
+          //console.log(this.sessions());
         })
     );
   }
@@ -121,7 +121,7 @@ export class SessionsearchComponent implements OnDestroy {
       this.subscriptionList.push(
         this.assessmentService.createSessoinTraining(payload).subscribe({
           next: (res: any) => {
-            console.log(res.message);
+            //console.log(res.message);
             this.utils.showToast('saved successfully', 'success');
             this.close();
           },

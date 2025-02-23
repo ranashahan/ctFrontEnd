@@ -257,10 +257,10 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
       headerTooltip: 'Courses',
     },
     {
-      headerName: 'Category',
-      field: 'categoryName',
+      headerName: 'Trainer',
+      field: 'trainerName',
       filter: 'agTextColumnFilter',
-      headerTooltip: 'Categories',
+      headerTooltip: 'Trainers',
     },
     {
       headerName: 'Sponsor',

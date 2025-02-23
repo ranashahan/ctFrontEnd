@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  inject,
   OnDestroy,
   signal,
 } from '@angular/core';
@@ -27,6 +28,11 @@ declare var bootstrap: any;
 })
 export class ProfileComponent implements OnDestroy {
   /**
+   * Injection
+   */
+
+  private utils = inject(UtilitiesService);
+  /**
    * Form User
    */
   formUser: FormGroup;
@@ -48,7 +54,7 @@ export class ProfileComponent implements OnDestroy {
   /**
    * Roles
    */
-  roles = signal<string[]>([]);
+  roles = signal<string[]>(this.utils.roles());
 
   /**
    * Theme mode
@@ -67,7 +73,6 @@ export class ProfileComponent implements OnDestroy {
     private userService: UsersService,
     private authService: AuthService,
     private fb: FormBuilder,
-    private utils: UtilitiesService,
     private cdRef: ChangeDetectorRef
   ) {
     this.formUser = this.fb.group({
@@ -89,7 +94,6 @@ export class ProfileComponent implements OnDestroy {
 
     this.userid.set(Number(this.authService.getUserID()));
     this.getLoggedinUser();
-    this.getRoles();
 
     if (authService.getUserTheme() === 'dark') {
       this.isDarkMode.set(true);
@@ -121,7 +125,7 @@ export class ProfileComponent implements OnDestroy {
     this.subscriptionList.push(
       this.userService.user$.subscribe({
         next: (res: any) => {
-          if (res.length !== 0) {
+          if (res) {
             this.formUser.patchValue(res[0]);
             // this.username = res[0].username;
             // this.userid = res[0].userid;
@@ -143,16 +147,18 @@ export class ProfileComponent implements OnDestroy {
    * This This method to update the user profile form
    */
   public saveForm(): void {
+    console.log(this.formUser.getRawValue());
+    console.log(this.formUser.value);
     this.subscriptionList.push(
       this.userService
         .updateUserByID(
           this.userid(),
-          this.formUser.value.name,
-          this.formUser.value.mobile,
-          this.formUser.value.company,
-          this.formUser.value.designation,
-          this.formUser.value.imagepath,
-          this.formUser.value.role
+          this.formUser.getRawValue().name,
+          this.formUser.getRawValue().mobile,
+          this.formUser.getRawValue().company,
+          this.formUser.getRawValue().designation,
+          this.formUser.getRawValue().imagepath,
+          this.formUser.getRawValue().role
         )
         .subscribe({
           next: (data) => {
@@ -225,13 +231,6 @@ export class ProfileComponent implements OnDestroy {
     } else {
       console.error('Modal element not found');
     }
-  }
-
-  /**
-   * This method will fetch all the user roles
-   */
-  private getRoles(): void {
-    this.roles.set(this.utils.roles());
   }
 
   /**
