@@ -435,6 +435,8 @@ export class TrainingdetailComponent implements OnInit, OnDestroy {
    * Open Driver Search Model Popup
    */
   openSearchModal() {
+    const buttonElement = document.activeElement as HTMLElement; // Get the currently focused element
+    buttonElement.blur();
     this.sessionSearchComponent.openModal();
   }
 

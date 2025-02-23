@@ -45,7 +45,7 @@ export const routes: Routes = [
         path: 'dashboard',
         component: DashboardComponent,
         canActivate: [authGuard],
-        data: { roles: ['admin', 'manager', 'staff', 'member'] },
+        data: { roles: ['admin', 'biller', 'manager', 'staff', 'member'] },
       },
       {
         path: 'gdashboard',
@@ -111,13 +111,13 @@ export const routes: Routes = [
         path: 'alltrainings',
         component: AlltrainingsComponent,
         canActivate: [authGuard],
-        data: { roles: ['admin', 'manager'] },
+        data: { roles: ['admin', 'biller', 'manager'] },
       },
       {
         path: 'alltrainings/:id',
         component: TrainingdetailComponent,
         canActivate: [authGuard],
-        data: { roles: ['admin', 'manager'] },
+        data: { roles: ['admin', 'biller', 'manager'] },
       },
       {
         path: 'addtraining',
@@ -129,7 +129,7 @@ export const routes: Routes = [
         path: 'trainingsreport',
         component: TrainingsreportComponent,
         canActivate: [authGuard],
-        data: { roles: ['admin', 'manager'] },
+        data: { roles: ['admin', 'biller', 'manager'] },
       },
       {
         path: 'trainer',

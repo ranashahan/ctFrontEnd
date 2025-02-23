@@ -125,7 +125,7 @@
               >
                 <option disabled value="null">Select User Role</option>
                 @for (item of roles(); track $index) {
-                <option>{{ item }}</option>
+                <option [value]="item">{{ item }}</option>
                 }
               </select>
             </div>

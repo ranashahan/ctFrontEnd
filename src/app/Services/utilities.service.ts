@@ -136,6 +136,8 @@ export class UtilitiesService {
     if (!dateString) return '';
     const date = new Date(dateString);
 
+    if (isNaN(date.getTime())) return '';
+
     // Options for date formatting
     const options: Intl.DateTimeFormatOptions = {
       weekday: 'long', // Full day name (e.g., Friday)
@@ -144,7 +146,7 @@ export class UtilitiesService {
       year: 'numeric', // Full year (e.g., 2024)
     };
 
-    return date.toLocaleDateString('en-US', options);
+    return date.toLocaleDateString(undefined, options);
   }
 
   public formatStringDate(dateStr: string): string {
@@ -160,7 +162,7 @@ export class UtilitiesService {
     }
 
     // Convert to YYYY-MM-DD format
-    return parsedDate.toISOString().split('T')[0];
+    return this.toYYYYMMDD(parsedDate);
   }
 
   /**
@@ -169,13 +171,41 @@ export class UtilitiesService {
    * @returns
    */
   public convertToMySQLDate(date: string): string {
+    if (!date) return '';
     // Convert MM/DD/YYYY format to YYYY-MM-DD
-    if (date) {
-      const [month, day, year] = date.split('/');
-      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-    } else {
-      return date;
+    const parsedDate = new Date(date);
+    if (!isNaN(parsedDate.getTime())) {
+      return this.toYYYYMMDD(parsedDate);
     }
+
+    // If normal parsing fails, try splitting manually (for DD/MM/YYYY or MM/DD/YYYY)
+    const parts = date.split(/[/\-.]/); // Supports MM/DD/YYYY, DD-MM-YYYY, DD.MM.YYYY
+    if (parts.length === 3) {
+      let [d, m, y] = parts.map(Number); // Convert to numbers
+      if (y < 1000) [y, m, d] = [d, m, y]; // If year is at the end, swap positions
+
+      const manualDate = new Date(y, m - 1, d); // Months are 0-based in JS
+      if (!isNaN(manualDate.getTime())) {
+        return this.toYYYYMMDD(manualDate);
+      }
+    }
+
+    return ''; // Return empty if all parsing fails
+  }
+
+  /**
+   * This method will convert any date into db format
+   * @param date date
+   * @returns date
+   */
+  private toYYYYMMDD(date: Date): string {
+    return (
+      date.getFullYear() +
+      '-' +
+      String(date.getMonth() + 1).padStart(2, '0') +
+      '-' +
+      String(date.getDate()).padStart(2, '0')
+    );
   }
 
   /**
@@ -213,7 +243,7 @@ export class UtilitiesService {
    * @returns array of string
    */
   public roles(): string[] {
-    return ['admin', 'guest', 'member', 'manager', 'staff'];
+    return ['admin', 'biller', 'guest', 'member', 'manager', 'staff'];
   }
 
   /**

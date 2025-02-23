@@ -3,7 +3,7 @@ export const Menu = {
     {
       path: '/dashboard',
       name: 'Dashboard',
-      roles: ['admin', 'manager', 'staff', 'member'],
+      roles: ['admin', 'biller', 'manager', 'staff', 'member'],
       icon: 'fa-solid fa-house fa-flip me-1',
     },
   ],
@@ -70,12 +70,12 @@ export const Menu = {
       name: 'Training',
       icon: 'fa-solid fa-laptop-code fa-beat-fade me-1',
       id: 'training',
-      roles: ['admin', 'manager'],
+      roles: ['admin', 'biller', 'manager'],
       items: [
         {
           name: 'All Trainings',
           path: '/alltrainings',
-          roles: ['admin', 'manager'],
+          roles: ['admin', 'biller', 'manager'],
           icon: 'fa-solid fa-book-open-reader me-1',
         },
         {
@@ -87,7 +87,7 @@ export const Menu = {
         {
           name: 'Training Report',
           path: '/trainingsreport',
-          roles: ['admin', 'manager'],
+          roles: ['admin', 'biller', 'manager'],
           icon: 'fa-solid fa-laptop-file me-1',
         },
       ],

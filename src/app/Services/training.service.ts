@@ -8,6 +8,7 @@ import { ClientService } from './client.service';
 import { ContractorService } from './contractor.service';
 import { CourseService } from './course.service';
 import { CategoryService } from './category.service';
+import { TrainerService } from './trainer.service';
 
 @Injectable({
   providedIn: 'root',
@@ -43,6 +44,10 @@ export class TrainingService {
    */
   private categoryService = inject(CategoryService);
   /**
+   * Trainer Service
+   */
+  private trainerService = inject(TrainerService);
+  /**
    * Course signal
    */
   private courses = this.courseService.courses;
@@ -58,6 +63,10 @@ export class TrainingService {
    * Contractor signal
    */
   private contractors = this.cService.contractors;
+  /**
+   * Trainer signal
+   */
+  private trainers = this.trainerService.trainers;
   /**
    * Counter
    */
@@ -87,6 +96,12 @@ export class TrainingService {
       const clientsValue = this.clients();
       const coursesValue = this.courses();
       const categoriesValue = this.categories();
+      const trainersValues = this.trainers();
+
+      const trainerMap = trainersValues.reduce((map, trainer: any) => {
+        map[trainer.id] = trainer.name;
+        return map;
+      }, {} as Record<number, string>);
 
       const contractorMap = contractorsValue.reduce((map, contractor: any) => {
         map[contractor.id] = contractor.name;
@@ -110,6 +125,7 @@ export class TrainingService {
 
       return trainings.map((training) => ({
         ...training,
+        trainerName: trainerMap[training.trainerid] || '',
         contractorName: contractorMap[training.contractorid] || '',
         clientName: clientsMap[training.clientid] || '',
         courseName: coursesMap[training.courseid] || '',
