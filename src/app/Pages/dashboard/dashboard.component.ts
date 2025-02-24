@@ -24,7 +24,7 @@ import {
   ChartComponent,
   ApexTooltip,
 } from 'ng-apexcharts';
-import { Subscription } from 'rxjs';
+import { of, Subscription } from 'rxjs';
 import { UtilitiesService } from '../../Services/utilities.service';
 import { LocationService } from '../../Services/location.service';
 import { DriverService } from '../../Services/driver.service';
@@ -34,6 +34,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ToastComponent } from '../../Widgets/toast/toast.component';
 import { ClientService } from '../../Services/client.service';
 import { ContractorService } from '../../Services/contractor.service';
+import { ROLES } from '../../Models/Constants';
+import { AuthService } from '../../Services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -44,6 +46,7 @@ import { ContractorService } from '../../Services/contractor.service';
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   @ViewChild('chart') chart!: ChartComponent;
+  private authService = inject(AuthService);
   private trainingService = inject(TrainingService);
   private utils = inject(UtilitiesService);
   private locationService = inject(LocationService);
@@ -91,13 +94,23 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private trainers = this.trainerService.trainers;
   private clients = this.clientService.clients;
   private contractors = this.cService.contractors;
-  private trainings = toSignal(this.trainingService.getAllTraining());
+  private trainings = toSignal(
+    computed(
+      () =>
+        this.authService.getUserRole() === ROLES.ADMIN ||
+        this.authService.getUserRole() === ROLES.MANAGER ||
+        this.authService.getUserRole() === ROLES.BILLER
+          ? this.trainingService.getAllTraining() // Returns an Observable
+          : of([]) // Also an Observable
+    )(),
+    { initialValue: [] } // Ensure initial state
+  );
+  // this.trainingService.getAllTraining());
   public latestTrainings = computed(() => {
     const trainingsValue = this.trainings();
     if (!trainingsValue || trainingsValue.length === 0) {
-      return []; // Return an empty array if trainings is undefined or empty
+      return []; // Return an empty array if no trainings
     }
-
     return [...trainingsValue].slice(0, 5);
   });
 

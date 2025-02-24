@@ -81,6 +81,7 @@ export class SignupComponent implements OnDestroy {
         next: (data) => {
           this.utils.showToast(data.message, 'success');
           this.formReset();
+          this.userService.refreshUsers();
         },
         error: (err) => {
           this.utils.showToast(err.message, 'error');

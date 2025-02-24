@@ -4,6 +4,7 @@ import {
   Component,
   inject,
   OnDestroy,
+  OnInit,
   signal,
 } from '@angular/core';
 import {
@@ -26,12 +27,14 @@ declare var bootstrap: any;
   styleUrl: './profile.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProfileComponent implements OnDestroy {
+export class ProfileComponent implements OnInit, OnDestroy {
   /**
    * Injection
    */
 
   private utils = inject(UtilitiesService);
+  private userService = inject(UsersService);
+  private authService = inject(AuthService);
   /**
    * Form User
    */
@@ -42,9 +45,9 @@ export class ProfileComponent implements OnDestroy {
    */
   formPassword: FormGroup;
   /**
-   * Userid signal
+   * User signal
    */
-  private userid = signal<number>(0);
+  user = this.userService.user;
 
   /**
    * Subscriptionlist so ngondestory will destory all registered subscriptions.
@@ -63,18 +66,10 @@ export class ProfileComponent implements OnDestroy {
 
   /**
    * Constructor
-   * @param userService user service
-   * @param authService auth service
    * @param fb form builder
-   * @param utils utility service
    * @param cdRef Change detector Reference
    */
-  constructor(
-    private userService: UsersService,
-    private authService: AuthService,
-    private fb: FormBuilder,
-    private cdRef: ChangeDetectorRef
-  ) {
+  constructor(private fb: FormBuilder, private cdRef: ChangeDetectorRef) {
     this.formUser = this.fb.group({
       userid: [{ value: 0, disabled: true }, Validators.required],
       email: [{ value: '', disabled: true }, Validators.required],
@@ -92,12 +87,12 @@ export class ProfileComponent implements OnDestroy {
       newpassword: ['', [Validators.required, Validators.minLength(8)]],
     });
 
-    this.userid.set(Number(this.authService.getUserID()));
-    this.getLoggedinUser();
-
-    if (authService.getUserTheme() === 'dark') {
+    if (this.authService.getUserTheme() === 'dark') {
       this.isDarkMode.set(true);
     }
+  }
+  ngOnInit(): void {
+    this.getLoggedinUser();
   }
 
   /**
@@ -121,38 +116,20 @@ export class ProfileComponent implements OnDestroy {
    * This method to get the user profile info from database
    */
   private getLoggedinUser(): void {
-    this.userService.getUserByID(this.userid().toString());
-    this.subscriptionList.push(
-      this.userService.user$.subscribe({
-        next: (res: any) => {
-          if (res) {
-            this.formUser.patchValue(res[0]);
-            // this.username = res[0].username;
-            // this.userid = res[0].userid;
-            // if (res[0].role == ROLES.ADMIN || res[0].role == ROLES.MANAGER) {
-            if (res[0].role == ROLES.ADMIN) {
-              this.formUser.get('role')?.enable();
-            }
-          }
-        },
-        error: (err: any) => {
-          this.utils.showToast(err.message, 'error');
-          console.log(err.message);
-        },
-      })
-    );
+    this.formUser.patchValue(this.user());
+    if (this.user().role == ROLES.ADMIN) {
+      this.formUser.get('role')?.enable();
+    }
   }
 
   /**
    * This This method to update the user profile form
    */
   public saveForm(): void {
-    console.log(this.formUser.getRawValue());
-    console.log(this.formUser.value);
     this.subscriptionList.push(
       this.userService
         .updateUserByID(
-          this.userid(),
+          this.user().userid,
           this.formUser.getRawValue().name,
           this.formUser.getRawValue().mobile,
           this.formUser.getRawValue().company,
@@ -163,7 +140,7 @@ export class ProfileComponent implements OnDestroy {
         .subscribe({
           next: (data) => {
             this.utils.showToast('User saved successfully', 'success');
-            this.userService.getUserByIDMust(this.userid().toString());
+            this.userService.refreshUser();
           },
           error: (err) => {
             this.utils.showToast(err.message, 'error');

@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  inject,
   OnDestroy,
   OnInit,
   signal,
@@ -43,8 +44,10 @@ export class AllusersComponent implements OnInit, OnDestroy {
   @ViewChild(SignupComponent) signupComponent!: SignupComponent;
   @ViewChild(DeleteConfirmationComponent)
   deleteConfirmation!: DeleteConfirmationComponent;
-  employees = signal<apiUserModel[]>([]);
-  roles = signal<string[]>([]);
+  private userService = inject(UsersService);
+  private utils = inject(UtilitiesService);
+  employees = this.userService.users;
+  roles = signal<string[]>(this.utils.roles());
   formPassword: FormGroup;
 
   /**
@@ -54,19 +57,10 @@ export class AllusersComponent implements OnInit, OnDestroy {
 
   /**
    * Constructor
-   * @param utils utility service
-   * @param toastService toast service
    * @param cdRef change detection
-   * @param userService user service
    * @param fb form builder
    */
-  constructor(
-    private utils: UtilitiesService,
-    private cdRef: ChangeDetectorRef,
-    private userService: UsersService,
-    private fb: FormBuilder
-  ) {
-    this.roles.set(this.utils.roles());
+  constructor(private cdRef: ChangeDetectorRef, private fb: FormBuilder) {
     this.formPassword = this.fb.group({
       id: [{ value: 0 }],
       newpassword: [
@@ -88,18 +82,6 @@ export class AllusersComponent implements OnInit, OnDestroy {
    */
   ngOnInit(): void {
     this.utils.setTitle('All Employees');
-    this.getAll();
-  }
-  /**
-   * This method will fetch all the records from database.
-   */
-  getAll() {
-    this.userService.getAllUsers();
-    this.subscriptionList.push(
-      this.userService.users$.subscribe((res: any) => {
-        this.employees.set(res);
-      })
-    );
   }
 
   /**
@@ -113,6 +95,7 @@ export class AllusersComponent implements OnInit, OnDestroy {
         .updateUserPasswordByID(id, password)
         .subscribe((res: any) => {
           this.utils.showToast('Password saved successfully', 'success');
+          this.userService.refreshUsers();
         })
     );
   }
@@ -139,6 +122,7 @@ export class AllusersComponent implements OnInit, OnDestroy {
         .updateUserByID(id, name, mobile, company, designation, '', role)
         .subscribe((res: any) => {
           this.utils.showToast('User updated successfully', 'success');
+          this.userService.refreshUsers();
         })
     );
   }
@@ -155,9 +139,7 @@ export class AllusersComponent implements OnInit, OnDestroy {
       this.subscriptionList.push(
         this.userService.deleteUser(id).subscribe((res: any) => {
           this.utils.showToast('User deleted successfully', 'success');
-          this.employees.update((employees) =>
-            employees.filter((user) => user.userid !== id)
-          );
+          this.userService.refreshUsers();
         })
       );
     }

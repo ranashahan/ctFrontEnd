@@ -1,9 +1,11 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  inject,
   OnDestroy,
   OnInit,
   signal,
+  ViewChild,
 } from '@angular/core';
 import {
   FormBuilder,
@@ -20,6 +22,7 @@ import { ROLES } from '../../Models/Constants';
 import { environment } from '../../../environments/environment';
 import {
   RECAPTCHA_SETTINGS,
+  RecaptchaComponent,
   RecaptchaModule,
   RecaptchaSettings,
 } from 'ng-recaptcha-2';
@@ -40,6 +43,9 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent implements OnInit, OnDestroy {
+  private authService = inject(AuthService);
+  private utils = inject(UtilitiesService);
+  @ViewChild(RecaptchaComponent) recaptcha!: RecaptchaComponent; // Get reCAPTCHA reference
   formLogin: FormGroup;
   subscriptionList: Subscription[] = [];
   siteKey = signal<string>(environment.recaptchaSiteKey);
@@ -47,16 +53,9 @@ export class LoginComponent implements OnInit, OnDestroy {
   /**
    * Constructor
    * @param router Router for page route
-   * @param utils utility service
    * @param fb Form Builder
-   * @param authService auth service
    */
-  constructor(
-    private router: Router,
-    private utils: UtilitiesService,
-    private fb: FormBuilder,
-    private authService: AuthService
-  ) {
+  constructor(private router: Router, private fb: FormBuilder) {
     this.formLogin = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
@@ -99,6 +98,7 @@ export class LoginComponent implements OnInit, OnDestroy {
             error: (err: any) => {
               // console.log(err.message);
               this.utils.showToast(err.message, 'error');
+              this.recaptcha.reset();
             },
           })
       );
