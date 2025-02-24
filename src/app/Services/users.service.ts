@@ -1,9 +1,11 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { computed, inject, Injectable, signal } from '@angular/core';
+import { EMPTY, Observable } from 'rxjs';
 import { apiUserModel } from '../Models/User';
 import { environment } from '../../environments/environment';
 import { AuthService } from './auth.service';
+import { rxResource } from '@angular/core/rxjs-interop';
+import { ROLES } from '../Models/Constants';
 
 @Injectable({
   providedIn: 'root',
@@ -12,76 +14,52 @@ export class UsersService {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
   private readonly apiURL = `${environment.apiUrl}users/`;
-  private usersLoaded = false;
-  private usersBS: BehaviorSubject<apiUserModel[]> = new BehaviorSubject<
-    apiUserModel[]
-  >([]);
-  public users$: Observable<apiUserModel[]> = this.usersBS.asObservable();
-  private userBS: BehaviorSubject<apiUserModel[]> = new BehaviorSubject<
-    apiUserModel[]
-  >([]);
-  public user$: Observable<apiUserModel[]> = this.userBS.asObservable();
+  private userid = signal<string>(this.authService.getUserID());
 
   /**
-   * This method will fetch all the active users
+   * Users API call
    */
-  getAllUsers(): void {
-    if (!this.usersLoaded) {
-      this.http
-        .get<apiUserModel[]>(this.apiURL + 'getusers')
-        .pipe(
-          tap((data) => {
-            this.usersBS.next(data);
-            this.usersLoaded = true;
-          })
-        )
-        .subscribe();
-    }
-  }
-  /**
-   * This method will fetch all the active users
-   */
-  getUsersMust(): void {
-    this.http
-      .get<apiUserModel[]>(this.apiURL + 'getusers')
-      .pipe(
-        tap((data) => {
-          this.usersBS.next(data);
-          this.usersLoaded = true;
-        })
-      )
-      .subscribe();
-  }
+  private usersResponse = rxResource({
+    loader: () => {
+      if (this.authService.getUserRole() !== ROLES.ADMIN) {
+        return EMPTY; // Prevents API call if user is not admin
+      }
+      return this.http.get<apiUserModel[]>(this.apiURL + 'getusers');
+    },
+  });
 
   /**
-   * This method will fetch the user detail against user id
-   * @param id number userid
+   * Readonly Computed users
    */
-  getUserByID(id: string): void {
-    if (this.userBS.value.length < 1) {
-      this.http
-        .get<apiUserModel[]>(this.apiURL + `${id}`)
-        .pipe(
-          tap((data) => {
-            this.userBS.next(data);
-          })
-        )
-        .subscribe();
-    }
-  }
+  public users = computed(
+    () => this.usersResponse.value() ?? ([] as apiUserModel[])
+  );
+
   /**
-   * This method will fetch the user detail against user id
-   * @param id number userid
+   * Refresh users API call
    */
-  getUserByIDMust(id: string): void {
-    this.http
-      .get<apiUserModel[]>(this.apiURL + `${id}`)
-      .pipe(
-        tap((data) => {
-          this.userBS.next(data);
-        })
-      )
-      .subscribe();
+  public refreshUsers() {
+    this.usersResponse.reload();
+  }
+
+  private userResponse = rxResource({
+    request: this.userid, // Use parameterized id
+    loader: ({ request }) =>
+      this.http.get<apiUserModel>(`${this.apiURL}/${request}`),
+  });
+
+  /**
+   * Readonly Computed user
+   */
+  public user = computed(
+    () => this.userResponse.value() ?? ({} as apiUserModel)
+  );
+
+  /**
+   * Refresh user API call
+   */
+  public refreshUser() {
+    this.userResponse.reload();
   }
 
   /**
@@ -156,7 +134,6 @@ export class UsersService {
    * @returns Observable
    */
   createUser(obj: apiUserModel): Observable<apiUserModel> {
-    console.log(obj);
     return this.http.post<apiUserModel>(this.apiURL + 'register', {
       obj,
     });
