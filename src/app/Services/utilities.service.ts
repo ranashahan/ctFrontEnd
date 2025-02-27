@@ -5,6 +5,7 @@ import { apiGenericModel } from '../Models/Generic';
 import { AbstractControl } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
 import { Toast } from '../Models/Toast';
+import { DatePipe } from '@angular/common';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +14,7 @@ export class UtilitiesService {
   private _toasts$ = new BehaviorSubject<Toast[]>([]);
   toasts$ = this._toasts$.asObservable();
 
-  constructor(private titleService: Title) {}
+  constructor(private titleService: Title, private datePipe: DatePipe) {}
 
   /**
    * This method will show toast message on page
@@ -206,6 +207,10 @@ export class UtilitiesService {
       '-' +
       String(date.getDate()).padStart(2, '0')
     );
+  }
+
+  public formatDatetoddMMMYYYY(date: string | Date): string {
+    return this.datePipe.transform(date, 'dd-MMM-yyyy') || '';
   }
 
   /**

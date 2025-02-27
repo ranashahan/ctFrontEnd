@@ -287,7 +287,17 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
    */
   public downloadWordReport() {
     if (this.session().length > 0) {
-      this.reportService.generateWordFile(this.session());
+      this.reportService.generateWordCards(this.session());
+    } else {
+      this.utils.showToast('Did not find any records', 'warning');
+    }
+  }
+  /**
+   * This method will generate card report in Docx (MsWord)
+   */
+  public downloadWordSummery() {
+    if (this.session().length > 0) {
+      this.reportService.generateWordSummery(this.session());
     } else {
       this.utils.showToast('Did not find any records', 'warning');
     }
