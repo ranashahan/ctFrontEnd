@@ -30,6 +30,8 @@ import { TitleService } from './title.service';
 import { BloodgroupService } from './bloodgroup.service';
 import { VisualService } from './visual.service';
 import { fontsPDF } from '../Models/Fonts';
+import { TrainerService } from './trainer.service';
+import { VehicleService } from './vehicle.service';
 
 @Injectable({
   providedIn: 'root',
@@ -42,6 +44,8 @@ export class ReportService {
   private titleService = inject(TitleService);
   private bgService = inject(BloodgroupService);
   private visualService = inject(VisualService);
+  private trainerService = inject(TrainerService);
+  private vehicleService = inject(VehicleService);
 
   private contractors = this.cService.contractors;
   private locations = this.locationService.locations;
@@ -49,6 +53,8 @@ export class ReportService {
   private titles = this.titleService.titles;
   private bloodgroups = this.bgService.bloodGroups;
   private visuals = this.visualService.visuals;
+  private trainers = this.trainerService.trainers;
+  private vehicles = this.vehicleService.vehicles;
 
   /**
    * This method will generate and open pdf
@@ -114,9 +120,9 @@ export class ReportService {
             margin: [0, 20, 0, 0],
           },
           {
-            text: `CNIC #:  ${session.nic}\nDriver’s Code: ${
-              session.code || ''
-            }`,
+            text:
+              `CNIC #: ${session.nic}` +
+              (session.code ? `\nDriver’s Code: ${session.code}` : '\n '),
             style: 'details',
             alignment: 'center',
           },
@@ -141,11 +147,7 @@ export class ReportService {
             margin: [0, 10, 0, 0],
           },
           {
-            text:
-              `${this.utils.getGenericDescription(
-                this.dltypes(),
-                session.licensetypeid
-              )}` + ' Driver Training',
+            text: `Defensive Driving Course`,
             style: 'course',
             alignment: 'center',
             margin: [0, 20, 0, 0],
@@ -159,6 +161,15 @@ export class ReportService {
           {
             text: 'Skill Assessment',
             style: 'course',
+            alignment: 'center',
+            margin: [0, 20, 0, 0],
+          },
+          {
+            text: `for ${this.utils.getGenericName(
+              this.vehicles(),
+              session.vehicleid
+            )} vehicle driver`,
+            style: 'subheader',
             alignment: 'center',
             margin: [0, 20, 0, 0],
           },
@@ -208,7 +219,7 @@ export class ReportService {
                     )}-16H`,
                     alignment: 'center',
                     style: 'verticalText',
-                    margin: [0, 5, 0, 0],
+                    margin: [0, 3, 0, 0],
                   },
                 ],
                 alignment: 'center', // Align the stack to center
@@ -219,7 +230,7 @@ export class ReportService {
                 alignment: 'right', // Align to right
               },
             ],
-            margin: [10, 70, 0, 10], // Optional margin
+            margin: [10, 50, 0, 10], // Optional margin
           },
 
           { text: '', pageBreak: 'after' }, // Adds a page break after each session
@@ -239,8 +250,8 @@ export class ReportService {
 
     const documentDefinition: TDocumentDefinitions = {
       version: '1.7',
-      userPassword: 'consult',
-      ownerPassword: 'consulttrain',
+      // userPassword: 'consult',
+      // ownerPassword: 'consulttrain',
       info: {
         title: 'Certificates',
         author: 'Rana Mansoor Ahmed',
@@ -687,7 +698,585 @@ export class ReportService {
    * This method will generate Docx file
    * @param drivers API Session Driver Reprot
    */
-  async generateWordFile(drivers: apiSessionDriverReportModel[]) {
+  async generateWordSummery(drivers: apiSessionDriverReportModel[]) {
+    const tableRows: TableRow[] = [];
+
+    for (let i = 0; i < drivers.length; i++) {
+      const driver = drivers[i];
+      console.log(driver);
+      const qrcodeString = `Name: ${driver.drivername} NIC: ${driver.nic} License: ${driver.licensenumber} Permit: ${driver.permitnumber} Expiry: ${driver.permitexpiry} SessionID: ${driver.sessioname}`;
+
+      // Generate QR Codes
+      const qrCode1 = await this.generateQRCode(qrcodeString);
+      const logo = await this.loadImage();
+
+      // Create document
+      const doc = new Document({
+        styles: {
+          paragraphStyles: [
+            {
+              id: 'Normal',
+              name: 'Normal',
+              run: {
+                font: 'Arial',
+                size: 24, // 12pt font size (1pt = 2 half-points)
+              },
+            },
+          ],
+        },
+        sections: [
+          {
+            children: [
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: `Consult & Train (Pvt.) Limited`,
+                    bold: true,
+                    size: 36,
+                  }),
+                ],
+              }),
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: `Heavy Vehicle Driver Training & Skill Assessment Summary`,
+                    size: 32,
+                  }),
+                ],
+              }),
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: `for `,
+                    size: 32,
+                  }),
+                  new TextRun({
+                    text: `${this.utils.getGenericName(
+                      this.contractors(),
+                      driver.sessioncontractorid
+                    )}`,
+                    bold: true,
+                    size: 32,
+                  }),
+                ],
+              }),
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: `Particulars:`,
+                    bold: true,
+                    size: 24,
+                  }),
+                ],
+              }),
+              new Table({
+                width: {
+                  size: 100,
+                  type: WidthType.PERCENTAGE, // Ensure table spans the full width
+                },
+                rows: [
+                  new TableRow({
+                    children: [
+                      new TableCell({
+                        children: [
+                          new Paragraph({
+                            children: [
+                              new TextRun({
+                                text: `Participant Name:`,
+                                bold: true,
+                                size: 20,
+                              }),
+                            ],
+                          }),
+                        ],
+                        borders: {
+                          right: {
+                            style: BorderStyle.NONE,
+                            size: 0,
+                            color: 'FFFFFF',
+                          },
+                        },
+                      }),
+                      new TableCell({
+                        children: [
+                          new Paragraph({
+                            children: [
+                              new TextRun({
+                                text: `${driver.drivername}`,
+                                size: 20,
+                              }),
+                            ],
+                          }),
+                        ],
+                        borders: {
+                          left: {
+                            style: BorderStyle.NONE,
+                            size: 0,
+                            color: 'FFFFFF',
+                          },
+                          right: {
+                            style: BorderStyle.NONE,
+                            size: 0,
+                            color: 'FFFFFF',
+                          },
+                        },
+                      }),
+                      new TableCell({
+                        children: [
+                          new Paragraph({
+                            children: [
+                              new TextRun({
+                                text: `Registration #:`,
+                                bold: true,
+                                size: 20,
+                              }),
+                            ],
+                          }),
+                        ],
+                        borders: {
+                          left: {
+                            style: BorderStyle.NONE,
+                            size: 0,
+                            color: 'FFFFFF',
+                          },
+                          right: {
+                            style: BorderStyle.NONE,
+                            size: 0,
+                            color: 'FFFFFF',
+                          },
+                        },
+                      }),
+                      new TableCell({
+                        children: [
+                          new Paragraph({
+                            children: [
+                              new TextRun({
+                                text: `${driver.sessioname}`,
+                                size: 20,
+                              }),
+                            ],
+                          }),
+                        ],
+                        borders: {
+                          left: {
+                            style: BorderStyle.NONE,
+                            size: 0,
+                            color: 'FFFFFF',
+                          },
+                        },
+                      }),
+                    ],
+                  }),
+                  new TableRow({
+                    children: [
+                      new TableCell({
+                        children: [
+                          new Paragraph({
+                            children: [
+                              new TextRun({
+                                text: `Venue:`,
+                                bold: true,
+                                size: 20,
+                              }),
+                            ],
+                          }),
+                        ],
+                        borders: {
+                          right: {
+                            style: BorderStyle.NONE,
+                            size: 0,
+                            color: 'FFFFFF',
+                          },
+                        },
+                      }),
+                      new TableCell({
+                        children: [
+                          new Paragraph({
+                            children: [
+                              new TextRun({
+                                text: `${this.utils.getGenericName(
+                                  this.locations(),
+                                  driver.locationid
+                                )}`,
+                                size: 20,
+                              }),
+                            ],
+                          }),
+                        ],
+                        borders: {
+                          left: {
+                            style: BorderStyle.NONE,
+                            size: 0,
+                            color: 'FFFFFF',
+                          },
+                          right: {
+                            style: BorderStyle.NONE,
+                            size: 0,
+                            color: 'FFFFFF',
+                          },
+                        },
+                      }),
+                      new TableCell({
+                        children: [
+                          new Paragraph({
+                            children: [
+                              new TextRun({
+                                text: `Eyesight Status:`,
+                                bold: true,
+                                size: 20,
+                              }),
+                            ],
+                          }),
+                        ],
+                        borders: {
+                          left: {
+                            style: BorderStyle.NONE,
+                            size: 0,
+                            color: 'FFFFFF',
+                          },
+                          right: {
+                            style: BorderStyle.NONE,
+                            size: 0,
+                            color: 'FFFFFF',
+                          },
+                        },
+                      }),
+                      new TableCell({
+                        children: [
+                          new Paragraph({
+                            children: [
+                              new TextRun({
+                                text: `${this.utils.getGenericName(
+                                  this.visuals(),
+                                  driver.visualid
+                                )}`,
+                                size: 20,
+                              }),
+                            ],
+                          }),
+                        ],
+                        borders: {
+                          left: {
+                            style: BorderStyle.NONE,
+                            size: 0,
+                            color: 'FFFFFF',
+                          },
+                        },
+                      }),
+                    ],
+                  }),
+                  new TableRow({
+                    children: [
+                      new TableCell({
+                        children: [
+                          new Paragraph({
+                            children: [
+                              new TextRun({
+                                text: `Medical Validity:`,
+                                bold: true,
+                                size: 20,
+                              }),
+                            ],
+                          }),
+                        ],
+                        borders: {
+                          right: {
+                            style: BorderStyle.NONE,
+                            size: 0,
+                            color: 'FFFFFF',
+                          },
+                        },
+                      }),
+                      new TableCell({
+                        children: [
+                          new Paragraph({
+                            children: [
+                              new TextRun({
+                                text: `${this.utils.formatDatetoddMMMYYYY(
+                                  driver.medicalexpiry
+                                )}`,
+                                size: 20,
+                              }),
+                            ],
+                          }),
+                        ],
+                        borders: {
+                          left: {
+                            style: BorderStyle.NONE,
+                            size: 0,
+                            color: 'FFFFFF',
+                          },
+                          right: {
+                            style: BorderStyle.NONE,
+                            size: 0,
+                            color: 'FFFFFF',
+                          },
+                        },
+                      }),
+                      new TableCell({
+                        children: [
+                          new Paragraph({
+                            children: [
+                              new TextRun({
+                                text: `Experience:`,
+                                bold: true,
+                                size: 20,
+                              }),
+                            ],
+                          }),
+                        ],
+                        borders: {
+                          left: {
+                            style: BorderStyle.NONE,
+                            size: 0,
+                            color: 'FFFFFF',
+                          },
+                          right: {
+                            style: BorderStyle.NONE,
+                            size: 0,
+                            color: 'FFFFFF',
+                          },
+                        },
+                      }),
+                      new TableCell({
+                        children: [
+                          new Paragraph({
+                            children: [
+                              new TextRun({
+                                text: `${driver.experience}`,
+                                size: 20,
+                              }),
+                            ],
+                          }),
+                        ],
+                        borders: {
+                          left: {
+                            style: BorderStyle.NONE,
+                            size: 0,
+                            color: 'FFFFFF',
+                          },
+                        },
+                      }),
+                    ],
+                  }),
+                  new TableRow({
+                    children: [
+                      new TableCell({
+                        children: [
+                          new Paragraph({
+                            children: [
+                              new TextRun({
+                                text: `Session Date:`,
+                                bold: true,
+                                size: 20,
+                              }),
+                            ],
+                          }),
+                        ],
+                        borders: {
+                          right: {
+                            style: BorderStyle.NONE,
+                            size: 0,
+                            color: 'FFFFFF',
+                          },
+                        },
+                      }),
+                      new TableCell({
+                        children: [
+                          new Paragraph({
+                            children: [
+                              new TextRun({
+                                text: `${this.utils.formatDatetoddMMMYYYY(
+                                  driver.sessiondate
+                                )}`,
+                                size: 20,
+                              }),
+                            ],
+                          }),
+                        ],
+                        borders: {
+                          left: {
+                            style: BorderStyle.NONE,
+                            size: 0,
+                            color: 'FFFFFF',
+                          },
+                          right: {
+                            style: BorderStyle.NONE,
+                            size: 0,
+                            color: 'FFFFFF',
+                          },
+                        },
+                      }),
+                      new TableCell({
+                        children: [
+                          new Paragraph({
+                            children: [
+                              new TextRun({
+                                text: `Assessment Date:`,
+                                bold: true,
+                                size: 20,
+                              }),
+                            ],
+                          }),
+                        ],
+                        borders: {
+                          left: {
+                            style: BorderStyle.NONE,
+                            size: 0,
+                            color: 'FFFFFF',
+                          },
+                          right: {
+                            style: BorderStyle.NONE,
+                            size: 0,
+                            color: 'FFFFFF',
+                          },
+                        },
+                      }),
+                      new TableCell({
+                        children: [
+                          new Paragraph({
+                            children: [
+                              new TextRun({
+                                text: `${this.utils.formatDatetoddMMMYYYY(
+                                  driver.sessiondate
+                                )}`,
+                                size: 20,
+                              }),
+                            ],
+                          }),
+                        ],
+                        borders: {
+                          left: {
+                            style: BorderStyle.NONE,
+                            size: 0,
+                            color: 'FFFFFF',
+                          },
+                        },
+                      }),
+                    ],
+                  }),
+                  new TableRow({
+                    children: [
+                      new TableCell({
+                        children: [
+                          new Paragraph({
+                            children: [
+                              new TextRun({
+                                text: `Trainer:`,
+                                bold: true,
+                                size: 20,
+                              }),
+                            ],
+                          }),
+                        ],
+                        borders: {
+                          right: {
+                            style: BorderStyle.NONE,
+                            size: 0,
+                            color: 'FFFFFF',
+                          },
+                        },
+                      }),
+                      new TableCell({
+                        children: [
+                          new Paragraph({
+                            children: [
+                              new TextRun({
+                                text: `${this.utils.getGenericName(
+                                  this.trainers(),
+                                  driver.trainerid
+                                )}`,
+                                size: 20,
+                              }),
+                            ],
+                          }),
+                        ],
+                        borders: {
+                          left: {
+                            style: BorderStyle.NONE,
+                            size: 0,
+                            color: 'FFFFFF',
+                          },
+                          right: {
+                            style: BorderStyle.NONE,
+                            size: 0,
+                            color: 'FFFFFF',
+                          },
+                        },
+                      }),
+                      new TableCell({
+                        children: [
+                          new Paragraph({
+                            children: [
+                              new TextRun({
+                                text: `Timings:`,
+                                bold: true,
+                                size: 20,
+                              }),
+                            ],
+                          }),
+                        ],
+                        borders: {
+                          left: {
+                            style: BorderStyle.NONE,
+                            size: 0,
+                            color: 'FFFFFF',
+                          },
+                          right: {
+                            style: BorderStyle.NONE,
+                            size: 0,
+                            color: 'FFFFFF',
+                          },
+                        },
+                      }),
+                      new TableCell({
+                        children: [
+                          new Paragraph({
+                            children: [
+                              new TextRun({
+                                text: `09:00 A.M. - 05:00 P.M.`,
+                                size: 20,
+                              }),
+                            ],
+                          }),
+                        ],
+                        borders: {
+                          left: {
+                            style: BorderStyle.NONE,
+                            size: 0,
+                            color: 'FFFFFF',
+                          },
+                        },
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: `Yard Test:`,
+                    bold: true,
+                    size: 24,
+                  }),
+                ],
+              }),
+            ],
+          },
+        ],
+      });
+
+      // Download the document
+      const blob = await Packer.toBlob(doc);
+      this.downloadBlob(blob, 'Driver_Permits.docx');
+    }
+  }
+
+  /**
+   * This method will generate Docx file
+   * @param drivers API Session Driver Reprot
+   */
+  async generateWordCards(drivers: apiSessionDriverReportModel[]) {
     const tableRows: TableRow[] = [];
 
     for (let i = 0; i < drivers.length; i++) {

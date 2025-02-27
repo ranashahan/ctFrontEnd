@@ -8,6 +8,7 @@ import {
 } from '@angular/common/http';
 import { tokenInterceptor } from './Services/token.interceptor';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { DatePipe } from '@angular/common';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -15,5 +16,6 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withFetch(), withInterceptors([tokenInterceptor])),
     provideRouter(routes),
     provideAnimationsAsync(),
+    DatePipe,
   ],
 };

@@ -3,6 +3,7 @@ import {
   ChangeDetectorRef,
   Component,
   computed,
+  effect,
   inject,
   OnDestroy,
   OnInit,
@@ -61,6 +62,7 @@ export class AddtrainingComponent implements OnInit, OnDestroy {
   previousTax = signal<number>(0);
 
   selectedClient = signal<number | null>(null);
+  selectedContractor = signal<number | null>(null);
 
   filteredContractors = computed(() => {
     const clientid = this.selectedClient();
@@ -69,6 +71,16 @@ export class AddtrainingComponent implements OnInit, OnDestroy {
           (c) => Number(c.clientid) === Number(clientid)
         )
       : this.contractors();
+  });
+
+  private selectedContractorDetails = computed(() => {
+    const contractorId = Number(this.selectedContractor()); // Get the selected contractor ID
+    const contractorsList = this.contractors();
+    if (!contractorId || !contractorsList || contractorsList.length === 0) {
+      return null; // If no contractor is selected or list is empty, return null
+    }
+
+    return contractorsList.find((c) => c.id === contractorId) || null;
   });
 
   formTraining: FormGroup;
@@ -115,7 +127,24 @@ export class AddtrainingComponent implements OnInit, OnDestroy {
     this.formTraining.get('clientid')?.valueChanges.subscribe((clientid) => {
       this.selectedClient.set(clientid);
     });
+
+    this.formTraining
+      .get('contractorid')
+      ?.valueChanges.subscribe((contractorid) => {
+        this.selectedContractor.set(contractorid);
+      });
+
     this.setupTotalCalculation();
+
+    effect(() => {
+      const contractorDetails = this.selectedContractorDetails(); // Get latest details
+      if (contractorDetails) {
+        this.formTraining.patchValue({
+          requestedby: contractorDetails.contactname || '',
+          contactnumber: contractorDetails.contactnumber || '',
+        });
+      }
+    });
   }
 
   /**
