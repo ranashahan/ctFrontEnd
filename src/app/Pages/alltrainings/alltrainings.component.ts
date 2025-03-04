@@ -250,17 +250,27 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
       headerTooltip: 'Plan Date',
     },
     {
-      headerName: 'Course Title',
-      field: 'courseName',
-      filter: 'agTextColumnFilter',
-      flex: 1.5,
-      headerTooltip: 'Courses',
+      headerName: 'End Date',
+      field: 'enddate',
+      valueGetter: (params) =>
+        params.data.enddate ? new Date(params.data.enddate) : null,
+      valueFormatter: (params) =>
+        this.datePipe.transform(params.value, 'MM-dd-yyyy') || '',
+      filter: 'agDateColumnFilter',
+      headerTooltip: 'End Date',
     },
     {
       headerName: 'Trainer',
       field: 'trainerName',
       filter: 'agTextColumnFilter',
       headerTooltip: 'Trainers',
+    },
+    {
+      headerName: 'Course Title',
+      field: 'courseName',
+      filter: 'agTextColumnFilter',
+      flex: 1.5,
+      headerTooltip: 'Courses',
     },
     {
       headerName: 'Sponsor',
@@ -275,7 +285,7 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
       headerTooltip: 'Contractors',
     },
     {
-      headerName: 'Total Amount',
+      headerName: 'Total',
       field: 'total',
       filter: 'agNumberColumnFilter',
       valueFormatter: (params) => {
@@ -285,7 +295,7 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
       headerTooltip: 'Total Amount',
     },
     {
-      headerName: 'Received Amount',
+      headerName: 'Received',
       field: 'amountreceived',
       filter: 'agNumberColumnFilter',
       valueFormatter: (params) => {

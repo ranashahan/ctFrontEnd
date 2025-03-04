@@ -141,9 +141,9 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
 
     this.subscriptionList.push(
       this.assessmentService
-        .getSessionReportAll(this.formSession.value.sessionname)
+        .getSessionReportByDate(this.formSession.value.sessionname)
         .subscribe({
-          next: (data) => {
+          next: (data: any) => {
             if (!data) {
               this.utils.showToast(
                 'Did not fetch any record, please update criteria',
@@ -171,6 +171,7 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
     this.subscriptionList.push(
       this.assessmentService
         .getSessionReportByDate(
+          undefined,
           this.formDate.value.clientid,
           this.formDate.value.contractorid,
           this.formDate.value.startDate,
