@@ -426,7 +426,6 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
         this.assessmentService
           .getSessionbyID(this.sessionID)
           .subscribe((res: any) => {
-            console.log(res[0]);
             this.assessmentService.selectedSuperCategoryId.set(res[0].formid);
             this.selectedForm.set(res[0].formid);
             this.sessionDetail.set(res[0]);
