@@ -96,7 +96,7 @@ export class ReportService {
       },
     };
 
-    const logoAslam = await this.getBase64ImageFromURL('/img/AslamSig.png');
+    const logoAslam = await this.getBase64ImageFromURL('/img/AslamSig1.png');
     const logoAmina = await this.getBase64ImageFromURL('/img/AmenaSig.png');
     const printDate = new Date().toLocaleDateString('en-US');
     const documentContent: Content[] = sessions
@@ -122,7 +122,9 @@ export class ReportService {
           {
             text:
               `CNIC #: ${session.nic}` +
-              (session.code ? `\nDriver’s Code: ${session.code}` : '\n '),
+              (session.drivercode
+                ? `\nDriver’s Code: ${session.drivercode}`
+                : '\n '),
             style: 'details',
             alignment: 'center',
           },
@@ -134,7 +136,7 @@ export class ReportService {
           {
             text: `${this.utils.getGenericName(
               this.contractors(),
-              session.sessioncontractorid
+              session.contractorid
             )}`,
             style: 'company',
             alignment: 'center',
@@ -168,7 +170,7 @@ export class ReportService {
             text: `for ${this.utils.getGenericName(
               this.vehicles(),
               session.vehicleid
-            )} vehicle driver`,
+            )} driver`,
             style: 'subheader',
             alignment: 'center',
             margin: [0, 20, 0, 0],
@@ -206,7 +208,7 @@ export class ReportService {
               {
                 stack: [
                   {
-                    qr: `${session.sessioname}`, // QR code content
+                    qr: `${session.name}`, // QR code content
                     fit: 50, // Set size for QR code
                     alignment: 'center', // Align the QR code
                   },
@@ -228,9 +230,10 @@ export class ReportService {
                 image: logoAslam, // Right image
                 width: 80, // Set width
                 alignment: 'right', // Align to right
+                margin: [0, 20, 10, 0],
               },
             ],
-            margin: [10, 50, 0, 10], // Optional margin
+            margin: [10, 50, 0, 0], // Optional margin
           },
 
           { text: '', pageBreak: 'after' }, // Adds a page break after each session
@@ -1686,7 +1689,7 @@ export class ReportService {
                         new TextRun({
                           text: `${this.utils.getGenericName(
                             this.contractors(),
-                            driver.sessioncontractorid
+                            driver.contractorid
                           )}`,
                           bold: true,
                         }),
@@ -1903,7 +1906,7 @@ export class ReportService {
                       alignment: AlignmentType.CENTER,
                       children: [
                         new TextRun({
-                          text: `${driver.designation}`,
+                          text: `${driver.designation ?? ''}`,
                           size: 20,
                           color: 'FF0000',
                         }),
@@ -2065,7 +2068,7 @@ export class ReportService {
                     new Paragraph({
                       children: [
                         new TextRun({
-                          text: `${driver.code ?? ''}`,
+                          text: `${driver.drivercode ?? ''}`,
                           bold: true,
                         }),
                       ],

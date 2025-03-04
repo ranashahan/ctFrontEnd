@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  computed,
   inject,
   OnDestroy,
   OnInit,
@@ -13,6 +14,7 @@ import {
   AbstractControl,
   FormArray,
   FormBuilder,
+  FormControl,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
@@ -93,6 +95,7 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
   isAPICallInProgress = signal<boolean>(false);
   licenseVerification = signal<any[]>(this.utils.verificationStatus());
   risks = signal<string[]>(this.utils.risk());
+  selectedForm = signal<number>(16001);
   assessmentForm: FormGroup;
   driverForm: FormGroup;
   isEdit = signal<boolean>(false);
@@ -161,14 +164,36 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Private regex method
+   */
+  private regexPattern = computed(() => {
+    return this.selectedForm() === 16001 ? /[^0-3]/g : /[^0-5]/g;
+  });
+  /**
    * This method will restrict user to type only 1 digit
    * @param event event
+   * @param control control
    */
-  public restrictToSingleDigit(event: any): void {
-    const input = event.target;
-    if (input.value.length > 1) {
-      input.value = input.value.slice(0, 1);
+  public restrictToSingleDigit(
+    event: any,
+    control: AbstractControl | null
+  ): void {
+    if (!control || !(control instanceof FormControl)) return; // Ensure it's a FormControl
+    let input = event.target;
+    let value = input.value.replace(this.regexPattern(), ''); // Allow only 0-5
+
+    // Keep only the first digit
+    if (value.length > 1) {
+      value = value.charAt(0);
     }
+    // If value is empty, set it to null
+    const finalValue = value === '' ? null : value;
+
+    // Update the input field display
+    input.value = finalValue ?? ''; // Show empty string if null
+
+    // Update FormControl value
+    control.setValue(finalValue, { emitEvent: false });
   }
 
   /**
@@ -402,6 +427,7 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
           .getSessionbyID(this.sessionID)
           .subscribe((res: any) => {
             this.assessmentService.selectedSuperCategoryId.set(res[0].formid);
+            this.selectedForm.set(res[0].formid);
             this.sessionDetail.set(res[0]);
             this.getDriver(res[0].driverid);
             const formattedSessionDate = this.utils.convertToMySQLDate(

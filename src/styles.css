@@ -65,7 +65,7 @@ body {
 }
 
 .legend-blue {
-  background-color: #85c0e4; /* Blue for Permit Expired */
+  background-color: #85c0e4;
   border-color: #856404;
 }
 .legend-dblue {
@@ -76,6 +76,57 @@ body {
 .legend-green {
   background-color: #d1e7dd; /* Green for Permit Expired */
   border-color: #856404;
+}
+.legend-darkred {
+  display: inline-flex;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  color: white;
+  background-color: red;
+  border-color: red;
+}
+.legend-darkyellow {
+  display: inline-flex;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  color: white;
+  background-color: rgb(180, 180, 4);
+  border-color: rgb(180, 180, 4);
+}
+.legend-darkmegenta {
+  display: inline-flex;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  color: white;
+  background-color: darkmagenta; /* Green for Permit Expired */
+  border-color: darkmagenta;
+}
+.legend-darkblue {
+  display: inline-flex;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  color: white;
+  background-color: darkblue; /* Green for Permit Expired */
+  border-color: darkblue;
+}
+
+.legend-darkgreen {
+  display: inline-flex;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  color: white;
+  background-color: #049554; /* Green for Permit Expired */
+  border-color: #049554;
 }
 .my-input {
   width: 100px; /* Adjust the width as needed */

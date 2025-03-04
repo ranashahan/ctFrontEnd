@@ -167,12 +167,16 @@ export class AssessmentService {
    * @returns Observable
    */
   public getSessionReportByDate(
+    name?: string,
     clientid?: number,
     contractorid?: number,
     startDate?: string,
     endDate?: string
   ): Observable<apiSessionModel[]> {
     let params = new HttpParams();
+    if (name) {
+      params = params.set('name', name);
+    }
     if (clientid) {
       params = params.set('clientid', clientid);
     }
@@ -455,7 +459,7 @@ export class AssessmentService {
               score: activity.scoreInitial,
               assessmentdate: sessionDate,
             });
-            // totalScore += activity.scoreInitial;
+            // totalScore += Number(activity.scoreInitial);
           }
           if (activity.scoreMiddle != null) {
             result.push({
@@ -465,7 +469,7 @@ export class AssessmentService {
               score: activity.scoreMiddle,
               assessmentdate: sessionDate,
             });
-            // totalScore += activity.scoreMiddle;
+            // totalScore += Number(activity.scoreMiddle);
           }
 
           if (activity.scoreFinal != null) {
@@ -476,7 +480,8 @@ export class AssessmentService {
               score: activity.scoreFinal,
               assessmentdate: sessionDate,
             });
-            totalScore += activity.scoreFinal;
+            console.log(activity.scoreFinal);
+            totalScore += Number(activity.scoreFinal);
           }
         });
       });

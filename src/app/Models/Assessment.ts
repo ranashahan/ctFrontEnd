@@ -91,13 +91,16 @@ export interface apiSessionDriverReportModel {
   medicalexpiry: Date;
   bloodgroupid: number;
   drivercontractorid: number;
+  contractorid: number;
   visualid: number;
   ddccount: number;
   experience: number;
   code: string;
+  drivercode: string;
   drivercomment: string;
   sessionid: number;
   sessioname: string;
+  name: string;
   sessiondate: Date;
   locationid: number;
   resultid: number;

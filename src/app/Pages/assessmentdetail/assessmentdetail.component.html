@@ -10,7 +10,6 @@
     </div>
   </div>
   } @if (!isLoading()) {
-
   <div class="bg-success bg-opacity-50 fs-7 fw-medium mt-3">
     <h6 class="ms-3">Driver Information</h6>
 
@@ -263,10 +262,8 @@
         </div>
       </div>
     </form>
-
     <hr />
   </div>
-
   <form [formGroup]="assessmentForm">
     <div class="bg-warning bg-opacity-25 fs-7 fw-medium">
       <div class="row row-cols-lg-auto g-3 justify-content-start ms-1">
@@ -516,6 +513,99 @@
       </div>
       <hr />
     </div>
+    <div class="row">
+      <div class="col-lg-8 col-md-6 col-sm-12">
+        @if (selectedForm()==16001) {
+        <div class="legend-container">
+          Marking Guide:
+          <div class="legend-item fs-7">
+            <span class="legend-box legend-darkred">0</span>
+            <span>Unsatisfactory</span>
+          </div>
+          <div class="legend-item fs-7">
+            <span class="legend-box legend-darkyellow">1</span>
+            <span>Sometimes</span>
+          </div>
+          <div class="legend-item fs-7">
+            <span class="legend-box legend-darkblue">2</span>
+            <span>Frequently</span>
+          </div>
+          <div class="legend-item fs-7">
+            <span class="legend-box legend-darkgreen">3</span>
+            <span>Consistently</span>
+          </div>
+        </div>
+        }@else if (selectedForm()==16002) {
+        <div class="legend-container">
+          Scoring Interp:
+          <div class="legend-item fs-7">
+            <span class="legend-box legend-darkred">1</span>
+            <span>Poor</span>
+          </div>
+          <div class="legend-item fs-7">
+            <span class="legend-box legend-darkyellow">2</span>
+            <span>Lacking</span>
+          </div>
+          <div class="legend-item fs-7">
+            <span class="legend-box legend-darkmegenta">3</span>
+            <span>Satisfactory</span>
+          </div>
+          <div class="legend-item fs-7">
+            <span class="legend-box legend-darkblue">4</span>
+            <span>Good</span>
+          </div>
+          <div class="legend-item fs-7">
+            <span class="legend-box legend-darkgreen">5</span>
+            <span>Excellent</span>
+          </div>
+        </div>
+        } @else {
+        <div class="legend-container">
+          Key to Grades:
+          <div class="legend-item fs-7">
+            <span class="legend-box legend-darkgreen">1</span>
+            <span>Excellent</span>
+          </div>
+          <div class="legend-item fs-7">
+            <span class="legend-box legend-darkblue">2</span>
+            <span>Good</span>
+          </div>
+          <div class="legend-item fs-7">
+            <span class="legend-box legend-darkmegenta">3</span>
+            <span>Satisfactory</span>
+          </div>
+          <div class="legend-item fs-7">
+            <span class="legend-box legend-darkyellow">4</span>
+            <span>Lacking</span>
+          </div>
+          <div class="legend-item fs-7">
+            <span class="legend-box legend-darkred">5</span>
+            <span>Poor</span>
+          </div>
+        </div>
+        }
+      </div>
+      <div class="col-lg-4 col-md-6 col-sm-12 fs-7">
+        <i title="Created By" class="fa-solid fa-user-tie me-2 text-warning"></i
+        >{{ sessionDetail()?.createdby }}
+        <i
+          title="Created Date"
+          class="fa-solid fa-thumbtack me-1 text-warning"
+        ></i
+        >{{ sessionDetail()?.created_at | date }}
+
+        <i
+          title="Modified By"
+          class="fa-solid fa-user-pen ms-1 me-1 text-warning"
+        ></i
+        >{{ sessionDetail()?.modifiedby }}
+        <i
+          title="Modified Date"
+          class="fa-solid fa-thumbtack me-1 text-warning"
+        ></i
+        >{{ sessionDetail()?.modified_at | date }}
+      </div>
+    </div>
     <div formArrayName="categories">
       @for (category of categories.controls; track $index;let i = $index) {
       <div [formGroupName]="i">
@@ -628,7 +718,12 @@
                                         class="score-input"
                                         name="initial"
                                         formControlName="scoreInitial"
-                                        (input)="restrictToSingleDigit($event)"
+                                        (input)="
+                                          restrictToSingleDigit(
+                                            $event,
+                                            activity.get('scoreInitial')
+                                          )
+                                        "
                                       />
                                     </td>
 
@@ -641,7 +736,12 @@
                                         class="score-input"
                                         name="middle"
                                         formControlName="scoreMiddle"
-                                        (input)="restrictToSingleDigit($event)"
+                                        (input)="
+                                          restrictToSingleDigit(
+                                            $event,
+                                            activity.get('scoreMiddle')
+                                          )
+                                        "
                                       />
                                     </td>
 
@@ -654,7 +754,12 @@
                                         class="score-input"
                                         name="final"
                                         formControlName="scoreFinal"
-                                        (input)="restrictToSingleDigit($event)"
+                                        (input)="
+                                          restrictToSingleDigit(
+                                            $event,
+                                            activity.get('scoreFinal')
+                                          )
+                                        "
                                       />
                                     </td>
                                   </tr>

@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   effect,
   inject,
   OnDestroy,
@@ -14,6 +15,7 @@ import {
   AbstractControl,
   FormArray,
   FormBuilder,
+  FormControl,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
@@ -96,6 +98,7 @@ export class AddassessmentComponent implements OnInit, OnDestroy {
   driverForm: FormGroup;
   initialFormData: any;
   subscriptionList: Subscription[] = [];
+  selectedForm = signal<number>(16001);
 
   @ViewChild(DriversearchComponent)
   driverSearchComponent!: DriversearchComponent;
@@ -123,7 +126,8 @@ export class AddassessmentComponent implements OnInit, OnDestroy {
       categories: this.fb.array([]), // Initialize categories array
     });
     this.assessmentForm.get('formid')?.valueChanges.subscribe((formid) => {
-      this.assessmentService.selectedSuperCategoryId.set(formid);
+      this.selectedForm.set(Number(formid));
+      this.assessmentService.selectedSuperCategoryId.set(Number(formid));
     });
 
     effect(() => {
@@ -159,19 +163,40 @@ export class AddassessmentComponent implements OnInit, OnDestroy {
    */
   ngOnInit(): void {
     this.utils.setTitle('Add Assessment');
-    // this.licenseVerification.set(this.utils.verificationStatus());
-    // this.setCategories(this.assessments());
   }
+
+  /**
+   * Private regex method
+   */
+  private regexPattern = computed(() => {
+    return this.selectedForm() === 16001 ? /[^0-3]/g : /[^0-5]/g;
+  });
 
   /**
    * This method will restrict user to type only 1 digit
    * @param event event
+   * @param control control
    */
-  public restrictToSingleDigit(event: any): void {
-    const input = event.target;
-    if (input.value.length > 1) {
-      input.value = input.value.slice(0, 1);
+  public restrictToSingleDigit(
+    event: any,
+    control: AbstractControl | null
+  ): void {
+    if (!control || !(control instanceof FormControl)) return; // Ensure it's a FormControl
+    let input = event.target;
+    let value = input.value.replace(this.regexPattern(), ''); // Allow only 0-5
+
+    // Keep only the first digit
+    if (value.length > 1) {
+      value = value.charAt(0);
     }
+    // If value is empty, set it to null
+    const finalValue = value === '' ? null : value;
+
+    // Update the input field display
+    input.value = finalValue ?? ''; // Show empty string if null
+
+    // Update FormControl value
+    control.setValue(finalValue, { emitEvent: false });
   }
 
   /**
@@ -366,7 +391,8 @@ export class AddassessmentComponent implements OnInit, OnDestroy {
     if (slaveCategory) {
       const activities = slaveCategory.activities || [];
       totalScore = activities.reduce(
-        (sum: number, activity: any) => sum + (activity.scoreFinal || 0),
+        (sum: number, activity: any) =>
+          sum + (Number(activity.scoreFinal) || 0),
         0
       );
     }
