@@ -480,7 +480,6 @@ export class AssessmentService {
               score: activity.scoreFinal,
               assessmentdate: sessionDate,
             });
-            console.log(activity.scoreFinal);
             totalScore += Number(activity.scoreFinal);
           }
         });

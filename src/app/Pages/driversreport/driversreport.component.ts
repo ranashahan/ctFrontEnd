@@ -86,7 +86,6 @@ export class DriversreportComponent implements OnInit, OnDestroy {
         )
         .subscribe((res: any) => {
           this.drivers.set(res);
-          console.log(this.drivers());
         })
     );
   }
@@ -95,8 +94,6 @@ export class DriversreportComponent implements OnInit, OnDestroy {
    * This method will download expiry report
    */
   public getDriversExpiry(): void {
-    let formValue = this.formExpiry.getRawValue();
-    console.log(formValue);
     this.subscriptionList.push(
       this.driverService.expiryReport(this.formExpiry.value.expiry).subscribe({
         next: (res: any) => {

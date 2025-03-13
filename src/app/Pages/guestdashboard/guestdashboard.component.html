@@ -26,8 +26,8 @@
     >
       <div class="col-auto">
         <label class="label ms-1 strong required" for="inlineFormInputGroupNic"
-          >Driver NIC</label
-        >
+          >N.I.C. #
+        </label>
         <div class="input-group">
           <input
             type="text"
@@ -40,7 +40,7 @@
       </div>
       <div class="col-auto">
         <label class="label ms-1 strong" for="inlineFormInputGroupSessionDate"
-          >Session/Road Date</label
+          >Session Date</label
         >
         <div class="input-group">
           <input
@@ -131,9 +131,10 @@
           <th>#</th>
           <th>Session Name</th>
           <th>Session Date</th>
-          <th>Driver Name</th>
-          <th>Driver NIC</th>
+          <th>Candidate Name</th>
+          <th>N.I.C. #</th>
           <th>Contractor</th>
+          <th>Title</th>
           <th>Location</th>
           <th>Result</th>
           <th>Stage</th>
@@ -171,6 +172,11 @@
           <td>
             <div>
               {{ getContractorName(item.contractorid) }}
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ getTitleName(item.titleid) }}
             </div>
           </td>
           <td>

@@ -21,6 +21,7 @@
         <input
           id="loginemail"
           type="email"
+          [attr.data-testid]="'loginemail'"
           class="form-field animation a3"
           placeholder="Email Address"
           formControlName="email"
@@ -36,6 +37,7 @@
         <input
           id="pwd"
           type="password"
+          [attr.data-testid]="'pwd'"
           class="form-field animation a4"
           placeholder="Password"
           formControlName="password"
@@ -47,6 +49,7 @@
         }
         <button
           type="submit"
+          [attr.data-testid]="'loginbtn'"
           [disabled]="formLogin.invalid"
           class="animation a6"
           title="Login Button"
@@ -55,23 +58,12 @@
           LOGIN
         </button>
         <div class="captcha-container">
-          <!-- <label>{{ captchaQuestion }}</label>
-          <input
-            type="number"
-            class="form-control form-control-sm"
-            formControlName="captchaAnswer"
-            placeholder="Answer"
-          />
-          @if (formLogin.controls['captchaAnswer'].errors &&
-          formLogin.controls['captchaAnswer'].touched) {
-          <span class="text-danger small"
-            >Please answer the question above</span
-          >
-          } -->
+          <!-- @if (noInterNet()) { -->
           <re-captcha
             (resolved)="onCaptchaResolved($event)"
             [siteKey]="siteKey()"
           ></re-captcha>
+          <!-- } -->
         </div>
       </div>
     </form>
