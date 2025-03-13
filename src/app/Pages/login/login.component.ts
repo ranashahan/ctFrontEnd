@@ -49,6 +49,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   formLogin: FormGroup;
   subscriptionList: Subscription[] = [];
   siteKey = signal<string>(environment.recaptchaSiteKey);
+  // noInterNet = signal<boolean>(false);
 
   /**
    * Constructor

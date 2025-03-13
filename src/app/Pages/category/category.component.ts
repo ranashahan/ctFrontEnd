@@ -41,7 +41,7 @@ export class CategoryComponent {
    * This method will invoke all the methods while rendering the page
    */
   ngOnInit(): void {
-    this.utils.setTitle('categorys');
+    this.utils.setTitle('Categories');
   }
 
   /**

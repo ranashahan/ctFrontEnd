@@ -22,6 +22,7 @@ import { LocationService } from '../../Services/location.service';
 import { StageService } from '../../Services/stage.service';
 import { ResultService } from '../../Services/result.service';
 import { ToastComponent } from '../../Widgets/toast/toast.component';
+import { TitleService } from '../../Services/title.service';
 
 @Component({
   selector: 'app-guestdashboard',
@@ -37,6 +38,7 @@ export class GuestdashboardComponent implements OnDestroy {
   private locationService = inject(LocationService);
   private stageService = inject(StageService);
   private resultService = inject(ResultService);
+  private titleService = inject(TitleService);
 
   sessions = signal<apiSessionModel[]>([]);
   subscriptionList: Subscription[] = [];
@@ -45,7 +47,9 @@ export class GuestdashboardComponent implements OnDestroy {
   locations = this.locationService.locations;
   results = this.resultService.results;
   stages = this.stageService.stages;
+  titles = this.titleService.titles;
   formSession: FormGroup;
+
   constructor(private fb: FormBuilder) {
     this.utils.setTitle('Dashboard');
 
@@ -71,6 +75,13 @@ export class GuestdashboardComponent implements OnDestroy {
   getContractorName(itemId: number): string {
     return this.utils.getGenericName(this.contractors(), itemId);
   }
+  getTitleName(itemId: number): string {
+    return this.utils.getGenericName(this.titles(), itemId);
+  }
+
+  /**
+   * Search Filter
+   */
   getFillterredData() {
     this.subscriptionList.push(
       this.assessmentService
@@ -84,15 +95,15 @@ export class GuestdashboardComponent implements OnDestroy {
           this.formSession.value.locationid
         )
         .subscribe({
-          next: (res: any[]) => {
-            if (res.length > 0) {
-              this.utils.showToast('Driver Found', 'success');
-              this.sessions.set(res);
-            } else {
+          next: (data) => {
+            if (!data) {
               this.utils.showToast(
                 'Could not find any record in database, please correct your search filter',
                 'warning'
               );
+            } else {
+              this.utils.showToast('Driver Found', 'success');
+              this.sessions.set(data);
             }
           },
           error: (err: any) => {
@@ -103,6 +114,9 @@ export class GuestdashboardComponent implements OnDestroy {
     );
   }
 
+  /**
+   * Form Reset Method
+   */
   formRest() {
     this.formSession.reset({
       sessiondate: null,

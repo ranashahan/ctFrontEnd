@@ -65,6 +65,7 @@
       type="button"
       data-bs-toggle="collapse"
       data-bs-target="#navbarNavDropdown"
+      data-testid="mobilemenu"
       aria-controls="navbarNavDropdown"
       aria-expanded="false"
       aria-label="Toggle navigation"
@@ -110,6 +111,7 @@
             class="nav-link dropdown-toggle text-light"
             href="#"
             id="{{ menu.id }}"
+            attr.data-testid="{{ menu.testid }}"
             role="button"
             data-bs-toggle="dropdown"
             aria-expanded="false"
@@ -123,6 +125,7 @@
               <a
                 class="dropdown-item text-primary small"
                 [routerLink]="item.path"
+                attr.data-testid="{{ item.testid }}"
                 routerLinkActive="custom-active-dropdown"
                 [routerLinkActiveOptions]="{ exact: true }"
                 ><i [class]="item.icon"></i>{{ item.name }}
@@ -139,6 +142,7 @@
             class="nav-link dropdown-toggle text-light"
             href="#"
             id="user"
+            data-testid="user"
             role="button"
             data-bs-toggle="dropdown"
             aria-expanded="false"
@@ -151,6 +155,7 @@
             <li>
               <a
                 class="dropdown-item text-primary small"
+                data-testid="userprofile"
                 href="#"
                 (click)="openUserProfileModal(); $event.preventDefault()"
                 ><i class="fa-solid fa-user me-1"></i>Profile
@@ -160,6 +165,7 @@
             <li>
               <a
                 class="dropdown-item text-primary small"
+                data-testid="logout"
                 routerLink="/login"
                 routerLinkActive="active"
                 (click)="onLogOut()"
@@ -170,7 +176,10 @@
             <li>
               <!-- @if (userRoles[0]==='admin'||userRoles[0]==='manager') { -->
               @if (userRoles[0]==='admin') {
-              <a class="dropdown-item text-primary small" routerLink="/allusers"
+              <a
+                class="dropdown-item text-primary small"
+                data-testid="employees"
+                routerLink="/allusers"
                 ><i class="fa-solid fa-user-group me-1"></i>Employees
               </a>
               <hr class="dropdown-divider" />

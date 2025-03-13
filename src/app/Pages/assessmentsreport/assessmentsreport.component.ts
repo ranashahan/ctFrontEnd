@@ -8,7 +8,10 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
-import { apiSessionDriverReportModel } from '../../Models/Assessment';
+import {
+  apiSessionDriverReportModel,
+  apiVSessionModel,
+} from '../../Models/Assessment';
 import {
   FormBuilder,
   FormGroup,
@@ -56,7 +59,7 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
   private trainerService = inject(TrainerService);
   private excelReport = inject(ExcelreportService);
 
-  session = signal<apiSessionDriverReportModel[]>([]);
+  session = signal<apiVSessionModel[]>([]);
   contractors = this.cService.contractors;
   clients = this.clientService.clients;
   dltypes = this.dlTypeService.dltypes;
@@ -97,7 +100,7 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
     private cdRef: ChangeDetectorRef
   ) {
     this.formSession = this.fb.group({
-      sessionname: ['', Validators.required],
+      sessionname: ['UEP-DDTA-2502-17-01', Validators.required],
     });
 
     this.formDate = this.fb.group({
@@ -298,7 +301,10 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
    */
   public downloadWordSummery() {
     if (this.session().length > 0) {
-      this.reportService.generateWordSummery(this.session());
+      this.apiCallInProgress.set(true);
+      this.reportService.generateWordSummery(this.session(), () => {
+        this.apiCallInProgress.set(false); // Stop loading after download
+      });
     } else {
       this.utils.showToast('Did not find any records', 'warning');
     }

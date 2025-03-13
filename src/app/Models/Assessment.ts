@@ -123,14 +123,14 @@ export interface apiSessionDriverReportModel {
 export interface apiVSessionModel {
   id: number;
   name: string;
-  sessiondate: string;
+  sessiondate: Date;
   locationid: number;
   resultid: number;
   stageid: number;
   titleid: number;
   vehicleid: number;
   totalscore: number;
-  classdate: string;
+  classdate: Date;
   yarddate: string;
   weather: string;
   traffic: string;
@@ -142,6 +142,7 @@ export interface apiVSessionModel {
   driverid: number;
   drivername: string;
   nic: string;
+  nicexpiry: Date;
   dob: Date;
   designation: string;
   department: string;
@@ -156,12 +157,19 @@ export interface apiVSessionModel {
   permitissue: string;
   permitexpiry: string;
   drivercode: any;
+  medicalexpiry: Date;
+  experience: number;
   trainerid: number;
   trainername: string;
   contractorid: number;
   contractorname: string;
   clientid: number;
   clientname: string;
+  createdby: number;
+  modifiedby: number;
+  created_at: string;
+  modified_at: string;
+  formid: number;
   assessments: AssessmentData[];
   isEdit: boolean;
   message: string;

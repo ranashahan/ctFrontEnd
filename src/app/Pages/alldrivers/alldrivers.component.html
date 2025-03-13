@@ -8,6 +8,7 @@
         alt="AllDrivers"
         width="180px"
         height="150px"
+        data-testid="alldriversimage"
       />
     </div>
     <div class="col-auto">
@@ -30,6 +31,7 @@
             type="text"
             class="form-control form-control-sm"
             id="inlineFormInputGroupname"
+            data-testid="dsfName"
             placeholder="Muhammad Ahmed"
             formControlName="name"
           />
@@ -44,6 +46,7 @@
             type="text"
             class="form-control form-control-sm"
             id="inlineFormInputGroupNic"
+            data-testid="dsfNIC"
             placeholder="xxxxx-xxxxxxx-x"
             formControlName="nic"
           />
@@ -58,6 +61,7 @@
             type="text"
             class="form-control form-control-sm"
             id="inlineFormInputGroupLicense"
+            data-testid="dsfLicense"
             placeholder="AA-xxxxx"
             formControlName="licensenumber"
           />
@@ -72,6 +76,7 @@
             type="text"
             class="form-control form-control-sm"
             id="inlineFormInputGroupPermit"
+            data-testid="dsfPermit"
             placeholder="CONT-xxxx"
             formControlName="permitnumber"
           />
@@ -84,6 +89,7 @@
         <select
           class="form-select form-select-sm"
           id="inlineFormSelectContractor"
+          data-testid="dssContractor"
           formControlName="contractorid"
         >
           <option disabled value="null">-----Select-----</option>
@@ -101,6 +107,7 @@
             type="date"
             class="form-control form-control-sm"
             id="inlineFormInputGroupStartDate"
+            data-testid="dsfStartDate"
             formControlName="startDate"
           />
         </div>
@@ -114,6 +121,7 @@
             type="date"
             class="form-control form-control-sm"
             id="inlineFormInputGroupEndDate"
+            data-testid="dsfEndDate"
             formControlName="endDate"
           />
         </div>
@@ -122,6 +130,7 @@
         <button
           type="submit"
           class="btn btn-success btn-sm"
+          data-testid="dsbSearch"
           (click)="getFillterredData()"
           title="Search drivers"
         >
@@ -131,6 +140,7 @@
         <button
           type="button"
           class="btn btn-secondary btn-sm ms-1"
+          data-testid="dsbReset"
           (click)="formRest()"
           title="Reset Searched Form"
         >
@@ -146,6 +156,7 @@
       class="form-control"
       placeholder="Filter driver records......"
       id="filter-text-box"
+      data-testid="dfFilter"
       (input)="onFilterTextBoxChanged()"
     />
   </div>
@@ -181,6 +192,7 @@
     <div class="col-lg-6 col-md-6 col-sm-12">
       <button
         class="btn btn-sm btn-outline-secondary ms-1 float-end"
+        data-testid="dgridReset"
         (click)="resetFilters()"
         title="Reset All Grid Filters"
       >
@@ -189,6 +201,7 @@
       </button>
       <button
         class="btn btn-sm btn-outline-secondary ms-1 float-end"
+        data-testid="dexport"
         (click)="executeExport()"
         title="Export to Excel"
       >
@@ -196,6 +209,7 @@
       </button>
       <button
         class="btn btn-sm btn-outline-secondary float-end"
+        data-testid="andriver"
         title="Add New Driver"
         routerLink="/adddriver"
       >

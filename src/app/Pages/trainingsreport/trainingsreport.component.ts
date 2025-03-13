@@ -99,7 +99,7 @@ export class TrainingsreportComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.utils.setTitle('Trainin Reports');
+    this.utils.setTitle('Training Reports');
   }
 
   /**
