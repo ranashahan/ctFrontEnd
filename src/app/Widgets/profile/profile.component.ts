@@ -91,6 +91,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
       this.isDarkMode.set(true);
     }
   }
+
+  /**
+   * This method will invoke all the methods while rendering the page
+   */
   ngOnInit(): void {
     this.getLoggedinUser();
   }

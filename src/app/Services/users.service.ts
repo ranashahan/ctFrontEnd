@@ -45,7 +45,7 @@ export class UsersService {
   private userResponse = rxResource({
     request: this.userid, // Use parameterized id
     loader: ({ request }) =>
-      this.http.get<apiUserModel>(`${this.apiURL}/${request}`),
+      this.http.get<apiUserModel>(`${this.apiURL}${request}`),
   });
 
   /**

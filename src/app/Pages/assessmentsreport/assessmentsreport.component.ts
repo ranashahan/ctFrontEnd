@@ -8,10 +8,7 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
-import {
-  apiSessionDriverReportModel,
-  apiVSessionModel,
-} from '../../Models/Assessment';
+import { apiVSessionModel } from '../../Models/Assessment';
 import {
   FormBuilder,
   FormGroup,
@@ -60,6 +57,9 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
   private excelReport = inject(ExcelreportService);
 
   session = signal<apiVSessionModel[]>([]);
+  filteredSession = computed(
+    () => this.session()?.filter((s) => s.resultid === 7001) || []
+  );
   contractors = this.cService.contractors;
   clients = this.clientService.clients;
   dltypes = this.dlTypeService.dltypes;
@@ -100,7 +100,7 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
     private cdRef: ChangeDetectorRef
   ) {
     this.formSession = this.fb.group({
-      sessionname: ['UEP-DDTA-2502-17-01', Validators.required],
+      sessionname: ['', Validators.required],
     });
 
     this.formDate = this.fb.group({
@@ -268,8 +268,8 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
    * @param session session array
    */
   public async downloadSessionReport() {
-    if (this.session().length > 0) {
-      await this.reportService.generatePdfReportSession(this.session());
+    if (this.filteredSession().length > 0) {
+      await this.reportService.generatePdfReportSession(this.filteredSession());
     } else {
       this.utils.showToast('Did not find any records', 'warning');
     }
@@ -290,8 +290,8 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
    * This method will generate card report in Docx (MsWord)
    */
   public downloadWordReport() {
-    if (this.session().length > 0) {
-      this.reportService.generateWordCards(this.session());
+    if (this.filteredSession().length > 0) {
+      this.reportService.generateWordCards(this.filteredSession());
     } else {
       this.utils.showToast('Did not find any records', 'warning');
     }
@@ -299,10 +299,10 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
   /**
    * This method will generate card report in Docx (MsWord)
    */
-  public downloadWordSummery() {
+  public downloadWordSummary() {
     if (this.session().length > 0) {
       this.apiCallInProgress.set(true);
-      this.reportService.generateWordSummery(this.session(), () => {
+      this.reportService.generateWordSummary(this.session(), () => {
         this.apiCallInProgress.set(false); // Stop loading after download
       });
     } else {
@@ -310,6 +310,9 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
     }
   }
 
+  public resultName(resultid: number): string {
+    return this.utils.getGenericName(this.results(), resultid);
+  }
   /**
    * This method will destory all the subscriptions
    */

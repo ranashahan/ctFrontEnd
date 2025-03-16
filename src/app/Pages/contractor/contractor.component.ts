@@ -3,6 +3,8 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  computed,
+  effect,
   inject,
   OnDestroy,
   OnInit,
@@ -42,7 +44,50 @@ export class ContractorComponent implements OnInit, OnDestroy {
    * client signal
    */
   clients = this.clientService.clients;
+  /**
+   * 🔹 Paginated Contractors (Computed)
+   */
+  paginatedContractors = computed(() => {
+    const startIndex = (this.currentPage() - 1) * this.itemsPerPage();
+    return this.filteredContractors().slice(
+      startIndex,
+      startIndex + this.itemsPerPage()
+    );
+  });
+  /**
+   * current page
+   */
+  currentPage = signal<number>(1); // Active page
+  /**
+   * itemPerPage
+   */
+  itemsPerPage = signal<number>(15); // Items per page
+  /**
+   * 🔹 Total Pages (Computed)
+   */
+  totalPages = computed(() =>
+    Math.ceil(this.filteredContractors().length / this.itemsPerPage())
+  );
+  /**
+   * 🔹 Pages Array (Computed)
+   */
+  pages = computed(() =>
+    Array.from({ length: this.totalPages() }, (_, i) => i + 1)
+  );
+  /**
+   * Search query
+   */
+  searchTerm = signal<string>(''); // Search input
 
+  /**
+   * 🔹 Filtered Contractors (Computed)
+   */
+  filteredContractors = computed(() => {
+    const term = this.searchTerm().toLowerCase();
+    return this.contractors().filter((contractor) =>
+      contractor.name.toLowerCase().includes(term)
+    );
+  });
   /**
    * Industries signal
    */
@@ -64,10 +109,10 @@ export class ContractorComponent implements OnInit, OnDestroy {
     address: new FormControl(),
     initials: new FormControl(),
     clientid: new FormControl(),
-    clientnames: new FormControl(),
     industriesid: new FormControl(),
   });
 
+  constructor() {}
   /**
    * This method will invoke all the methods while rendering the page
    */
@@ -192,6 +237,81 @@ export class ContractorComponent implements OnInit, OnDestroy {
    */
   executeExport() {
     this.utils.exportToExcel('contractor-table', 'Consult-contractor-export');
+  }
+
+  /**
+   * This method will filter the contractors by name
+   */
+  // filterContractors(): void {
+  //   if (this.searchTerm) {
+  //     this.filteredContractors.set(
+  //       this.contractors().filter((contractor) =>
+  //         contractor.name.toLowerCase().includes(this.searchTerm.toLowerCase())
+  //       )
+  //     );
+  //   } else {
+  //     this.filteredContractors.set(this.contractors());
+  //   }
+  //   this.currentPage = 1; // Reset to the first page
+  //   this.totalPages = Math.ceil(
+  //     this.filteredContractors().length / this.itemsPerPage
+  //   );
+  //   console.log(this.totalPages);
+  //   this.pages.set(Array.from({ length: this.totalPages }, (_, i) => i + 1));
+  //   console.log('pages', this.pages());
+  //   this.updatePaginatedContractors();
+  // }
+
+  // filteredContractors = computed(() => {
+  //   const contractors = this.contractors();
+  //   const searchTerm = this.searchTerm()?.toLowerCase() || '';
+
+  //   return searchTerm
+  //     ? contractors.filter((contractor) =>
+  //         contractor.name.toLowerCase().includes(searchTerm)
+  //       )
+  //     : contractors;
+  // });
+
+  /**
+   * This method will update the paginated contractors
+   */
+  // updatePaginatedContractors(): void {
+  //   const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+  //   console.log('start index', startIndex);
+  //   this.paginatedContractors.set(
+  //     this.filteredContractors().slice(
+  //       startIndex,
+  //       startIndex + this.itemsPerPage
+  //     )
+  //   );
+  //   console.log('paginatedcontractors', this.paginatedContractors());
+  // }
+  /**
+   * This method will work with pagination previous button
+   */
+  previousPage() {
+    if (this.currentPage() > 1) {
+      this.currentPage.set(this.currentPage() - 1);
+    }
+  }
+
+  /**
+   * This methid will work with pagination next button
+   */
+  nextPage(): void {
+    if (this.currentPage() < this.totalPages()) {
+      this.currentPage.set(this.currentPage() + 1);
+    }
+  }
+  /**
+   * This method will navigate to page number
+   * @param page number page
+   */
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
+    }
   }
 
   /**

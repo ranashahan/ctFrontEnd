@@ -14,7 +14,7 @@
       <form
         class="d-flex ms-2 position-relative"
         role="search"
-        (submit)="clearSearch()"
+        (submit)="searchResource.set([])"
       >
         <input
           class="form-control form-control-sm me-2"
@@ -31,14 +31,18 @@
         >
           <i class="fa-solid fa-magnifying-glass"></i>
         </button>
-
+        @if (searchResource.isLoading()) {
+        <div class="spinner-grow spinner-grow-sm text-light m-2" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        }
         <!-- Search Results Dropdown -->
-        @if (searchResults().length>0) {
+        @if (searchResource.value()) {
         <ul
           class="list-group position-absolute mt-4"
           style="width: 300px; z-index: 2000; background-color: white"
         >
-          @for (item of searchResults(); track $index) {
+          @for (item of searchResource.value(); track $index) {
           <li class="list-group-item small">
             <a
               (click)="navigateToDriver(item.id); $event.preventDefault()"
@@ -50,10 +54,6 @@
           </li>
           }
         </ul>
-        } @if (isLoading()) {
-        <div class="spinner-grow spinner-grow-sm text-light m-2" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
         }
       </form>
       }

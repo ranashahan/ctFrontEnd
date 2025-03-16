@@ -74,6 +74,8 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
   /**
    * Variables / Signals
    */
+  showInitial = signal<boolean>(false);
+  showMiddle = signal<boolean>(false);
   sessionID: number = 0;
   sessionDetail = signal<apiSessionModel | null>(null);
   isLoading = signal<boolean>(true);
@@ -194,6 +196,25 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
 
     // Update FormControl value
     control.setValue(finalValue, { emitEvent: false });
+  }
+
+  /**
+   * this method will toggle initial assessment
+   */
+  public toggleInitial(): void {
+    // this.assessmentForm.markAsUntouched();
+    // this.assessmentForm.markAsPristine();
+    this.showInitial.set(!this.showInitial());
+    if (!this.showInitial()) {
+      this.showMiddle.set(false);
+    }
+  }
+
+  /**
+   * this method will toggle middle assessment
+   */
+  public toggleMiddle(): void {
+    this.showMiddle.set(!this.showMiddle());
   }
 
   /**
@@ -326,6 +347,7 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
                   'DDC form has been updated successfully!',
                   'success'
                 );
+                this.getSessionByID();
                 this.isAPICallInProgress.set(false);
               },
               error: (err) => {
@@ -399,7 +421,6 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
     slaveCategoryId: number
   ): number {
     const formGroup = category as FormGroup;
-    const masterCategoryName = formGroup.get('name')?.value || ''; // Get Master Category name
     const slaveCategories = formGroup.get('slavecategories')?.value || [];
     let totalActivities = 0;
 
@@ -412,9 +433,12 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
       totalActivities = activities.length;
     }
 
-    return masterCategoryName === 'General'
-      ? totalActivities * 5
-      : totalActivities * 3;
+    // return masterCategoryName === 'General'
+    //   ? totalActivities * 5
+    //   : totalActivities * 3;
+    return this.selectedForm() === 16001
+      ? totalActivities * 3
+      : totalActivities * 5;
   }
 
   /**
@@ -459,9 +483,9 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
               traffic: res[0].traffic,
               weather: res[0].weather,
             });
+            this.checkAssessmentTypes(this.sessionDetail()?.assessments);
 
-            // Step 5: Fetch categories and set categories once
-            const categories = this.assessments(); // Assuming this is your computed categories logic
+            const categories = this.assessments();
             this.setCategories(
               categories,
               this.sessionDetail()?.assessments || []
@@ -473,7 +497,7 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
             // this.cdRef.detectChanges();
           })
       );
-    }, 100);
+    }, 200);
   }
 
   /**
@@ -510,6 +534,26 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
       (c: apiContractorModel) => c.id === itemID
     );
     return contractor?.clientid || 0;
+  }
+
+  /**
+   * This method will check which type needs to be enabled on UI
+   * @param assessments assessments
+   */
+  private checkAssessmentTypes(assessments: DATA[] | undefined) {
+    if (!assessments) {
+    } else {
+      const hasInitial = assessments.some(
+        (a) => a.assessment_type === 'Initial'
+      );
+      const hasMiddle = assessments.some((a) => a.assessment_type === 'Middle');
+
+      if (hasInitial) this.showInitial.set(true);
+      if (hasMiddle) {
+        this.showInitial.set(true);
+        this.showMiddle.set(true);
+      }
+    }
   }
 
   /**

@@ -20,6 +20,7 @@ import {
   Header,
   Footer,
   ISectionOptions,
+  SymbolRun,
 } from 'docx';
 import QRCode from 'qrcode';
 
@@ -703,7 +704,7 @@ export class ReportService {
    * This method will generate Docx file
    * @param drivers API Session Driver Reprot
    */
-  async generateWordSummery(
+  async generateWordSummary(
     drivers: apiVSessionModel[],
     onComplete: () => void
   ) {
@@ -810,6 +811,11 @@ export class ReportService {
           new Paragraph({
             text: `Particulars:`,
             heading: 'Heading2',
+            thematicBreak: true,
+          }),
+          new Paragraph({
+            text: `Participant Info:`,
+            heading: 'Heading3',
             spacing: { before: 100 },
           }),
           new Table({
@@ -825,7 +831,7 @@ export class ReportService {
                       new Paragraph({
                         children: [
                           new TextRun({
-                            text: `Participant Name:`,
+                            text: `Name:`,
                             bold: true,
                             size: 20,
                           }),
@@ -869,7 +875,7 @@ export class ReportService {
                       new Paragraph({
                         children: [
                           new TextRun({
-                            text: `Registration #:`,
+                            text: `Date of Birth:`,
                             bold: true,
                             size: 20,
                           }),
@@ -894,7 +900,11 @@ export class ReportService {
                       new Paragraph({
                         children: [
                           new TextRun({
-                            text: `${driver.name}`,
+                            text: driver.dob
+                              ? `${this.utils.formatDatetoddMMMYYYY(
+                                  driver.dob
+                                )}`
+                              : '',
                             size: 20,
                           }),
                         ],
@@ -917,7 +927,7 @@ export class ReportService {
                       new Paragraph({
                         children: [
                           new TextRun({
-                            text: `Participant N.I.C. #:`,
+                            text: `N.I.C. #:`,
                             bold: true,
                             size: 20,
                           }),
@@ -961,7 +971,7 @@ export class ReportService {
                       new Paragraph({
                         children: [
                           new TextRun({
-                            text: `Permit #:`,
+                            text: `License #:`,
                             bold: true,
                             size: 20,
                           }),
@@ -986,7 +996,407 @@ export class ReportService {
                       new Paragraph({
                         children: [
                           new TextRun({
+                            text: `${driver.licensenumber}`,
+                            size: 20,
+                          }),
+                        ],
+                      }),
+                    ],
+                    borders: {
+                      left: {
+                        style: BorderStyle.NONE,
+                        size: 0,
+                        color: 'FFFFFF',
+                      },
+                    },
+                  }),
+                ],
+              }),
+              new TableRow({
+                children: [
+                  new TableCell({
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new TextRun({
+                            text: `License Type:`,
+                            bold: true,
+                            size: 20,
+                          }),
+                        ],
+                      }),
+                    ],
+                    borders: {
+                      right: {
+                        style: BorderStyle.NONE,
+                        size: 0,
+                        color: 'FFFFFF',
+                      },
+                    },
+                  }),
+                  new TableCell({
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new TextRun({
+                            text: `${this.utils.getGenericName(
+                              this.dltypes(),
+                              driver.licensetypeid
+                            )}`,
+                            size: 20,
+                          }),
+                        ],
+                      }),
+                    ],
+                    borders: {
+                      left: {
+                        style: BorderStyle.NONE,
+                        size: 0,
+                        color: 'FFFFFF',
+                      },
+                      right: {
+                        style: BorderStyle.NONE,
+                        size: 0,
+                        color: 'FFFFFF',
+                      },
+                    },
+                  }),
+                  new TableCell({
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new TextRun({
+                            text: `License Expiry:`,
+                            bold: true,
+                            size: 20,
+                          }),
+                        ],
+                      }),
+                    ],
+                    borders: {
+                      left: {
+                        style: BorderStyle.NONE,
+                        size: 0,
+                        color: 'FFFFFF',
+                      },
+                      right: {
+                        style: BorderStyle.NONE,
+                        size: 0,
+                        color: 'FFFFFF',
+                      },
+                    },
+                  }),
+                  new TableCell({
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new TextRun({
+                            text: driver.licenseexpiry
+                              ? `${this.utils.formatDatetoddMMMYYYY(
+                                  driver.licenseexpiry
+                                )}`
+                              : '',
+                            size: 20,
+                          }),
+                        ],
+                      }),
+                    ],
+                    borders: {
+                      left: {
+                        style: BorderStyle.NONE,
+                        size: 0,
+                        color: 'FFFFFF',
+                      },
+                    },
+                  }),
+                ],
+              }),
+              new TableRow({
+                children: [
+                  new TableCell({
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new TextRun({
+                            text: `Permit #:`,
+                            bold: true,
+                            size: 20,
+                          }),
+                        ],
+                      }),
+                    ],
+                    borders: {
+                      right: {
+                        style: BorderStyle.NONE,
+                        size: 0,
+                        color: 'FFFFFF',
+                      },
+                    },
+                  }),
+                  new TableCell({
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new TextRun({
                             text: `${driver.permitnumber}`,
+                            size: 20,
+                          }),
+                        ],
+                      }),
+                    ],
+                    borders: {
+                      left: {
+                        style: BorderStyle.NONE,
+                        size: 0,
+                        color: 'FFFFFF',
+                      },
+                      right: {
+                        style: BorderStyle.NONE,
+                        size: 0,
+                        color: 'FFFFFF',
+                      },
+                    },
+                  }),
+                  new TableCell({
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new TextRun({
+                            text: `Permit Expiry:`,
+                            bold: true,
+                            size: 20,
+                          }),
+                        ],
+                      }),
+                    ],
+                    borders: {
+                      left: {
+                        style: BorderStyle.NONE,
+                        size: 0,
+                        color: 'FFFFFF',
+                      },
+                      right: {
+                        style: BorderStyle.NONE,
+                        size: 0,
+                        color: 'FFFFFF',
+                      },
+                    },
+                  }),
+                  new TableCell({
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new TextRun({
+                            text: driver.permitexpiry
+                              ? `${this.utils.formatDatetoddMMMYYYY(
+                                  driver.permitexpiry
+                                )}`
+                              : '',
+                            size: 20,
+                          }),
+                        ],
+                      }),
+                    ],
+                    borders: {
+                      left: {
+                        style: BorderStyle.NONE,
+                        size: 0,
+                        color: 'FFFFFF',
+                      },
+                    },
+                  }),
+                ],
+              }),
+              new TableRow({
+                children: [
+                  new TableCell({
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new TextRun({
+                            text: `Medical Validity:`,
+                            bold: true,
+                            size: 20,
+                          }),
+                        ],
+                      }),
+                    ],
+                    borders: {
+                      right: {
+                        style: BorderStyle.NONE,
+                        size: 0,
+                        color: 'FFFFFF',
+                      },
+                    },
+                  }),
+                  new TableCell({
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new TextRun({
+                            text: driver.medicalexpiry
+                              ? `${this.utils.formatDatetoddMMMYYYY(
+                                  driver.medicalexpiry
+                                )}`
+                              : '',
+                            size: 20,
+                          }),
+                        ],
+                      }),
+                    ],
+                    borders: {
+                      left: {
+                        style: BorderStyle.NONE,
+                        size: 0,
+                        color: 'FFFFFF',
+                      },
+                      right: {
+                        style: BorderStyle.NONE,
+                        size: 0,
+                        color: 'FFFFFF',
+                      },
+                    },
+                  }),
+                  new TableCell({
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new TextRun({
+                            text: `Experience:`,
+                            bold: true,
+                            size: 20,
+                          }),
+                        ],
+                      }),
+                    ],
+                    borders: {
+                      left: {
+                        style: BorderStyle.NONE,
+                        size: 0,
+                        color: 'FFFFFF',
+                      },
+                      right: {
+                        style: BorderStyle.NONE,
+                        size: 0,
+                        color: 'FFFFFF',
+                      },
+                    },
+                  }),
+                  new TableCell({
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new TextRun({
+                            text: driver.experience
+                              ? `${driver.experience} Years`
+                              : '',
+                            size: 20,
+                          }),
+                        ],
+                      }),
+                    ],
+                    borders: {
+                      left: {
+                        style: BorderStyle.NONE,
+                        size: 0,
+                        color: 'FFFFFF',
+                      },
+                    },
+                  }),
+                ],
+              }),
+            ],
+          }),
+          new Paragraph({
+            text: `Assessment Info:`,
+            heading: 'Heading3',
+            spacing: { before: 100 },
+          }),
+          new Table({
+            width: {
+              size: 100,
+              type: WidthType.PERCENTAGE, // Ensure table spans the full width
+            },
+            rows: [
+              new TableRow({
+                children: [
+                  new TableCell({
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new TextRun({
+                            text: `Registration #:`,
+                            bold: true,
+                            size: 20,
+                          }),
+                        ],
+                      }),
+                    ],
+                    borders: {
+                      right: {
+                        style: BorderStyle.NONE,
+                        size: 0,
+                        color: 'FFFFFF',
+                      },
+                    },
+                  }),
+                  new TableCell({
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new TextRun({
+                            text: `${driver.name}`,
+                            size: 20,
+                          }),
+                        ],
+                      }),
+                    ],
+                    borders: {
+                      left: {
+                        style: BorderStyle.NONE,
+                        size: 0,
+                        color: 'FFFFFF',
+                      },
+                      right: {
+                        style: BorderStyle.NONE,
+                        size: 0,
+                        color: 'FFFFFF',
+                      },
+                    },
+                  }),
+                  new TableCell({
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new TextRun({
+                            text: `Session Date:`,
+                            bold: true,
+                            size: 20,
+                          }),
+                        ],
+                      }),
+                    ],
+                    borders: {
+                      left: {
+                        style: BorderStyle.NONE,
+                        size: 0,
+                        color: 'FFFFFF',
+                      },
+                      right: {
+                        style: BorderStyle.NONE,
+                        size: 0,
+                        color: 'FFFFFF',
+                      },
+                    },
+                  }),
+                  new TableCell({
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new TextRun({
+                            text: `${this.utils.formatDatetoddMMMYYYY(
+                              driver.sessiondate
+                            )}`,
                             size: 20,
                           }),
                         ],
@@ -1056,7 +1466,7 @@ export class ReportService {
                       new Paragraph({
                         children: [
                           new TextRun({
-                            text: `Eyesight Status:`,
+                            text: `Class Date:`,
                             bold: true,
                             size: 20,
                           }),
@@ -1081,105 +1491,10 @@ export class ReportService {
                       new Paragraph({
                         children: [
                           new TextRun({
-                            text: `${this.utils.getGenericName(
-                              this.visuals(),
-                              driver.visualid
-                            )}`,
-                            size: 20,
-                          }),
-                        ],
-                      }),
-                    ],
-                    borders: {
-                      left: {
-                        style: BorderStyle.NONE,
-                        size: 0,
-                        color: 'FFFFFF',
-                      },
-                    },
-                  }),
-                ],
-              }),
-              new TableRow({
-                children: [
-                  new TableCell({
-                    children: [
-                      new Paragraph({
-                        children: [
-                          new TextRun({
-                            text: `Medical Validity:`,
-                            bold: true,
-                            size: 20,
-                          }),
-                        ],
-                      }),
-                    ],
-                    borders: {
-                      right: {
-                        style: BorderStyle.NONE,
-                        size: 0,
-                        color: 'FFFFFF',
-                      },
-                    },
-                  }),
-                  new TableCell({
-                    children: [
-                      new Paragraph({
-                        children: [
-                          new TextRun({
-                            text: `${this.utils.formatDatetoddMMMYYYY(
-                              driver.medicalexpiry
-                            )}`,
-                            size: 20,
-                          }),
-                        ],
-                      }),
-                    ],
-                    borders: {
-                      left: {
-                        style: BorderStyle.NONE,
-                        size: 0,
-                        color: 'FFFFFF',
-                      },
-                      right: {
-                        style: BorderStyle.NONE,
-                        size: 0,
-                        color: 'FFFFFF',
-                      },
-                    },
-                  }),
-                  new TableCell({
-                    children: [
-                      new Paragraph({
-                        children: [
-                          new TextRun({
-                            text: `Experience:`,
-                            bold: true,
-                            size: 20,
-                          }),
-                        ],
-                      }),
-                    ],
-                    borders: {
-                      left: {
-                        style: BorderStyle.NONE,
-                        size: 0,
-                        color: 'FFFFFF',
-                      },
-                      right: {
-                        style: BorderStyle.NONE,
-                        size: 0,
-                        color: 'FFFFFF',
-                      },
-                    },
-                  }),
-                  new TableCell({
-                    children: [
-                      new Paragraph({
-                        children: [
-                          new TextRun({
-                            text: driver.experience
-                              ? `${driver.experience} Years`
+                            text: driver.classdate
+                              ? `${this.utils.formatDatetoddMMMYYYY(
+                                  driver.classdate
+                                )}`
                               : '',
                             size: 20,
                           }),
@@ -1203,7 +1518,7 @@ export class ReportService {
                       new Paragraph({
                         children: [
                           new TextRun({
-                            text: `Session Date:`,
+                            text: `Risk Rating:`,
                             bold: true,
                             size: 20,
                           }),
@@ -1223,9 +1538,9 @@ export class ReportService {
                       new Paragraph({
                         children: [
                           new TextRun({
-                            text: `${this.utils.formatDatetoddMMMYYYY(
-                              driver.sessiondate
-                            )}`,
+                            text: driver.riskrating
+                              ? `${driver.riskrating}`
+                              : '',
                             size: 20,
                           }),
                         ],
@@ -1249,7 +1564,7 @@ export class ReportService {
                       new Paragraph({
                         children: [
                           new TextRun({
-                            text: `Assessment Date:`,
+                            text: `Result:`,
                             bold: true,
                             size: 20,
                           }),
@@ -1273,12 +1588,26 @@ export class ReportService {
                     children: [
                       new Paragraph({
                         children: [
-                          new TextRun({
-                            text: `${this.utils.formatDatetoddMMMYYYY(
-                              driver.sessiondate
-                            )}`,
-                            size: 20,
-                          }),
+                          driver.resultid === 7001
+                            ? new TextRun({
+                                text: `${this.utils.getGenericDescription(
+                                  this.results(),
+                                  driver.resultid
+                                )} `,
+                                size: 20,
+                                color: '11a53c',
+                              })
+                            : new TextRun({
+                                text: `${this.utils.getGenericDescription(
+                                  this.results(),
+                                  driver.resultid
+                                )} `,
+                                size: 20,
+                                color: '#FF0000',
+                              }),
+                          driver.resultid === 7001
+                            ? new SymbolRun('F0FE') // ✅ Show 'F0FE' symbol when resultid is 7001
+                            : new TextRun({ text: 'x', size: 20 }),
                         ],
                       }),
                     ],
@@ -1371,7 +1700,7 @@ export class ReportService {
                       new Paragraph({
                         children: [
                           new TextRun({
-                            text: `09:00 A.M. - 05:00 P.M.`,
+                            text: `09 - 17`,
                             size: 20,
                           }),
                         ],
@@ -1389,80 +1718,22 @@ export class ReportService {
               }),
             ],
           }),
+
           new Paragraph(''),
+          new Paragraph({
+            text: `Assessment Score:`,
+            heading: 'Heading2',
+            thematicBreak: true,
+          }),
           ...this.createCategorySections(driver.assessments),
           new Paragraph(''),
           new Paragraph({
-            children: [
-              new TextRun({
-                text: `Driver Comments:`,
-                bold: true,
-                size: 24,
-              }),
-            ],
+            text: `Comment:`,
             heading: 'Heading2',
-            spacing: { before: 100 },
-          }),
-          new Paragraph({ text: `${driver.comment ?? ''}` }),
-          new Paragraph({
-            children: [
-              new TextRun({
-                text: `Risk Rate:.......................`,
-                size: 22,
-              }),
-              new TextRun({
-                text: `Safe Driver`,
-                size: driver.riskrating === 'Safe Driver' ? 24 : undefined,
-                highlight:
-                  driver.riskrating === 'Safe Driver' ? 'darkGray' : 'none', // Highlight if matches
-                color:
-                  driver.riskrating === 'Safe Driver' ? '#fafbfc' : undefined,
-              }),
-              new TextRun({ text: '  |  ' }), // Separator
-              new TextRun({
-                text: `Average`,
-                size: driver.riskrating === 'Average' ? 24 : undefined,
-                highlight:
-                  driver.riskrating === 'Average' ? 'darkGray' : 'none', // Highlight if matches
-                color: driver.riskrating === 'Average' ? '#fafbfc' : undefined,
-              }),
-              new TextRun({ text: '  |  ' }), // Separator
-
-              new TextRun({
-                text: `Low`,
-                size: driver.riskrating === 'Low' ? 24 : undefined,
-                highlight: driver.riskrating === 'Low' ? 'darkGray' : 'none', // Highlight if matches
-                color: driver.riskrating === 'Low' ? '#fafbfc' : undefined,
-              }),
-              new TextRun({ text: '  |  ' }),
-
-              new TextRun({
-                text: `Medium`,
-                size: driver.riskrating === 'Medium' ? 24 : undefined,
-                highlight: driver.riskrating === 'Medium' ? 'darkGray' : 'none', // Highlight if matches
-                color: driver.riskrating === 'Medium' ? '#fafbfc' : undefined,
-              }),
-              new TextRun({ text: '  |  ' }),
-
-              new TextRun({
-                text: `High`,
-                size: driver.riskrating === 'High' ? 24 : undefined,
-                highlight: driver.riskrating === 'High' ? 'darkGray' : 'none', // Highlight if matches
-                color: driver.riskrating === 'High' ? '#fafbfc' : undefined,
-              }),
-            ],
-            spacing: { before: 300 },
+            thematicBreak: true,
           }),
           new Paragraph({
-            children: [
-              new TextRun({
-                text: `Assessment Result:.......................${this.utils.getGenericDescription(
-                  this.results(),
-                  driver.resultid
-                )}`,
-                size: 22,
-              }),
-            ],
+            text: `${driver.comment ?? 'N/A'}`,
             spacing: { before: 300 },
           }),
         ];
@@ -1470,14 +1741,14 @@ export class ReportService {
         // ** Add Trainer Signature at the End of Each Driver's Summary **
         sessionContent.push(
           new Paragraph({
-            alignment: AlignmentType.LEFT, // Center align at bottom
-            spacing: { before: 3000 }, // Push it towards bottom of page
+            alignment: AlignmentType.CENTER, // Center align at bottom
+            spacing: { before: 1000 }, // Push it towards bottom of page
             children: [
               new TextRun({
-                text: 'Trainer Signature',
-                bold: true,
-                size: 20,
-                underline: { type: 'single' }, // Optional underline
+                text: 'This document is system-generated and does not require a signature.',
+                size: 16,
+                italics: true,
+                // underline: { type: 'single' }, // Optional underline
               }),
             ],
           })
@@ -1526,7 +1797,7 @@ export class ReportService {
 
       // Download the document
       const blob = await Packer.toBlob(doc);
-      this.downloadBlob(blob, 'Driver_Summery.docx');
+      this.downloadBlob(blob, 'Driver_Summary.docx');
     } catch (error) {
       console.error('Error generating document:', error);
     } finally {
