@@ -758,9 +758,7 @@
                                     @if (showInitial()) {
                                     <td style="width: 80px">
                                       <input
-                                        type="number"
-                                        min="0"
-                                        max="1"
+                                        type="text"
                                         class="score-input"
                                         name="initial"
                                         formControlName="scoreInitial"
@@ -775,10 +773,7 @@
                                     } @if (showMiddle()) {
                                     <td style="width: 80px">
                                       <input
-                                        type="number"
-                                        min="0"
-                                        max="1"
-                                        maxlength="1"
+                                        type="text"
                                         class="score-input"
                                         name="middle"
                                         formControlName="scoreMiddle"
@@ -794,9 +789,7 @@
 
                                     <td style="width: 80px">
                                       <input
-                                        type="number"
-                                        maxlength="1"
-                                        pattern="[0-5]"
+                                        type="text"
                                         class="score-input"
                                         name="final"
                                         formControlName="scoreFinal"

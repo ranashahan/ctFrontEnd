@@ -16,6 +16,16 @@
   </div>
   <hr />
   <app-toast />
+  <div class="form-group">
+    <input
+      id="filterbyname"
+      type="search"
+      class="form-control"
+      placeholder="Filter by name..."
+      [(ngModel)]="searchTerm"
+      (input)="filteredContractors()"
+    />
+  </div>
   <hr />
   <button
     class="btn btn-sm btn-outline-secondary float-end"
@@ -56,9 +66,12 @@
       </tr>
     </thead>
     <tbody>
-      @for (contractor of contractors(); track contractor.id) {
+      @for (contractor of paginatedContractors(); track contractor.id) {
       <tr>
-        <td class="col-auto">{{ $index + 1 }}</td>
+        <!-- <td class="col-auto">{{ $index + 1 }}</td> -->
+        <td class="col-auto">
+          {{ (currentPage() - 1) * itemsPerPage() + $index + 1 }}
+        </td>
         <td class="col-auto">{{ contractor.id }}</td>
         <td class="col-auto">
           <div *ngIf="contractor.isEdit">
@@ -238,9 +251,9 @@
       }
     </tbody>
   </table>
-  <!-- <nav>
+  <nav>
     <ul class="pagination justify-content-center">
-      <li class="page-item" [class.disabled]="currentPage === 1">
+      <li class="page-item" [class.disabled]="currentPage() === 1">
         <a
           class="page-link"
           type="button"
@@ -252,7 +265,7 @@
       <li
         class="page-item"
         *ngFor="let page of pages()"
-        [class.active]="page === currentPage"
+        [class.active]="page === currentPage()"
       >
         <a class="page-link" type="button" (click)="goToPage(page)">{{
           page
@@ -268,7 +281,7 @@
         >
       </li>
     </ul>
-  </nav> -->
+  </nav>
   <hr />
 
   <!-- Modal -->

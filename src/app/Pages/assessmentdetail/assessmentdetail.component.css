@@ -23,12 +23,6 @@
   text-align: center;
   vertical-align: middle;
 }
-/* Chrome, Safari, Edge, Opera */
-.score-input::-webkit-outer-spin-button,
-.score-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
 
 .my-input {
   width: 100px; /* Adjust the width as needed */

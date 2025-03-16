@@ -112,15 +112,6 @@ export class DriverService {
   }
 
   /**
-   * This method will fetch nic and will work as ajax
-   * @param query string query
-   * @returns Observable
-   */
-  GetSearch(query: string) {
-    return this.http.get<apiDriverModel>(`${this.apiURL}search?nic=${query}`);
-  }
-
-  /**
    * This method will search driver
    * @param nic string
    * @param licenseNumber string

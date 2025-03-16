@@ -362,17 +362,17 @@
                 class="btn btn-warning ms-1"
                 type="button"
                 (click)="downloadSessionReport()"
-                title="Download PDF"
+                title="Download Certificates"
               >
                 <i class="fa-solid fa-file-pdf me-1"></i>Certificates
               </button>
               <button
                 class="btn btn-warning ms-1"
                 type="button"
-                (click)="downloadWordSummery()"
-                title="Download Driver Summery"
+                (click)="downloadWordSummary()"
+                title="Download Driver Summary"
               >
-                <i class="fa-solid fa-file-word me-1"></i>Summery
+                <i class="fa-solid fa-file-word me-1"></i>Summary
               </button>
               <button
                 class="btn btn-warning ms-1"
@@ -400,6 +400,7 @@
           <th>#</th>
           <th>Session Name</th>
           <th>Session Date</th>
+          <th>Result</th>
           <th>Driver Name</th>
           <th>Driver NIC</th>
         </tr>
@@ -419,6 +420,9 @@
           </td>
           <td>
             {{ item.sessiondate | date }}
+          </td>
+          <td>
+            {{ resultName(item.resultid) }}
           </td>
           <td>
             <div>

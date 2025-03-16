@@ -424,9 +424,12 @@ export class AddassessmentComponent implements OnInit, OnDestroy {
       totalActivities = activities.length;
     }
 
-    return masterCategoryName === 'General'
-      ? totalActivities * 5
-      : totalActivities * 3;
+    // return masterCategoryName === 'General'
+    //   ? totalActivities * 5
+    //   : totalActivities * 3;
+    return this.selectedForm() === 16001
+      ? totalActivities * 3
+      : totalActivities * 5;
   }
 
   /**

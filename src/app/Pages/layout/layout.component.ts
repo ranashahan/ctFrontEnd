@@ -9,9 +9,8 @@ import {
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ProfileComponent } from '../../Widgets/profile/profile.component';
 import { AuthService } from '../../Services/auth.service';
-import { DriverService } from '../../Services/driver.service';
 import { Menu } from '../../Models/Menu';
-import { debounceTime, switchMap } from 'rxjs';
+import { debounceTime } from 'rxjs';
 import {
   Router,
   RouterLink,
@@ -19,6 +18,9 @@ import {
   RouterOutlet,
 } from '@angular/router';
 import { FooterComponent } from '../footer/footer.component';
+import { httpResource } from '@angular/common/http';
+import { apiDriverModel } from '../../Models/Driver';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-layout',
@@ -36,12 +38,12 @@ import { FooterComponent } from '../footer/footer.component';
 })
 export class LayoutComponent implements OnInit {
   searchControl = new FormControl(); // Reactive form control for search input
-  searchResults = signal<any[]>([]); // Store search results
   isLoading = signal<boolean>(false); // Show loading indicator
   username = signal<string>('');
   @ViewChild(ProfileComponent) userprofileComponent!: ProfileComponent;
   dropdownMenus: any = [];
   userRoles: string[] = [];
+  searchQuery = signal<string>('');
 
   /**
    * Constructor
@@ -51,7 +53,6 @@ export class LayoutComponent implements OnInit {
    */
   constructor(
     private authService: AuthService,
-    private driverService: DriverService,
     private router: Router,
     private cdRef: ChangeDetectorRef
   ) {
@@ -59,43 +60,29 @@ export class LayoutComponent implements OnInit {
     this.authService.setUserRole();
     this.userRoles = [this.authService.getUserRole() ?? 'member'];
     this.username.set(this.authService.getUsername() ?? 'dummyUser');
+    this.searchControl.valueChanges
+      .pipe(debounceTime(800))
+      .subscribe((query) => {
+        this.searchQuery.set(query);
+      });
   }
+
   /**
    * This method will invoke all the methods while rendering the page
    */
   ngOnInit(): void {
-    this.getSearch();
+    // this.getSearch();
   }
 
   /**
    * This method for get search
    */
-  getSearch(): void {
-    this.searchControl.valueChanges
-      .pipe(
-        debounceTime(800), // Wait for the user to stop typing for 800ms
-        switchMap((query) => {
-          if (query) {
-            this.isLoading.set(true);
-            return this.driverService.GetSearch(query);
-          } else {
-            // If the query is empty, return an empty array or fetch all
-            if (this.isLoading()) {
-              this.isLoading.set(false);
-            }
-            this.clearSearch();
-            return [];
-          }
-        })
-      )
-      .subscribe((results: any) => {
-        if (results) {
-          this.isLoading.set(false);
-          this.searchResults.set(results);
-        }
-      });
-  }
-
+  searchResource = httpResource<apiDriverModel[]>(() => {
+    const query = this.searchQuery() || '';
+    return query
+      ? `${environment.apiUrl}driver/search?nic=${query}`
+      : undefined;
+  });
   /**
    * This method to navigate programatically
    * @param id driver ID
@@ -111,7 +98,7 @@ export class LayoutComponent implements OnInit {
    * This method for clear search
    */
   clearSearch(): void {
-    this.searchResults.set([]);
+    this.searchResource.set([]);
     this.searchControl.setValue(''); // Clear the search input
   }
 
