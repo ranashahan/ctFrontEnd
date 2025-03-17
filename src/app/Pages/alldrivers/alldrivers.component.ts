@@ -13,7 +13,6 @@ import { DeleteConfirmationComponent } from '../../Widgets/delete-confirmation/d
 import { apiDriverModel } from '../../Models/Driver';
 import {
   FormBuilder,
-  FormControl,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
@@ -222,23 +221,6 @@ export class AlldriversComponent implements OnInit, OnDestroy {
       endDate: [this.utils.daysAhead(1).toISOString().substring(0, 10)],
     });
     this.drivers.set(this.initialValues);
-  }
-  /**
-   * This method will convert id into name
-   * @param contractorId number contractor id
-   * @returns string name
-   */
-  public getContractorName(contractorId: number): string {
-    return this.utils.getGenericName(this.contractors(), contractorId);
-  }
-
-  /**
-   * This method will convert id into name
-   * @param dlTypeId number driver license type id
-   * @returns string name
-   */
-  public getDLTypesName(dlTypeId: number): string {
-    return this.utils.getGenericName(this.dltypes(), dlTypeId);
   }
 
   components = {

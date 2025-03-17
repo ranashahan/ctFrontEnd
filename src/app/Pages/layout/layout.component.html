@@ -20,17 +20,20 @@
           class="form-control form-control-sm me-2"
           id="search"
           type="search"
+          data-testid="nicsearch"
           placeholder="Search driver by NIC"
           [formControl]="searchControl"
           aria-label="Search"
         />
-        <button
+        <!-- <button
           class="btn btn-outline-light btn-sm"
           type="submit"
           title="Search Driver"
+          [disabled]="!searchEnable()"
+          (click)="navigateToAllDrivers()"
         >
           <i class="fa-solid fa-magnifying-glass"></i>
-        </button>
+        </button> -->
         @if (searchResource.isLoading()) {
         <div class="spinner-grow spinner-grow-sm text-light m-2" role="status">
           <span class="visually-hidden">Loading...</span>
