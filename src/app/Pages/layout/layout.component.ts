@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  computed,
   OnInit,
   signal,
   ViewChild,
@@ -44,6 +45,7 @@ export class LayoutComponent implements OnInit {
   dropdownMenus: any = [];
   userRoles: string[] = [];
   searchQuery = signal<string>('');
+  searchEnable = computed(() => this.searchQuery().length > 0);
 
   /**
    * Constructor
@@ -70,17 +72,15 @@ export class LayoutComponent implements OnInit {
   /**
    * This method will invoke all the methods while rendering the page
    */
-  ngOnInit(): void {
-    // this.getSearch();
-  }
+  ngOnInit(): void {}
 
   /**
    * This method for get search
    */
   searchResource = httpResource<apiDriverModel[]>(() => {
-    const query = this.searchQuery() || '';
-    return query
-      ? `${environment.apiUrl}driver/search?nic=${query}`
+    const enabled = this.searchEnable();
+    return enabled
+      ? `${environment.apiUrl}driver/search?nic=${this.searchQuery()}`
       : undefined;
   });
   /**

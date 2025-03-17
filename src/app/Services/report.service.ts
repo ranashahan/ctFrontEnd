@@ -702,7 +702,7 @@ export class ReportService {
 
   /**
    * This method will generate Docx file
-   * @param drivers API Session Driver Reprot
+   * @param drivers API Sessions Driver Reprot
    */
   async generateWordSummary(
     drivers: apiVSessionModel[],
@@ -1138,7 +1138,9 @@ export class ReportService {
                       new Paragraph({
                         children: [
                           new TextRun({
-                            text: `${driver.permitnumber}`,
+                            text: driver.permitnumber
+                              ? `${driver.permitnumber}`
+                              : '',
                             size: 20,
                           }),
                         ],
