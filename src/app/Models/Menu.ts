@@ -130,7 +130,7 @@ export const Menu = {
           name: 'Category',
           path: '/category',
           testid: 'categories',
-          roles: ['admin'],
+          roles: ['admin', 'manager'],
           icon: 'fa-solid fa-layer-group me-1',
         },
         {
@@ -151,7 +151,7 @@ export const Menu = {
           name: 'Course',
           path: '/course',
           testid: 'courses',
-          roles: ['admin'],
+          roles: ['admin', 'manager'],
           icon: 'fa-solid fa-graduation-cap me-1',
         },
         {

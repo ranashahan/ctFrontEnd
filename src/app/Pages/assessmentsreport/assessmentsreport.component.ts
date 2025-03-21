@@ -291,7 +291,10 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
    */
   public downloadWordReport() {
     if (this.filteredSession().length > 0) {
-      this.reportService.generateWordCards(this.filteredSession());
+      this.apiCallInProgress.set(true);
+      this.reportService.generateWordCards(this.filteredSession(), () => {
+        this.apiCallInProgress.set(false); // Stop loading after download
+      });
     } else {
       this.utils.showToast('Did not find any records', 'warning');
     }

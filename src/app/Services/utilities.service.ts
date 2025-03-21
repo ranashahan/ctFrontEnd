@@ -352,4 +352,12 @@ export class UtilitiesService {
     const formatRegex = /^\d{5}-\d{7}-\d{1}$/;
     return formatRegex.test(value) ? null : { invalidFormat: true };
   }
+
+  /**
+   * This method will load the c&t logo image
+   * @returns logo image
+   */
+  public async loadImage(path: string): Promise<ArrayBuffer> {
+    return fetch(path).then((response) => response.arrayBuffer());
+  }
 }
