@@ -31,6 +31,7 @@
               class="form-control form-control-sm"
               id="drivername"
               type="text"
+              data-testid="adfName"
               placeholder="Muhammad Ahmed"
               formControlName="name"
               required
@@ -52,6 +53,7 @@
           <input
             class="form-control form-control-sm"
             id="driverdob"
+            data-testid="adfDOB"
             type="date"
             formControlName="dob"
           />
@@ -62,6 +64,7 @@
             <input
               class="form-control form-control-sm"
               id="nic"
+              data-testid="adfNIC"
               type="text"
               placeholder="xxxxx-xxxxxxx-x"
               formControlName="nic"
@@ -85,6 +88,7 @@
           <input
             class="form-control form-control-sm"
             id="drivernicexpiry"
+            data-testid="adfNICE"
             type="date"
             formControlName="nicexpiry"
           />
@@ -97,6 +101,7 @@
             <input
               class="form-control form-control-sm"
               id="licensenumber"
+              data-testid="adfLicense"
               type="text"
               placeholder="QA-2233"
               formControlName="licensenumber"
@@ -117,6 +122,7 @@
           <select
             class="form-select form-select-sm"
             id="licensetypeid"
+            data-testid="adfLicenseID"
             formControlName="licensetypeid"
           >
             <option disabled selected value="null">-----Select-----</option>
@@ -130,6 +136,7 @@
           <input
             class="form-control form-control-sm"
             id="licenseexpiry"
+            data-testid="adfLicenseE"
             type="date"
             placeholder="QA-2233"
             formControlName="licenseexpiry"
@@ -142,6 +149,7 @@
           <select
             class="form-select form-select-sm"
             id="lverification"
+            data-testid="adfVerification"
             formControlName="licenseverified"
           >
             @for (item of licenseVerification(); track $index) {
@@ -155,6 +163,7 @@
             <input
               class="form-control form-control-sm"
               id="permitnumber"
+              data-testid="adfPermit"
               type="text"
               placeholder="CONT-XXXX"
               formControlName="permitnumber"
@@ -166,6 +175,7 @@
           <input
             class="form-control form-control-sm"
             id="permitissue"
+            data-testid="adfPermitI"
             type="date"
             formControlName="permitissue"
           />
@@ -175,6 +185,7 @@
           <input
             class="form-control form-control-sm"
             id="permitexpiry"
+            data-testid="adfPermiE"
             type="date"
             formControlName="permitexpiry"
           />
@@ -186,6 +197,7 @@
             class="form-control form-control-sm"
             min="0"
             id="formcount"
+            data-testid="adfDDC"
             type="number"
             placeholder="0"
             formControlName="ddccount"
@@ -196,6 +208,7 @@
           <select
             class="form-select form-select-sm"
             id="contractor"
+            data-testid="adfContractor"
             formControlName="contractorid"
           >
             <option disabled value="null">-----Select-----</option>
@@ -209,6 +222,7 @@
           <input
             class="form-control form-control-sm"
             id="ddesignation"
+            data-testid="adfDesignation"
             type="text"
             placeholder="Safety Manager"
             formControlName="designation"
@@ -219,6 +233,7 @@
           <input
             class="form-control form-control-sm"
             id="department"
+            data-testid="adfDepartment"
             type="text"
             placeholder="Quality Control"
             formControlName="department"
@@ -229,6 +244,7 @@
           <input
             class="form-control form-control-sm"
             id="medical"
+            data-testid="adfMedicalE"
             type="date"
             formControlName="medicalexpiry"
           />
@@ -239,6 +255,7 @@
           <select
             class="form-select form-select-sm"
             id="blood"
+            data-testid="adfBG"
             formControlName="bloodgroupid"
           >
             <option disabled value="null">-----Select-----</option>
@@ -252,6 +269,7 @@
           <select
             class="form-select form-select-sm"
             id="visual"
+            data-testid="adfVisual"
             formControlName="visualid"
           >
             <option disabled value="null">-----Select-----</option>
@@ -265,6 +283,7 @@
           <select
             class="form-select form-select-sm"
             id="gender"
+            data-testid="adfGender"
             formControlName="gender"
           >
             <option disabled selected value="null">-----Select-----</option>
@@ -281,6 +300,7 @@
             class="form-control form-control-sm"
             min="0"
             id="experience"
+            data-testid="adfExperience"
             type="number"
             placeholder="0"
             formControlName="experience"
@@ -292,6 +312,7 @@
             class="form-control form-control-sm"
             min="0"
             id="drivercode"
+            data-testid="adfCode"
             type="text"
             placeholder="STC-CT-001"
             formControlName="code"
@@ -302,6 +323,7 @@
           <textarea
             class="form-control form-control-sm"
             id="comment"
+            data-testid="adfComment"
             formControlName="comment"
             placeholder="Comment..."
           ></textarea>
@@ -312,6 +334,7 @@
           <div class="btn-group" role="group" aria-label="Default button group">
             <button
               type="submit"
+              data-testid="adbSave"
               class="btn btn-outline-success"
               [disabled]="formDriver.invalid"
               (click)="createDriver()"
@@ -321,6 +344,7 @@
             </button>
             <button
               type="button"
+              data-testid="adbReset"
               class="btn btn-outline-secondary"
               (click)="resetForm()"
               title="Reset Driver Form"

@@ -710,7 +710,7 @@ export class ReportService {
   ) {
     try {
       const sections: ISectionOptions[] = [];
-      const logo = await this.loadImage();
+      const logo = await this.utils.loadImage('img/logo.png');
       const footer = new Footer({
         children: [
           new Paragraph({
@@ -772,10 +772,12 @@ export class ReportService {
               }),
               new TextRun({ break: 1 }), // Forces a line break
               new TextRun({
-                text: `${this.utils.getGenericDescription(
-                  this.titles(),
-                  driver.titleid
-                )} Driver Training & Skill Assessment Summary`,
+                text: driver.titleid
+                  ? `${this.utils.getGenericDescription(
+                      this.titles(),
+                      driver.titleid
+                    )} Training & Skill Assessment Summary`
+                  : 'Training & Skill Assessment Summary',
                 size: 32,
               }),
               new TextRun({ break: 1 }), // Forces a line break
@@ -1677,7 +1679,7 @@ export class ReportService {
                       new Paragraph({
                         children: [
                           new TextRun({
-                            text: `Timings:`,
+                            text: `Total Score:`,
                             bold: true,
                             size: 20,
                           }),
@@ -1702,7 +1704,7 @@ export class ReportService {
                       new Paragraph({
                         children: [
                           new TextRun({
-                            text: `09 - 17`,
+                            text: `${driver.totalscore}`,
                             size: 20,
                           }),
                         ],
@@ -1735,8 +1737,9 @@ export class ReportService {
             thematicBreak: true,
           }),
           new Paragraph({
-            text: `${driver.comment ?? 'N/A'}`,
-            spacing: { before: 300 },
+            children: driver.comment
+              ? this.generateDocWithMultiLineComment(driver.comment)
+              : [new TextRun('N/A')],
           }),
         ];
 
@@ -2019,102 +2022,123 @@ export class ReportService {
   }
 
   /**
+   * This method will generate multi lines comment
+   * @param comment string
+   * @returns string comments
+   */
+  private generateDocWithMultiLineComment(comment: string): TextRun[] {
+    return comment.split(/\r?\n/).flatMap((line) => [
+      new TextRun({ text: line, break: 1 }), // Ensure each line appears separately in Word
+    ]);
+  }
+
+  /**
    * This method will generate Docx file
    * @param drivers API Session Driver Reprot
+   * @param onComplete onComplete
    */
-  async generateWordCards(drivers: apiVSessionModel[]) {
-    const tableRows: TableRow[] = [];
+  async generateWordCards(drivers: apiVSessionModel[], onComplete: () => void) {
+    try {
+      const tableRows: TableRow[] = [];
 
-    for (let i = 0; i < drivers.length; i++) {
-      const driver = drivers[i];
-      const qrcodeString = `Name: ${driver.drivername} NIC: ${driver.nic} License: ${driver.licensenumber} Permit: ${driver.permitnumber} Expiry: ${driver.permitexpiry} SessionID: ${driver.name}`;
-      let cardColor: string;
-      let cardWording: string;
-      let cardTitle: string;
-      switch (driver.formid) {
-        case 16001:
-          if (driver.contractorid === 5001) {
-            cardColor = '#DE3163';
-          } else {
+      for (let i = 0; i < drivers.length; i++) {
+        const driver = drivers[i];
+        const qrcodeString = `Name: ${driver.drivername} NIC: ${driver.nic} License: ${driver.licensenumber} Permit: ${driver.permitnumber} Expiry: ${driver.permitexpiry} SessionID: ${driver.name}`;
+        let cardColor: string;
+        let cardWording: string;
+        let cardTitle: string;
+        switch (driver.formid) {
+          case 16001:
+            if (driver.contractorid === 5001) {
+              cardColor = '#DE3163';
+            } else {
+              cardColor = '11a53c';
+            }
+            cardWording = 'Trained and Assessed on UEPL ADDT Protocol';
+            break;
+          case 16002:
+            cardColor = 'FF7F50';
+            cardWording = 'Trained and Assessed on DDT Protocol';
+            break;
+          case 16003:
+            cardColor = '999999';
+            cardWording =
+              'Trained and Assessed on Client Company ADDT Protocol';
+            break;
+          case 16004:
+            cardColor = 'FFFF00';
+            cardWording =
+              'Trained and Assessed on Defensive Driving Training Protocol';
+            break;
+          default:
             cardColor = '11a53c';
-          }
-          cardWording = 'Trained and Assessed on UEPL ADDT Protocol';
-          break;
-        case 16002:
-          cardColor = 'FF7F50';
-          cardWording = 'Trained and Assessed on DDT Protocol';
-          break;
-        case 16003:
-          cardColor = '999999';
-          cardWording = 'Trained and Assessed on Client Company ADDT Protocol';
-          break;
-        case 16004:
-          cardColor = 'FFFF00';
-          cardWording =
-            'Trained and Assessed on Defensive Driving Training Protocol';
-          break;
-        default:
-          cardColor = '11a53c';
-          cardWording = 'Trained and Assessed on UEPL ADDT Protocol';
-          break;
+            cardWording = 'Trained and Assessed on UEPL ADDT Protocol';
+            break;
+        }
+
+        switch (driver.titleid) {
+          case 9004:
+            cardTitle = 'Defensive Driving LV Permit';
+            break;
+          case 9001:
+            cardTitle = 'Defensive Driving LV Permit';
+            break;
+          default:
+            cardTitle = 'Defensive Driving HV Permit';
+            break;
+        }
+
+        // Generate QR Codes
+        const qrCode1 = await this.generateQRCode(qrcodeString);
+        const logo = await this.utils.loadImage('img/logo.png');
+        const dummyImg = await this.utils.loadImage('img/dummy.jpg');
+        const driverCard1 = this.createDriverCard(
+          driver,
+          qrCode1,
+          logo,
+          dummyImg,
+          cardTitle,
+          cardColor,
+          cardWording
+        );
+
+        tableRows.push(new TableRow({ children: [driverCard1] }));
       }
 
-      switch (driver.titleid) {
-        case 9002:
-          cardTitle = 'Defensive Driving HV Permit';
-          break;
-        case 9001:
-          cardTitle = 'Defensive Driving LV Permit';
-          break;
-        default:
-          cardTitle = 'Defensive Driving HV Permit';
-          break;
-      }
-
-      // Generate QR Codes
-      const qrCode1 = await this.generateQRCode(qrcodeString);
-      const logo = await this.loadImage();
-      const driverCard1 = this.createDriverCard(
-        driver,
-        qrCode1,
-        logo,
-        cardTitle,
-        cardColor,
-        cardWording
-      );
-
-      tableRows.push(new TableRow({ children: [driverCard1] }));
-    }
-
-    // Create document
-    const doc = new Document({
-      styles: {
-        paragraphStyles: [
-          {
-            id: 'Normal',
-            name: 'Normal',
-            run: {
-              font: 'Arial',
-              size: 24, // 12pt font size (1pt = 2 half-points)
+      // Create document
+      const doc = new Document({
+        styles: {
+          paragraphStyles: [
+            {
+              id: 'Normal',
+              name: 'Normal',
+              run: {
+                font: 'Arial',
+                size: 24, // 12pt font size (1pt = 2 half-points)
+              },
             },
-          },
-        ],
-      },
-      sections: [
-        {
-          children: [
-            new Table({
-              rows: tableRows,
-              width: { size: 100, type: WidthType.PERCENTAGE },
-            }),
           ],
         },
-      ],
-    });
+        sections: [
+          {
+            children: [
+              new Table({
+                rows: tableRows,
+                width: { size: 100, type: WidthType.PERCENTAGE },
+              }),
+            ],
+          },
+        ],
+      });
 
-    // Download the document
-    const blob = await Packer.toBlob(doc);
-    this.downloadBlob(blob, 'Driver_Permits.docx');
+      // Download the document
+      const blob = await Packer.toBlob(doc);
+      this.downloadBlob(blob, 'Driver_Permits.docx');
+    } catch (error) {
+      console.error('Error generating document:', error);
+    } finally {
+      onComplete(); // Stop loading after success or failure
+    }
   }
 
   /**
@@ -2128,6 +2152,7 @@ export class ReportService {
     driver: apiVSessionModel,
     qrCodeBase64: string,
     logo: any,
+    dummy: any,
     cardTitle: string,
     cardColor: string,
     cardwording: string
@@ -2387,13 +2412,30 @@ export class ReportService {
             columnSpan: 1,
           }),
           new TableCell({
+            borders: {
+              top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+              bottom: {
+                style: BorderStyle.NONE,
+                size: 0,
+                color: 'FFFFFF',
+              },
+              left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+              right: {
+                style: BorderStyle.NONE,
+                size: 0,
+                color: 'FFFFFF',
+              },
+            },
             children: [
               new Paragraph({
-                alignment: AlignmentType.CENTER,
                 children: [
-                  new TextRun({ text: 'PHOTO', bold: true, size: 28 }),
+                  new ImageRun({
+                    type: 'jpg',
+                    data: dummy, // Your loaded image buffer
+                    transformation: { width: 100, height: 100 },
+                  }),
                 ],
-                spacing: { before: 90, line: 300 },
+                alignment: AlignmentType.CENTER,
               }),
             ],
             columnSpan: 1,
@@ -2859,17 +2901,17 @@ export class ReportService {
     );
 
     return new TableCell({
+      borders: {
+        top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+        bottom: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+        left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+        right: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+      },
       children: [
         new Table({
           width: {
-            size: 100,
+            size: 90,
             type: WidthType.PERCENTAGE, // Ensure table spans the full width
-          },
-          borders: {
-            top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
-            bottom: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
-            left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
-            right: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
           },
 
           alignment: AlignmentType.CENTER,
@@ -2912,13 +2954,5 @@ export class ReportService {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-  }
-
-  /**
-   * This method will load the c&t logo image
-   * @returns logo image
-   */
-  private async loadImage(): Promise<ArrayBuffer> {
-    return fetch('img/logo.png').then((response) => response.arrayBuffer());
   }
 }
