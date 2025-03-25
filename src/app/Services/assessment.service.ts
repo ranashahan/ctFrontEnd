@@ -1,7 +1,7 @@
 import { computed, inject, Injectable, signal, Signal } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, httpResource } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import {
   apiSessionDriverReportModel,
@@ -55,6 +55,10 @@ export class AssessmentService {
   public assessments = computed(
     () => this.assessmentResponse.value() ?? ([] as SuperCategory[])
   );
+
+  searchLatestSessions = httpResource<apiSessionModel[]>(() => {
+    return `${this.apiURL + 'getSAll'}`;
+  });
 
   /**
    * Form API call
