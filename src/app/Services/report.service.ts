@@ -221,9 +221,11 @@ export class ReportService {
                     alignment: 'center', // Align the QR code
                   },
                   {
-                    text: `Print Date: ${printDate} \nValid Till:${
+                    text: `Print Date: ${this.utils.formatDatetoddMMMYYYY(
+                      printDate
+                    )} \nValid Thru:${this.utils.formatDatetoddMMMYYYY(
                       session.permitexpiry
-                    } \n STC-${this.utils.getGenericName(
+                    )} \n STC-${this.utils.getGenericName(
                       this.titles(),
                       session.titleid
                     )}-16H`,
@@ -2432,14 +2434,14 @@ export class ReportService {
                   new ImageRun({
                     type: 'jpg',
                     data: dummy, // Your loaded image buffer
-                    transformation: { width: 100, height: 100 },
+                    transformation: { width: 120, height: 120 },
                   }),
                 ],
                 alignment: AlignmentType.CENTER,
               }),
             ],
             columnSpan: 1,
-            rowSpan: 4,
+            rowSpan: 5,
             width: { size: 2000, type: WidthType.DXA },
             verticalAlign: VerticalAlign.CENTER,
           }),
@@ -2531,7 +2533,7 @@ export class ReportService {
               new Paragraph({
                 children: [
                   new TextRun({
-                    text: `License No:`,
+                    text: `DL #:`,
                   }),
                 ],
                 spacing: { before: 90, line: 300 },
@@ -2656,7 +2658,70 @@ export class ReportService {
               new Paragraph({
                 children: [
                   new TextRun({
-                    text: `N.I.C. #:`,
+                    text: `DL Expiry:`,
+                  }),
+                ],
+                spacing: { before: 90, line: 300 },
+              }),
+            ],
+            columnSpan: 1,
+          }),
+          new TableCell({
+            borders: {
+              top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+              bottom: {
+                style: BorderStyle.NONE,
+                size: 0,
+                color: 'FFFFFF',
+              },
+              left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+              right: {
+                style: BorderStyle.NONE,
+                size: 0,
+                color: 'FFFFFF',
+              },
+            },
+
+            children: [
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: `${this.utils.formatDatetoddMMMYYYY(
+                      driver.licenseexpiry
+                    )}`,
+                    bold: true,
+                  }),
+                ],
+                spacing: { before: 90, line: 300 },
+              }),
+            ],
+            columnSpan: 1,
+          }),
+        ],
+      }),
+      new TableRow({
+        children: [
+          new TableCell({
+            borders: {
+              top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+              bottom: {
+                style: BorderStyle.NONE,
+                size: 0,
+                color: 'FFFFFF',
+              },
+              left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+              right: {
+                style: BorderStyle.NONE,
+                size: 0,
+                color: 'FFFFFF',
+              },
+            },
+
+            children: [
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: `C.N.I.C. #:`,
                   }),
                 ],
                 spacing: { before: 90, line: 300 },

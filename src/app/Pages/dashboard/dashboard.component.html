@@ -80,22 +80,31 @@
       </div>
 
       <div class="col-lg-4 mb-4">
-        <div class="customcard bg-warning bg-opacity-50">
+        <div class="customcard bg-dark bg-opacity-50">
           <div class="card-body">
-            <h5 class="card-title">Revenue Trend</h5>
-            <div>
-              <apx-chart
-                [series]="trendCOpt.series"
-                [chart]="trendCOpt.chart"
-                [xaxis]="trendCOpt.xaxis"
-                [yaxis]="trendCOpt.yaxis"
-                [dataLabels]="trendCOpt.dataLabels"
-                [fill]="trendCOpt.fill"
-                [colors]="trendCOpt.colors"
-                [stroke]="trendCOpt.stroke"
-                [title]="trendCOpt.title"
-              ></apx-chart>
-            </div>
+            <h5 class="card-title">Recent Assessments</h5>
+            <table class="table table-warning table-striped table-hover fs-7">
+              <thead>
+                <tr>
+                  <th>SessionID</th>
+                  <th>Created By</th>
+                  <th>Created Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of sessions.value(); track $index) {
+                <tr>
+                  <td>
+                    <a [routerLink]="['/allassessments/' + item.id]">{{
+                      item.name
+                    }}</a>
+                  </td>
+                  <td>{{ item.createdby }}</td>
+                  <td>{{ item.created_at | date }}</td>
+                </tr>
+                }
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

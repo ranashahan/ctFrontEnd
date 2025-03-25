@@ -51,7 +51,14 @@ export class SessionsearchComponent implements OnDestroy {
    */
   @Output() closeModal = new EventEmitter<void>();
 
+  /**
+   * Selected Sessions
+   */
   selectedSessions: any[] = [];
+  /**
+   * Select All
+   */
+  selectAll: boolean = false;
 
   /**
    * Constructor
@@ -95,6 +102,7 @@ export class SessionsearchComponent implements OnDestroy {
     } else {
       this.selectedSessions.push(session); // Add session if not already selected
     }
+    this.updateSelectAllState();
   }
 
   /**
@@ -104,6 +112,24 @@ export class SessionsearchComponent implements OnDestroy {
    */
   isSelected(session: any): boolean {
     return this.selectedSessions.some((s) => s.id === session.id);
+  }
+
+  /**
+   * This method will toggle select all options
+   */
+  toggleSelectAll() {
+    if (this.selectAll) {
+      this.selectedSessions = [...this.sessions()]; // Select all
+    } else {
+      this.selectedSessions = []; // Deselect all
+    }
+  }
+
+  /**
+   * This method will update select all state
+   */
+  updateSelectAllState() {
+    this.selectAll = this.selectedSessions.length === this.sessions().length;
   }
 
   /**

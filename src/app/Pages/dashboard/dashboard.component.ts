@@ -36,10 +36,13 @@ import { ClientService } from '../../Services/client.service';
 import { ContractorService } from '../../Services/contractor.service';
 import { ROLES } from '../../Models/Constants';
 import { AuthService } from '../../Services/auth.service';
+import { AssessmentService } from '../../Services/assessment.service';
+import { DatePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [NgApexchartsModule, ToastComponent],
+  imports: [NgApexchartsModule, ToastComponent, DatePipe, RouterLink],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -48,6 +51,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   @ViewChild('chart') chart!: ChartComponent;
   private authService = inject(AuthService);
   private trainingService = inject(TrainingService);
+  private assessmentService = inject(AssessmentService);
   private utils = inject(UtilitiesService);
   private locationService = inject(LocationService);
   private driverService = inject(DriverService);
@@ -113,6 +117,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
     return [...trainingsValue].slice(0, 5);
   });
+
+  public sessions = this.assessmentService.searchLatestSessions;
 
   /**
    * Constructor
