@@ -214,3 +214,13 @@ export interface DATA {
   score: number;
   assessmentdate: string;
 }
+
+export interface apiReportCount {
+  categories: string[];
+  series: Series[];
+}
+
+export interface Series {
+  name: string;
+  data: number[];
+}

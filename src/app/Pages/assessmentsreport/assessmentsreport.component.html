@@ -17,9 +17,50 @@
   <hr />
   <app-toast />
   <div class="row">
+    <div class="col-lg-6 col-md-6 col-sm-12">
+      <div class="card mb-4">
+        <div class="card-body bg-warning bg-opacity-50">
+          <h5 class="card-title">Yearly Assessments Count</h5>
+          <div id="chart1">
+            <apx-chart
+              [series]="trendAssessments.series"
+              [chart]="trendAssessments.chart"
+              [dataLabels]="trendAssessments.dataLabels"
+              [plotOptions]="trendAssessments.plotOptions"
+              [yaxis]="trendAssessments.yaxis"
+              [xaxis]="trendAssessments.xaxis"
+              [fill]="trendAssessments.fill"
+              [title]="trendAssessments.title"
+            ></apx-chart>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-12">
+      <div class="card mb-4">
+        <div class="card-body bg-warning bg-opacity-50">
+          <h5 class="card-title">Yearly DDC Standards Assessments</h5>
+          <div id="chart2">
+            <apx-chart
+              [series]="trendAssessmentsStacked.series"
+              [chart]="trendAssessmentsStacked.chart"
+              [dataLabels]="trendAssessmentsStacked.dataLabels"
+              [plotOptions]="trendAssessmentsStacked.plotOptions"
+              [responsive]="trendAssessmentsStacked.responsive"
+              [xaxis]="trendAssessmentsStacked.xaxis"
+              [legend]="trendAssessmentsStacked.legend"
+              [fill]="trendAssessmentsStacked.fill"
+            ></apx-chart>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <hr />
+  <div class="row">
     <div class="col-lg-12 col-md-12 col-sm-12">
       <div class="card mb-4">
-        <div class="card-body bg-warning bg-opacity-50 text-dark">
+        <div class="card-body bg-warning bg-opacity-50">
           <h5 class="card-title">Session Report All</h5>
           <form [formGroup]="formAll">
             <div class="row my-2">
@@ -234,7 +275,7 @@
   <div class="row">
     <div class="col-lg-6 col-md-6 col-sm-12">
       <div class="card mb-4">
-        <div class="card-body bg-warning bg-opacity-50 text-dark">
+        <div class="card-body bg-warning bg-opacity-50">
           <h5 class="card-title">Session report by client</h5>
           <form [formGroup]="formDate">
             <div class="row">
@@ -327,7 +368,7 @@
 
     <div class="col-lg-6 col-md-6 col-sm-12">
       <div class="card mb-4">
-        <div class="card-body bg-warning bg-opacity-50 text-dark">
+        <div class="card-body bg-warning bg-opacity-50">
           <h5 class="card-title">Session Certificates</h5>
           <form [formGroup]="formSession">
             <p class="card-text">

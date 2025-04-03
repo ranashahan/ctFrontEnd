@@ -1,6 +1,6 @@
 import { computed, inject, Injectable, Signal } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, httpResource } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { Observable } from 'rxjs';
 import { apiTrainingModel } from '../Models/Training';
@@ -9,6 +9,7 @@ import { ContractorService } from './contractor.service';
 import { CourseService } from './course.service';
 import { CategoryService } from './category.service';
 import { TrainerService } from './trainer.service';
+import { apiReportCount } from '../Models/Assessment';
 
 @Injectable({
   providedIn: 'root',
@@ -67,14 +68,6 @@ export class TrainingService {
    * Trainer signal
    */
   private trainers = this.trainerService.trainers;
-  /**
-   * Counter
-   */
-  private counter: number = 1;
-  /**
-   * Key
-   */
-  private keys: Set<string> = new Set();
 
   /**
    * This method will fetch all the active trainings
@@ -415,23 +408,35 @@ export class TrainingService {
   }
 
   /**
+   * This method will fetch count training
+   */
+  countTraining = httpResource<number>(() => {
+    return `${this.apiURL}getCount`;
+  });
+
+  /**
+   * This method will fetch count training for charts
+   */
+  public trainingReportCount = httpResource<apiReportCount>(() => {
+    return `${this.apiURL}getCountReportClients`;
+  });
+
+  /**
    * This method will generate key for auto increasement
    * @returns string generetedKey
    */
-  generateKey(): string {
+  async generateKey(): Promise<string> {
+    await this.countTraining.reload(); // Ensures the latest value is fetched
+    await new Promise((resolve) => setTimeout(resolve, 100)); // S
+    const count = this.countTraining.value(); // Get the latest value
+    if (count === undefined) throw new Error('Count not loaded'); // Handle potential undefined values
+
     const date = new Date();
     const year = date.getFullYear();
     const month = ('0' + (date.getMonth() + 1)).slice(-2);
     const day = ('0' + date.getDate()).slice(-2);
-    let key = `CNTT-${year}${month}${day}-${this.counter}`;
-
-    while (this.keys.has(key)) {
-      this.counter++;
-      key = `CNTT-${year}${month}${day}-${this.counter}`;
-    }
-
-    this.keys.add(key);
-    return key;
+    const key = `CNTT-${year}${month}${day}-${this.countTraining.value()}`;
+    return key; // Return k
   }
 
   /**

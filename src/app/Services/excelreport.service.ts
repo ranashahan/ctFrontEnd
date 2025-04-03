@@ -205,7 +205,6 @@ export class ExcelreportService {
    * @param fileName file name
    */
   exportToExcel(data: any[], fileName: string): void {
-    // 1. Extract unique activity names to use as column headers
     const uniqueActivityNames = Array.from(
       new Set(
         data.flatMap((item) =>
@@ -215,11 +214,17 @@ export class ExcelreportService {
                 assessment.assessment_type === 'Final'
             )
             .map(
-              (assessment: { activityname: string }) => assessment.activityname
+              (assessment: {
+                activityname: string;
+                slavecategoryid: number;
+              }) => ({
+                activityname: assessment.activityname,
+                slavecategoryid: assessment.slavecategoryid,
+              })
             )
         )
       )
-    );
+    ).sort((a, b) => a.slavecategoryid - b.slavecategoryid);
 
     // 2. Flatten data into rows with dynamic columns for activity scores
     const flattenedData = data.map((item) => {
@@ -251,18 +256,17 @@ export class ExcelreportService {
         SessionDate: item.sessiondate,
         VehicleUsed: this.convertGeneric(this.vehicles(), item.vehicleid),
         SessionResult: this.convertGeneric(this.results(), item.resultid),
-      }; // Include driver name
+      };
       uniqueActivityNames.forEach((activity) => {
         const assessment = item.assessments.find(
           (a: { activityname: string; assessment_type: string }) =>
-            a.activityname === activity && a.assessment_type === 'Final'
+            a.activityname === activity.activityname &&
+            a.assessment_type === 'Final'
         );
-        row[activity] = assessment ? assessment.score : null; // Add score or null
+
+        row[activity.activityname] = assessment ? assessment.score : null; // Add score or null
       });
-      row['TotalScore'] = uniqueActivityNames.reduce((sum, activity) => {
-        const score = row[activity]; // Get the score for each activity
-        return sum + (score ? score : 0); // Add score, treat null as 0
-      }, 0);
+      row['TotalScore'] = item.totalscore;
       return row;
     });
     // 3. Convert JSON to a worksheet

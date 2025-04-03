@@ -21,6 +21,7 @@ import {
   Footer,
   ISectionOptions,
   SymbolRun,
+  HeightRule,
 } from 'docx';
 import QRCode from 'qrcode';
 
@@ -2054,7 +2055,7 @@ export class ReportService {
             if (driver.contractorid === 5001) {
               cardColor = '#DE3163';
             } else {
-              cardColor = '11a53c';
+              cardColor = '#008000';
             }
             cardWording = 'Trained and Assessed on UEPL ADDT Protocol';
             break;
@@ -2379,7 +2380,7 @@ export class ReportService {
                     text: `Name: `,
                   }),
                 ],
-                spacing: { before: 90, line: 300 },
+                //spacing: { before: 90, line: 300 },
               }),
             ],
             columnSpan: 1,
@@ -2408,7 +2409,7 @@ export class ReportService {
                     bold: true,
                   }),
                 ],
-                spacing: { before: 90, line: 300 },
+                // spacing: { before: 90, line: 300 },
               }),
             ],
             columnSpan: 1,
@@ -2434,18 +2435,19 @@ export class ReportService {
                   new ImageRun({
                     type: 'jpg',
                     data: dummy, // Your loaded image buffer
-                    transformation: { width: 120, height: 120 },
+                    transformation: { width: 100, height: 100 },
                   }),
                 ],
                 alignment: AlignmentType.CENTER,
               }),
             ],
             columnSpan: 1,
-            rowSpan: 5,
-            width: { size: 2000, type: WidthType.DXA },
+            rowSpan: 6,
+            width: { size: 1600, type: WidthType.DXA },
             verticalAlign: VerticalAlign.CENTER,
           }),
         ],
+        //height: { value: 300, rule: HeightRule.EXACT },
       }),
       new TableRow({
         children: [
@@ -2472,7 +2474,7 @@ export class ReportService {
                     text: `Company:`,
                   }),
                 ],
-                spacing: { before: 90, line: 300 },
+                //spacing: { before: 90, line: 300 },
               }),
             ],
             columnSpan: 1,
@@ -2504,7 +2506,7 @@ export class ReportService {
                     bold: true,
                   }),
                 ],
-                spacing: { before: 90, line: 300 },
+                //spacing: { before: 90, line: 300 },
               }),
             ],
             columnSpan: 1,
@@ -2536,7 +2538,7 @@ export class ReportService {
                     text: `DL #:`,
                   }),
                 ],
-                spacing: { before: 90, line: 300 },
+                //spacing: { before: 90, line: 300 },
               }),
             ],
             columnSpan: 1,
@@ -2565,7 +2567,7 @@ export class ReportService {
                     bold: true,
                   }),
                 ],
-                spacing: { before: 90, line: 300 },
+                //spacing: { before: 90, line: 300 },
               }),
             ],
             columnSpan: 1,
@@ -2597,7 +2599,7 @@ export class ReportService {
                     text: `DL Type:`,
                   }),
                 ],
-                spacing: { before: 90, line: 300 },
+                //spacing: { before: 90, line: 300 },
               }),
             ],
             columnSpan: 1,
@@ -2629,7 +2631,7 @@ export class ReportService {
                     bold: true,
                   }),
                 ],
-                spacing: { before: 90, line: 300 },
+                //spacing: { before: 90, line: 300 },
               }),
             ],
             columnSpan: 1,
@@ -2661,7 +2663,7 @@ export class ReportService {
                     text: `DL Expiry:`,
                   }),
                 ],
-                spacing: { before: 90, line: 300 },
+                //spacing: { before: 90, line: 300 },
               }),
             ],
             columnSpan: 1,
@@ -2692,7 +2694,7 @@ export class ReportService {
                     bold: true,
                   }),
                 ],
-                spacing: { before: 90, line: 300 },
+                //spacing: { before: 90, line: 300 },
               }),
             ],
             columnSpan: 1,
@@ -2724,7 +2726,7 @@ export class ReportService {
                     text: `C.N.I.C. #:`,
                   }),
                 ],
-                spacing: { before: 90, line: 300 },
+                //spacing: { before: 90, line: 300 },
               }),
             ],
             columnSpan: 1,
@@ -2753,41 +2755,10 @@ export class ReportService {
                     bold: true,
                   }),
                 ],
-                spacing: { before: 90, line: 300 },
+                //spacing: { before: 90, line: 300 },
               }),
             ],
             columnSpan: 1,
-          }),
-          new TableCell({
-            borders: {
-              top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
-              bottom: {
-                style: BorderStyle.NONE,
-                size: 0,
-                color: 'FFFFFF',
-              },
-              left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
-              right: {
-                style: BorderStyle.NONE,
-                size: 0,
-                color: 'FFFFFF',
-              },
-            },
-
-            children: [
-              new Paragraph({
-                alignment: AlignmentType.CENTER,
-                children: [
-                  new TextRun({
-                    text: `${driver.designation ?? ''}`,
-                    size: 16,
-                    color: 'FF0000',
-                  }),
-                ],
-              }),
-            ],
-            columnSpan: 1,
-            width: { size: 2000, type: WidthType.DXA },
           }),
         ],
       })
@@ -2820,7 +2791,7 @@ export class ReportService {
                       text: `BG:`,
                     }),
                   ],
-                  spacing: { before: 90, line: 300 },
+                  // spacing: { before: 90, line: 300 },
                 }),
               ],
               columnSpan: 1,
@@ -2852,7 +2823,34 @@ export class ReportService {
                       bold: true,
                     }),
                   ],
-                  spacing: { before: 90, line: 300 },
+                  // spacing: { before: 90, line: 300 },
+                }),
+              ],
+              columnSpan: 1,
+            }),
+            new TableCell({
+              borders: {
+                top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                bottom: {
+                  style: BorderStyle.NONE,
+                  size: 0,
+                  color: 'FFFFFF',
+                },
+                left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                right: {
+                  style: BorderStyle.NONE,
+                  size: 0,
+                  color: 'FFFFFF',
+                },
+              },
+              children: [
+                new Paragraph({
+                  alignment: AlignmentType.CENTER,
+                  children: [
+                    new TextRun({
+                      text: ``,
+                    }),
+                  ],
                 }),
               ],
               columnSpan: 1,
@@ -2889,7 +2887,7 @@ export class ReportService {
                       text: `Code:`,
                     }),
                   ],
-                  spacing: { before: 90, line: 300 },
+                  // spacing: { before: 90, line: 300 },
                 }),
               ],
               columnSpan: 1,
@@ -2917,10 +2915,40 @@ export class ReportService {
                       bold: true,
                     }),
                   ],
-                  spacing: { before: 90, line: 300 },
+                  // spacing: { before: 90, line: 300 },
                 }),
               ],
               columnSpan: 1,
+            }),
+            new TableCell({
+              borders: {
+                top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                bottom: {
+                  style: BorderStyle.NONE,
+                  size: 0,
+                  color: 'FFFFFF',
+                },
+                left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+                right: {
+                  style: BorderStyle.NONE,
+                  size: 0,
+                  color: 'FFFFFF',
+                },
+              },
+              children: [
+                new Paragraph({
+                  alignment: AlignmentType.CENTER,
+                  children: [
+                    new TextRun({
+                      text: `${driver.designation ?? ''}`,
+                      size: 16,
+                      color: 'FF0000',
+                    }),
+                  ],
+                }),
+              ],
+              columnSpan: 1,
+              width: { size: 1600, type: WidthType.DXA },
             }),
           ],
         })
@@ -2956,7 +2984,7 @@ export class ReportService {
                     color: 'FF0000',
                   }),
                 ],
-                spacing: { before: 90, line: 300 },
+                // spacing: { before: 90, line: 300 },
               }),
             ],
             columnSpan: 3,
@@ -2975,7 +3003,7 @@ export class ReportService {
       children: [
         new Table({
           width: {
-            size: 90,
+            size: 80,
             type: WidthType.PERCENTAGE, // Ensure table spans the full width
           },
 
