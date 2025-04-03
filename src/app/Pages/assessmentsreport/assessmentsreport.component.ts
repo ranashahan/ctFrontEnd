@@ -7,8 +7,9 @@ import {
   OnDestroy,
   OnInit,
   signal,
+  ViewChild,
 } from '@angular/core';
-import { apiVSessionModel } from '../../Models/Assessment';
+import { apiVSessionModel, Series } from '../../Models/Assessment';
 import {
   FormBuilder,
   FormGroup,
@@ -33,15 +34,30 @@ import { StageService } from '../../Services/stage.service';
 import { TitleService } from '../../Services/title.service';
 import { VehicleService } from '../../Services/vehicle.service';
 import { TrainerService } from '../../Services/trainer.service';
+import {
+  ApexLegend,
+  ApexAxisChartSeries,
+  ApexChart,
+  ChartComponent,
+  ApexDataLabels,
+  ApexPlotOptions,
+  ApexYAxis,
+  ApexTitleSubtitle,
+  ApexXAxis,
+  ApexFill,
+  NgApexchartsModule,
+} from 'ng-apexcharts';
 
 @Component({
   selector: 'app-assessmentsreport',
-  imports: [DatePipe, ToastComponent, ReactiveFormsModule],
+  imports: [DatePipe, ToastComponent, ReactiveFormsModule, NgApexchartsModule],
   templateUrl: './assessmentsreport.component.html',
   styleUrl: './assessmentsreport.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AssessmentsreportComponent implements OnInit, OnDestroy {
+  private assessmentService = inject(AssessmentService);
+  private reportService = inject(ReportService);
   private utils = inject(UtilitiesService);
   private cService = inject(ContractorService);
   private clientService = inject(ClientService);
@@ -55,6 +71,29 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
   private vehicleService = inject(VehicleService);
   private trainerService = inject(TrainerService);
   private excelReport = inject(ExcelreportService);
+  @ViewChild('chart') chart!: ChartComponent;
+
+  public trendAssessments: {
+    series: ApexAxisChartSeries;
+    chart: ApexChart;
+    dataLabels: ApexDataLabels;
+    plotOptions: ApexPlotOptions;
+    yaxis: ApexYAxis;
+    xaxis: ApexXAxis;
+    fill: ApexFill;
+    title: ApexTitleSubtitle;
+  };
+
+  public trendAssessmentsStacked: {
+    series: ApexAxisChartSeries;
+    chart: ApexChart;
+    dataLabels: ApexDataLabels;
+    plotOptions: ApexPlotOptions;
+    responsive: ApexResponsive[];
+    xaxis: ApexXAxis;
+    legend: ApexLegend;
+    fill: ApexFill;
+  };
 
   session = signal<apiVSessionModel[]>([]);
   filteredSession = computed(
@@ -71,6 +110,7 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
   titles = this.titleService.titles;
   vehicles = this.vehicleService.vehicles;
   trainers = this.trainerService.trainers;
+  assessmentCount = this.assessmentService.assessmentsCountReport;
 
   apiCallInProgress = signal<boolean>(false);
 
@@ -93,12 +133,197 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
    */
   subscriptionList: Subscription[] = [];
 
-  constructor(
-    private fb: FormBuilder,
-    private assessmentService: AssessmentService,
-    private reportService: ReportService,
-    private cdRef: ChangeDetectorRef
-  ) {
+  /**
+   * Constructor
+   * @param fb formbuilder
+   * @param cdRef change detection
+   */
+  constructor(private fb: FormBuilder, private cdRef: ChangeDetectorRef) {
+    this.trendAssessmentsStacked = {
+      series: [
+        {
+          name: 'PRODUCT A',
+          data: [44, 55, 41, 67, 22, 43],
+        },
+        {
+          name: 'PRODUCT B',
+          data: [13, 23, 20, 8, 13, 27],
+        },
+        {
+          name: 'PRODUCT C',
+          data: [11, 17, 15, 15, 21, 14],
+        },
+        {
+          name: 'PRODUCT D',
+          data: [21, 7, 25, 13, 22, 8],
+        },
+      ],
+      chart: {
+        type: 'bar',
+        height: 350,
+        stacked: true,
+        toolbar: {
+          show: true,
+        },
+        zoom: {
+          enabled: true,
+        },
+      },
+      responsive: [
+        {
+          breakpoint: 480,
+          options: {
+            legend: {
+              position: 'bottom',
+              offsetX: -10,
+              offsetY: 0,
+            },
+          },
+        },
+      ],
+      plotOptions: {
+        bar: {
+          horizontal: false,
+        },
+      },
+      dataLabels: {
+        enabled: true,
+      },
+      xaxis: {
+        type: 'category',
+        categories: [
+          '01/2011',
+          '02/2011',
+          '03/2011',
+          '04/2011',
+          '05/2011',
+          '06/2011',
+        ],
+      },
+      legend: {
+        position: 'right',
+        offsetY: 40,
+      },
+      fill: {
+        opacity: 1,
+      },
+    };
+
+    this.trendAssessments = {
+      series: [
+        {
+          name: 'Assessments',
+          data: [2.3, 3.1, 4.0, 10.1, 4.0, 3.6, 3.2, 2.3, 1.4, 0.8, 0.5, 0.2],
+        },
+      ],
+      chart: {
+        height: 350,
+        type: 'bar',
+      },
+
+      plotOptions: {
+        bar: {
+          dataLabels: {
+            position: 'top', // top, center, bottom
+          },
+          colors: {
+            ranges: [
+              {
+                from: 0,
+                to: 50,
+                color: '#FFBF00', // Yellow for values 0-50
+              },
+            ],
+          },
+        },
+      },
+      dataLabels: {
+        enabled: true,
+
+        offsetY: -20,
+        style: {
+          fontSize: '12px',
+          colors: ['#304758'],
+        },
+      },
+
+      xaxis: {
+        categories: [
+          'Jan',
+          'Feb',
+          'Mar',
+          'Apr',
+          'May',
+          'Jun',
+          'Jul',
+          'Aug',
+          'Sep',
+          'Oct',
+          'Nov',
+          'Dec',
+        ],
+        position: 'top',
+        labels: {
+          offsetY: -18,
+        },
+        axisBorder: {
+          show: false,
+        },
+        axisTicks: {
+          show: false,
+        },
+        crosshairs: {
+          fill: {
+            type: 'gradient',
+            gradient: {
+              colorFrom: '#D8E3F0',
+              colorTo: '#BED1E6',
+              stops: [0, 100],
+              opacityFrom: 0.4,
+              opacityTo: 0.5,
+            },
+          },
+        },
+        tooltip: {
+          enabled: true,
+          offsetY: -35,
+        },
+      },
+      fill: {
+        type: 'gradient',
+        gradient: {
+          shade: 'dark',
+          type: 'horizontal',
+          shadeIntensity: 0.25,
+          gradientToColors: undefined,
+          inverseColors: true,
+          opacityFrom: 1,
+          opacityTo: 1,
+          stops: [50, 0, 100, 100],
+        },
+      },
+      yaxis: {
+        axisBorder: {
+          show: false,
+        },
+        axisTicks: {
+          show: false,
+        },
+        labels: {
+          show: false,
+        },
+      },
+      title: {
+        text: 'Monthly Assessments, ' + new Date().getFullYear(),
+        floating: false,
+        offsetY: 320,
+        align: 'center',
+        style: {
+          color: '#444',
+        },
+      },
+    };
+
     this.formSession = this.fb.group({
       sessionname: ['', Validators.required],
     });
@@ -133,9 +358,206 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
    * This method will invoke all the methods while rendering the page
    */
   ngOnInit(): void {
+    this.assessmentService.assessmentsCountReport.reload();
     this.utils.setTitle('Assessment Reports');
+    this.getReportCount();
   }
 
+  /**
+   * This method will generate charts
+   */
+  public getReportCount() {
+    if (this.assessmentCount.hasValue()) {
+      var dataSeries = this.getMonthlyTotals(
+        this.assessmentCount.value().series
+      );
+      this.trendAssessments = {
+        series: [
+          {
+            name: 'Assessments',
+            data: dataSeries,
+          },
+        ],
+        chart: {
+          height: 350,
+          type: 'bar',
+        },
+
+        plotOptions: {
+          bar: {
+            dataLabels: {
+              position: 'top', // top, center, bottom
+            },
+            colors: {
+              ranges: [
+                {
+                  from: 0,
+                  to: 200,
+                  color: '#DE3163', // Red for values 0-50
+                },
+                {
+                  from: 201,
+                  to: 350, // Set a large upper limit
+                  color: '#FFBF00', // Yellow for values > 50
+                },
+                {
+                  from: 351,
+                  to: 1000, // Set a large upper limit
+                  color: '#11a53c', // Green for values > 50
+                },
+              ],
+            },
+          },
+        },
+        dataLabels: {
+          enabled: true,
+
+          offsetY: -20,
+          style: {
+            fontSize: '12px',
+            colors: ['#304758'],
+          },
+        },
+
+        xaxis: {
+          categories: [
+            'Jan',
+            'Feb',
+            'Mar',
+            'Apr',
+            'May',
+            'Jun',
+            'Jul',
+            'Aug',
+            'Sep',
+            'Oct',
+            'Nov',
+            'Dec',
+          ],
+          position: 'top',
+          labels: {
+            offsetY: -18,
+          },
+          axisBorder: {
+            show: false,
+          },
+          axisTicks: {
+            show: false,
+          },
+          crosshairs: {
+            fill: {
+              type: 'gradient',
+              gradient: {
+                colorFrom: '#D8E3F0',
+                colorTo: '#BED1E6',
+                stops: [0, 100],
+                opacityFrom: 0.4,
+                opacityTo: 0.5,
+              },
+            },
+          },
+          tooltip: {
+            enabled: true,
+            offsetY: -35,
+          },
+        },
+        fill: {
+          type: 'gradient',
+          gradient: {
+            shade: 'dark',
+            type: 'horizontal',
+            shadeIntensity: 0.25,
+            gradientToColors: undefined,
+            inverseColors: true,
+            opacityFrom: 1,
+            opacityTo: 1,
+            stops: [50, 0, 100, 100],
+          },
+        },
+        yaxis: {
+          axisBorder: {
+            show: false,
+          },
+          axisTicks: {
+            show: false,
+          },
+          labels: {
+            show: false,
+          },
+        },
+        title: {
+          text: 'Assessments, ' + new Date().getFullYear(),
+          floating: false,
+          offsetY: 320,
+          align: 'center',
+          style: {
+            color: '#444',
+          },
+        },
+      };
+
+      this.trendAssessmentsStacked = {
+        series: this.assessmentCount.value().series,
+        chart: {
+          type: 'bar',
+          height: 350,
+          stacked: true,
+          toolbar: {
+            show: true,
+          },
+          zoom: {
+            enabled: true,
+          },
+        },
+        responsive: [
+          {
+            breakpoint: 480,
+            options: {
+              legend: {
+                position: 'bottom',
+                offsetX: -10,
+                offsetY: 0,
+              },
+            },
+          },
+        ],
+        plotOptions: {
+          bar: {
+            horizontal: false,
+          },
+        },
+        dataLabels: {
+          enabled: true,
+        },
+        xaxis: {
+          type: 'category',
+          categories: this.assessmentCount.value().categories,
+        },
+        legend: {
+          position: 'right',
+          offsetY: 40,
+        },
+        fill: {
+          opacity: 1,
+        },
+      };
+    }
+  }
+  /**
+   * This method will convert stacked count into total month count
+   * @param series Series
+   * @returns total months count
+   */
+  private getMonthlyTotals(
+    series: { name: string; data: number[] }[]
+  ): number[] {
+    return series.reduce((totals, form) => {
+      form.data.forEach((count, index) => {
+        totals[index] += count; // Add the count to the corresponding month
+      });
+      return totals;
+    }, new Array(12).fill(0)); // Initialize an array of 12 zeros for 12 months
+  }
   /**
    * This method will fetch all the session against session name
    */
@@ -313,9 +735,15 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * This is generic method for return result name.
+   * @param resultid resultid
+   * @returns resultName
+   */
   public resultName(resultid: number): string {
     return this.utils.getGenericName(this.results(), resultid);
   }
+
   /**
    * This method will destory all the subscriptions
    */

@@ -154,15 +154,19 @@ export class AddtrainingComponent implements OnInit, OnDestroy {
     this.utils.setTitle('Add Training');
     this.statuses.set(this.utils.statuses());
     this.sources.set(this.utils.sources());
-    this.generateKey();
+    setTimeout(() => this.generateKey(), 200);
   }
 
   /**
    * This method will set generated key
    */
-  generateKey() {
-    const generatedKey = this.trainingService.generateKey();
-    this.formTraining.get('name')?.setValue(generatedKey);
+  async generateKey() {
+    try {
+      const generatedKey = await this.trainingService.generateKey();
+      this.formTraining.get('name')?.setValue(generatedKey);
+    } catch (error) {
+      console.error('Error generating key:', error);
+    }
   }
 
   /**

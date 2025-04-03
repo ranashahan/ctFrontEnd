@@ -26,6 +26,9 @@
   background-color: #e9edf0 !important; /* Custom background for active dropdown links */
   color: #e9edf0 !important; /* Custom text color */
 }
+.card {
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
 
 html,
 body {

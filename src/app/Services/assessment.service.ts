@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { HttpClient, HttpParams, httpResource } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import {
+  apiReportCount,
   apiSessionDriverReportModel,
   apiSessionModel,
   apiVSessionModel,
@@ -55,9 +56,18 @@ export class AssessmentService {
   public assessments = computed(
     () => this.assessmentResponse.value() ?? ([] as SuperCategory[])
   );
-
-  searchLatestSessions = httpResource<apiSessionModel[]>(() => {
+  /**
+   * Recent assessments
+   */
+  public searchLatestSessions = httpResource<apiSessionModel[]>(() => {
     return `${this.apiURL + 'getSAll'}`;
+  });
+
+  /**
+   * Assessment Count
+   */
+  public assessmentsCountReport = httpResource<apiReportCount>(() => {
+    return `${this.apiURL + 'getCountReportForms'}`;
   });
 
   /**

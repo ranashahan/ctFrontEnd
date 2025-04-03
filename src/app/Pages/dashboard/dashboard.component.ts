@@ -240,7 +240,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       },
       yaxis: {
         title: {
-          text: 'Total (sessions)',
+          text: 'Total (assessments)',
         },
       },
       fill: {
@@ -249,7 +249,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       tooltip: {
         y: {
           formatter: function (val: any) {
-            return val + ' sessions';
+            return val + ' assessments';
           },
         },
       },
@@ -386,7 +386,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           },
           yaxis: {
             title: {
-              text: 'Total (sessions)',
+              text: 'Total (assessments)',
             },
           },
           fill: {
@@ -395,7 +395,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           tooltip: {
             y: {
               formatter: function (val: any) {
-                return val + ' sessions';
+                return val + ' assessments';
               },
             },
           },
