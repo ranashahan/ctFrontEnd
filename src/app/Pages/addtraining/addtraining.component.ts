@@ -93,7 +93,7 @@ export class AddtrainingComponent implements OnInit, OnDestroy {
   constructor(private fb: FormBuilder, private cdRef: ChangeDetectorRef) {
     this.formTraining = this.fb.group({
       name: ['', Validators.required],
-      plandate: [],
+      plandate: [null, Validators.required],
       startdate: [],
       enddate: [],
       duration: [],
@@ -119,6 +119,7 @@ export class AddtrainingComponent implements OnInit, OnDestroy {
       bank: [],
       cheque: [],
       amountreceived: [],
+      amountreceiveddate: [],
       status: ['Tentative'],
       classroom: [],
       assessment: [],
@@ -239,65 +240,73 @@ export class AddtrainingComponent implements OnInit, OnDestroy {
    */
   createTraining() {
     const formValues = this.formTraining.getRawValue();
-    let classroom = 1;
-    if (formValues.classroom) {
-      classroom = 2;
-    }
-    let assessment = 1;
-    if (formValues.assessment) {
-      assessment = 2;
-    }
-    let commentry = 1;
-    if (formValues.commentry) {
-      commentry = 2;
-    }
+    if (!formValues.plandate) {
+      this.utils.showToast(
+        'Training could not be submitted without Plan Date, Please select it.',
+        'error'
+      );
+    } else {
+      let classroom = 1;
+      if (formValues.classroom) {
+        classroom = 2;
+      }
+      let assessment = 1;
+      if (formValues.assessment) {
+        assessment = 2;
+      }
+      let commentry = 1;
+      if (formValues.commentry) {
+        commentry = 2;
+      }
 
-    this.subscriptionList.push(
-      this.trainingService
-        .createTraining(
-          formValues.name,
-          formValues.courseid,
-          formValues.categoryid,
-          formValues.plandate,
-          formValues.startdate,
-          formValues.enddate,
-          formValues.duration,
-          formValues.titleid,
-          formValues.clientid,
-          formValues.contractorid,
-          formValues.trainerid,
-          formValues.trainingexpiry,
-          formValues.invoicenumber,
-          formValues.invoicedate,
-          formValues.charges,
-          formValues.transportation,
-          formValues.miscexpense,
-          formValues.tax,
-          formValues.total,
-          formValues.bank,
-          formValues.cheque,
-          formValues.amountreceived,
-          formValues.requestedby,
-          formValues.contactnumber,
-          formValues.source,
-          formValues.venue,
-          formValues.locationid,
-          formValues.status,
-          classroom,
-          assessment,
-          commentry
-        )
-        .subscribe({
-          next: (data) => {
-            this.utils.showToast(data.message.toString(), 'success');
-            this.cdRef.detectChanges();
-            this.formRest();
-          },
-          error: (err) => {
-            this.utils.showToast(err.message, 'error');
-          },
-        })
-    );
+      this.subscriptionList.push(
+        this.trainingService
+          .createTraining(
+            formValues.name,
+            formValues.courseid,
+            formValues.categoryid,
+            formValues.plandate,
+            formValues.startdate,
+            formValues.enddate,
+            formValues.duration,
+            formValues.titleid,
+            formValues.clientid,
+            formValues.contractorid,
+            formValues.trainerid,
+            formValues.trainingexpiry,
+            formValues.invoicenumber,
+            formValues.invoicedate,
+            formValues.charges,
+            formValues.transportation,
+            formValues.miscexpense,
+            formValues.tax,
+            formValues.total,
+            formValues.bank,
+            formValues.cheque,
+            formValues.amountreceived,
+            formValues.amountreceiveddate,
+            formValues.requestedby,
+            formValues.contactnumber,
+            formValues.source,
+            formValues.venue,
+            formValues.locationid,
+            formValues.status,
+            classroom,
+            assessment,
+            commentry
+          )
+          .subscribe({
+            next: (data) => {
+              this.utils.showToast(data.message.toString(), 'success');
+              this.cdRef.detectChanges();
+              this.formRest();
+            },
+            error: (err) => {
+              this.utils.showToast(err.message, 'error');
+            },
+          })
+      );
+    }
   }
 
   /**

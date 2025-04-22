@@ -22,6 +22,7 @@ export interface apiTrainingModel {
   bank: string;
   cheque: string;
   amountreceived: number;
+  amountreceiveddate: Date;
   requestedby: string;
   contactnumber: string;
   source: string;

@@ -110,7 +110,7 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
       designation: [{ value: '', disabled: !this.isEdit }],
       department: [{ value: '', disabled: !this.isEdit }],
       permitnumber: [{ value: '', disabled: !this.isEdit }],
-      permitissue: [{ value: '', disabled: !this.isEdit }],
+      permitissue: [{ value: '', disabled: !this.isEdit }, Validators.required],
       permitexpiry: [{ value: '', disabled: !this.isEdit }],
       medicalexpiry: [{ value: '', disabled: !this.isEdit }],
       bloodgroupid: [{ value: null, disabled: !this.isEdit }],
@@ -335,6 +335,9 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
             },
           })
       );
+    } else {
+      this.utils.showToast('Fill all the mandatory fields', 'error');
+      this.toggleEdit();
     }
   }
 

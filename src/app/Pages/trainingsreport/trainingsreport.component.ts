@@ -278,7 +278,7 @@ export class TrainingsreportComponent implements OnInit, OnDestroy {
         },
       },
       title: {
-        text: 'Monthly Assessments, ' + new Date().getFullYear(),
+        text: 'Monthly Trainings, ' + new Date().getFullYear(),
         floating: false,
         offsetY: 320,
         align: 'center',
@@ -329,7 +329,7 @@ export class TrainingsreportComponent implements OnInit, OnDestroy {
       this.trendTrainings = {
         series: [
           {
-            name: 'Assessments',
+            name: 'Trainings',
             data: dataSeries,
           },
         ],
@@ -502,7 +502,7 @@ export class TrainingsreportComponent implements OnInit, OnDestroy {
   /**
    * This method will convert stacked count into total month count
    * @param series Series
-   * @returns total months count
+   * @returns total months counts
    */
   private getMonthlyTotals(
     series: { name: string; data: number[] }[]

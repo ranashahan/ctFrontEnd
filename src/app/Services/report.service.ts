@@ -191,9 +191,12 @@ export class ReportService {
             margin: [0, 20, 0, 0],
           },
           {
-            text: `${this.utils.formatDate(
-              session.classdate || ''
-            )} - ${this.utils.formatDate(session.sessiondate || '')}`,
+            text:
+              session.classdate === session.sessiondate
+                ? `${this.utils.formatDate(session.sessiondate || '')}`
+                : `${this.utils.formatDate(
+                    session.classdate || ''
+                  )} - ${this.utils.formatDate(session.sessiondate || '')}`,
             style: 'date',
             alignment: 'center',
             margin: [0, 20, 0, 0],
@@ -226,10 +229,7 @@ export class ReportService {
                       printDate
                     )} \nValid Thru:${this.utils.formatDatetoddMMMYYYY(
                       session.permitexpiry
-                    )} \n STC-${this.utils.getGenericName(
-                      this.titles(),
-                      session.titleid
-                    )}-16H`,
+                    )}`,
                     alignment: 'center',
                     style: 'verticalText',
                     margin: [0, 3, 0, 0],

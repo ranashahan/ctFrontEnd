@@ -109,11 +109,11 @@ export class TrainingdetailComponent implements OnInit, OnDestroy {
     this.formTraining = this.fb.group({
       id: [{ value: '', disabled: true }], // Always disabled
       name: [{ value: '', disabled: !this.isEdit }, Validators.required],
-      plandate: [{ value: null, disabled: !this.isEdit }],
+      plandate: [{ value: null, disabled: !this.isEdit }, Validators.required],
       startdate: [{ value: null, disabled: !this.isEdit }],
       enddate: [{ value: null, disabled: !this.isEdit }],
       duration: [{ value: null, disabled: !this.isEdit }],
-      courseid: [{ value: null, disabled: !this.isEdit }],
+      courseid: [{ value: null, disabled: !this.isEdit }, Validators.required],
       categoryid: [{ value: null, disabled: !this.isEdit }],
       clientid: [{ value: null, disabled: !this.isEdit }],
       contractorid: [{ value: null, disabled: !this.isEdit }],
@@ -135,6 +135,7 @@ export class TrainingdetailComponent implements OnInit, OnDestroy {
       bank: [{ value: null, disabled: !this.isEdit }],
       cheque: [{ value: null, disabled: !this.isEdit }],
       amountreceived: [{ value: null, disabled: !this.isEdit }],
+      amountreceiveddate: [{ value: null, disabled: !this.isEdit }],
       status: [{ value: null, disabled: !this.isEdit }],
       classroom: [{ value: null, disabled: !this.isEdit }],
       assessment: [{ value: null, disabled: !this.isEdit }],
@@ -284,6 +285,24 @@ export class TrainingdetailComponent implements OnInit, OnDestroy {
       this.trainingService.getTrainingByID(id).subscribe((res: any) => {
         this.formTraining.patchValue(res[0]);
 
+        if (res[0].classroom != 2) {
+          this.formTraining.patchValue({
+            classroom: false,
+          });
+        }
+
+        if (res[0].assessment != 2) {
+          this.formTraining.patchValue({
+            assessment: false,
+          });
+        }
+
+        if (res[0].commentry != 2) {
+          this.formTraining.patchValue({
+            commentry: false,
+          });
+        }
+
         const formattedPD = this.utils.convertToMySQLDate(res[0].plandate);
         this.formTraining.patchValue({
           plandate: formattedPD,
@@ -315,6 +334,14 @@ export class TrainingdetailComponent implements OnInit, OnDestroy {
           invoicedate: formattedID,
         });
         this.formTraining.get('invoicedate')?.updateValueAndValidity();
+
+        const formattedRD = this.utils.convertToMySQLDate(
+          res[0].amountreceiveddate
+        );
+        this.formTraining.patchValue({
+          amountreceiveddate: formattedRD,
+        });
+        this.formTraining.get('amountreceiveddate')?.updateValueAndValidity();
         this.cdRef.detectChanges();
       })
     );
@@ -362,66 +389,75 @@ export class TrainingdetailComponent implements OnInit, OnDestroy {
    */
   updateTraining() {
     const training = this.formTraining.getRawValue();
+    var plandate: string = this.formTraining.get('plandate')?.value;
 
-    let classroom = 1;
-    if (training.classroom) {
-      classroom = 2;
-    }
-    let assessment = 1;
-    if (training.assessment) {
-      assessment = 2;
-    }
-    let commentry = 1;
-    if (training.commentry) {
-      commentry = 2;
-    }
+    if (!plandate) {
+      this.utils.showToast(
+        'Training could not be submitted without Plan Date, Please select it.',
+        'error'
+      );
+    } else {
+      let classroom = 1;
+      if (training.classroom) {
+        classroom = 2;
+      }
+      let assessment = 1;
+      if (training.assessment) {
+        assessment = 2;
+      }
+      let commentry = 1;
+      if (training.commentry) {
+        commentry = 2;
+      }
 
-    this.subscriptionList.push(
-      this.trainingService
-        .updateTraining(
-          training.id,
-          training.name,
-          training.courseid,
-          training.categoryid,
-          training.plandate,
-          training.startdate,
-          training.enddate,
-          training.duration,
-          training.titleid,
-          training.clientid,
-          training.contractorid,
-          training.trainerid,
-          training.trainingexpiry,
-          training.invoicenumber,
-          training.invoicedate,
-          training.charges,
-          training.transportation,
-          training.miscexpense,
-          training.tax,
-          training.total,
-          training.bank,
-          training.cheque,
-          training.amountreceived,
-          training.requestedby,
-          training.contactnumber,
-          training.source,
-          training.venue,
-          training.locationid,
-          training.status,
-          classroom,
-          assessment,
-          commentry
-        )
-        .subscribe({
-          next: (res: any) => {
-            this.utils.showToast('Training Saved Successfully!', 'success');
-            this.getTraining(this.trainingId());
-          },
-          error: (err: any) => {
-            this.utils.showToast(err.message, 'error');
-          },
-        })
-    );
+      this.subscriptionList.push(
+        this.trainingService
+          .updateTraining(
+            training.id,
+            training.name,
+            training.courseid,
+            training.categoryid,
+            training.plandate,
+            training.startdate,
+            training.enddate,
+            training.duration,
+            training.titleid,
+            training.clientid,
+            training.contractorid,
+            training.trainerid,
+            training.trainingexpiry,
+            training.invoicenumber,
+            training.invoicedate,
+            training.charges,
+            training.transportation,
+            training.miscexpense,
+            training.tax,
+            training.total,
+            training.bank,
+            training.cheque,
+            training.amountreceived,
+            training.amountreceiveddate,
+            training.requestedby,
+            training.contactnumber,
+            training.source,
+            training.venue,
+            training.locationid,
+            training.status,
+            classroom,
+            assessment,
+            commentry
+          )
+          .subscribe({
+            next: (res: any) => {
+              this.utils.showToast('Training Saved Successfully!', 'success');
+              this.getTraining(this.trainingId());
+            },
+            error: (err: any) => {
+              this.utils.showToast(err.message, 'error');
+            },
+          })
+      );
+    }
   }
 
   /**
