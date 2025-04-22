@@ -186,6 +186,7 @@ export class ExcelreportService {
         Tax: item.tax,
         TotalAmount: item.total,
         ReceivedAmount: item.amountreceived,
+        ReceivedAmountDate: item.amountreceiveddate,
         Invoice: item.invoicenumber,
         InvoiceDate: item.invoicedate,
         BankName: item.bank,

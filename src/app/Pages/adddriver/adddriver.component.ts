@@ -69,7 +69,7 @@ export class AdddriverComponent implements OnInit, OnDestroy {
       licensetypeid: [null],
       licenseexpiry: [null],
       permitnumber: [null],
-      permitissue: [null],
+      permitissue: [null, Validators.required],
       permitexpiry: [null],
       licenseverified: [1],
       designation: [''],

@@ -212,6 +212,7 @@ export class TrainingService {
    * @param bank training bank name
    * @param cheque training cheque number
    * @param amountreceived training amount received
+   * @param amountreceiveddate training date
    * @param requestedby training requested by name
    * @param contactnumber training requested by contact info
    * @param source training source
@@ -246,6 +247,7 @@ export class TrainingService {
     bank: string,
     cheque: string,
     amountreceived: number,
+    amountreceiveddate: Date,
     requestedby: string,
     contactnumber: string,
     source: string,
@@ -279,6 +281,7 @@ export class TrainingService {
       bank,
       cheque,
       amountreceived,
+      amountreceiveddate,
       requestedby,
       contactnumber,
       source,
@@ -317,6 +320,7 @@ export class TrainingService {
    * @param bank {string} bank name
    * @param cheque {string} cheque
    * @param amountreceived {number}
+   * @param amountreceiveddate {Date}
    * @param requestedby {string} requested person name
    * @param contactnumber {string} requested person contact
    * @param source {string} source
@@ -352,6 +356,7 @@ export class TrainingService {
     bank: string,
     cheque: string,
     amountreceived: number,
+    amountreceiveddate: Date,
     requestedby: string,
     contactnumber: string,
     source: string,
@@ -385,6 +390,7 @@ export class TrainingService {
       bank,
       cheque,
       amountreceived,
+      amountreceiveddate,
       requestedby,
       contactnumber,
       source,
