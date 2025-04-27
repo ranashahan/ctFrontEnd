@@ -273,7 +273,7 @@
                 formControlName="contractorid"
               >
                 <option disabled selected value="null">-----Select-----</option>
-                @for (item of contractors(); track $index) {
+                @for (item of filteredContractors(); track $index) {
                 <option [value]="item.id">{{ item.name }}</option>
                 }
               </select>
