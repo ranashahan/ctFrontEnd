@@ -82,6 +82,7 @@ export class TrainingsreportComponent implements OnInit, OnDestroy {
     xaxis: ApexXAxis;
     legend: ApexLegend;
     fill: ApexFill;
+    colors: string[];
   };
 
   trainers = this.trainerService.trainers;
@@ -98,6 +99,16 @@ export class TrainingsreportComponent implements OnInit, OnDestroy {
   formFinance: FormGroup;
   apiCallInProgress = signal<boolean>(false);
   selectedClient = signal<number | null>(null);
+  private colors = [
+    '#008FFB', // Blue
+    '#00E396', // green
+    '#FEB019', // yellow
+    '#FF4560', // pink
+    '#775DD0', // purple
+    '#608078', // gray
+    '#d68156', // Gray
+    '#08a112', // Green
+  ];
   years = signal(this.utils.years());
   months = signal(this.utils.months());
   trainingCount = this.trainingService.trainingReportCount;
@@ -142,6 +153,7 @@ export class TrainingsreportComponent implements OnInit, OnDestroy {
           enabled: true,
         },
       },
+      colors: this.colors,
       responsive: [
         {
           breakpoint: 480,
@@ -464,6 +476,7 @@ export class TrainingsreportComponent implements OnInit, OnDestroy {
             enabled: true,
           },
         },
+        colors: this.colors,
         responsive: [
           {
             breakpoint: 480,

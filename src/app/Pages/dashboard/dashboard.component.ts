@@ -12,6 +12,7 @@ import {
 import {
   ApexChart,
   ApexAxisChartSeries,
+  ApexNonAxisChartSeries,
   ApexDataLabels,
   ApexStroke,
   ApexTitleSubtitle,
@@ -81,6 +82,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public trainerCOpt: {
     series: ApexAxisChartSeries;
     chart: ApexChart;
+    colors: string[];
     dataLabels: ApexDataLabels;
     plotOptions: ApexPlotOptions;
     xaxis: ApexXAxis;
@@ -88,6 +90,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     fill: ApexFill;
     stroke: ApexStroke;
     tooltip: ApexTooltip;
+  };
+  public trainerPOpt: {
+    series: ApexNonAxisChartSeries;
+    chart: ApexChart;
+    labels: any;
+    legend: ApexLegend;
+    colors: string[];
+    responsive: ApexResponsive[];
   };
 
   subscriptionList: Subscription[] = [];
@@ -119,7 +129,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
   });
 
   public sessions = this.assessmentService.searchLatestSessions;
-
+  private colors = [
+    '#008FFB', // Blue
+    '#00E396', // green
+    '#FEB019', // yellow
+    '#FF4560', // pink
+    '#775DD0', // purple
+    '#608078', // gray
+    '#d68156', // Gray
+    '#08a112', // Green
+  ];
   /**
    * Constructor
    * @param utils utility service
@@ -209,6 +228,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         type: 'bar',
         height: 350,
       },
+
       plotOptions: {
         bar: {
           horizontal: false,
@@ -218,6 +238,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       dataLabels: {
         enabled: false,
       },
+      colors: this.colors,
       stroke: {
         show: true,
         width: 2,
@@ -254,6 +275,32 @@ export class DashboardComponent implements OnInit, OnDestroy {
         },
       },
     };
+
+    this.trainerPOpt = {
+      series: [44],
+      colors: this.colors,
+      chart: {
+        type: 'pie',
+        height: 350,
+      },
+      labels: [], // no labels shown outside
+      legend: {
+        show: false, // hides legend
+      },
+      responsive: [
+        {
+          breakpoint: 480,
+          options: {
+            chart: {
+              width: 300,
+            },
+            legend: {
+              position: 'bottom',
+            },
+          },
+        },
+      ],
+    };
   }
   /**
    * This method will invoke all the methods while rendering the page
@@ -263,7 +310,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.getLocationData();
     this.getDriverSessionData();
     this.getTrainerSessionData();
-    // this.getAllTrainings();
+    this.getTrainerSessionPie();
   }
 
   /**
@@ -347,13 +394,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private getTrainerSessionData() {
     this.subscriptionList.push(
       this.trainerService.getTrainerCount().subscribe((res: any) => {
-        const chartSeries = this.convertToSeries(res);
         this.trainerCOpt = {
-          series: chartSeries,
+          series: res.series,
           chart: {
             type: 'bar',
             height: 350,
           },
+
           plotOptions: {
             bar: {
               horizontal: false,
@@ -363,26 +410,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
           dataLabels: {
             enabled: false,
           },
+          colors: this.colors,
           stroke: {
             show: true,
-            width: 2,
+
+            width: 1,
             colors: ['transparent'],
           },
           xaxis: {
-            categories: [
-              'Jan',
-              'Feb',
-              'Mar',
-              'Apr',
-              'May',
-              'Jun',
-              'Jul',
-              'Aug',
-              'Sep',
-              'Oct',
-              'Nov',
-              'Dec',
-            ],
+            categories: res.categories,
           },
           yaxis: {
             title: {
@@ -399,6 +435,52 @@ export class DashboardComponent implements OnInit, OnDestroy {
               },
             },
           },
+        };
+        this.cdRef.detectChanges();
+      })
+    );
+  }
+  /**
+   * This method will render the pie chart for trainer
+   */
+  private getTrainerSessionPie() {
+    this.subscriptionList.push(
+      this.trainerService.getTrainerCount().subscribe((res: any) => {
+        const trainerBarSeries = res.series;
+
+        const pieSeries = trainerBarSeries.map((trainer: any) =>
+          trainer.data.reduce(
+            (sum: number, monthVal: number) => sum + monthVal,
+            0
+          )
+        );
+
+        const pieLabels = trainerBarSeries.map((trainer: any) => trainer.name);
+
+        this.trainerPOpt = {
+          series: pieSeries,
+          chart: {
+            type: 'pie',
+            height: 350,
+          },
+          colors: this.colors,
+          labels: pieLabels, // no labels shown outside
+          legend: {
+            show: false, // hides legend
+          },
+          responsive: [
+            {
+              breakpoint: 480,
+              options: {
+                chart: {
+                  width: 300,
+                },
+                legend: {
+                  position: 'bottom',
+                },
+              },
+            },
+          ],
         };
         this.cdRef.detectChanges();
       })
@@ -425,27 +507,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * This method for convert chart series
-   * @param data chart data
-   * @returns series data
-   */
-  private convertToSeries(data: TrainerData[]) {
-    const seriesData = data.reduce((acc, item) => {
-      // Find or create the series for each unique trainer
-      let series = acc.find((s) => s.name === item.trainer_name);
-      if (!series) {
-        series = { name: item.trainer_name, data: [] };
-        acc.push(series);
-      }
-      // Append session count to the trainer's data array
-      series.data.push(item.session_count);
-      return acc;
-    }, [] as { name: string; data: number[] }[]);
-
-    return seriesData;
-  }
-
-  /**
    * This method will destory all the subscriptions
    */
   ngOnDestroy(): void {
@@ -453,11 +514,4 @@ export class DashboardComponent implements OnInit, OnDestroy {
       sub.unsubscribe();
     });
   }
-}
-
-interface TrainerData {
-  trainer_name: string;
-  year: number;
-  month: number;
-  session_count: number;
 }

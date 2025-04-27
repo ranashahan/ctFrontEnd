@@ -39,29 +39,9 @@
     </div>
 
     <!-- Charts Section -->
-    <div class="row">
-      <div class="col-lg-4 mb-4">
-        <div class="customcard bg-success bg-opacity-75">
-          <div class="card-body">
-            <h5 class="card-title">Trainer Workout</h5>
-            <div id="trainerCOpt">
-              <apx-chart
-                [series]="trainerCOpt.series"
-                [chart]="trainerCOpt.chart"
-                [dataLabels]="trainerCOpt.dataLabels"
-                [plotOptions]="trainerCOpt.plotOptions"
-                [yaxis]="trainerCOpt.yaxis"
-                [fill]="trainerCOpt.fill"
-                [stroke]="trainerCOpt.stroke"
-                [tooltip]="trainerCOpt.tooltip"
-                [xaxis]="trainerCOpt.xaxis"
-              ></apx-chart>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <div class="col-lg-4 mb-4">
+    <div class="row">
+      <div class="col-lg-8 mb-4">
         <div class="customcard bg-primary bg-opacity-25">
           <div class="card-body">
             <h5 class="card-title">Location</h5>
@@ -105,6 +85,52 @@
                 }
               </tbody>
             </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="divider-container my-4">
+        <div class="divider-line"></div>
+        <div class="divider-text">Trainers' Yearly Work Out</div>
+        <div class="divider-line"></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-9 mb-4">
+        <div class="customcard bg-success bg-opacity-75">
+          <div class="card-body">
+            <div id="trainerCOpt">
+              <apx-chart
+                [series]="trainerCOpt.series"
+                [chart]="trainerCOpt.chart"
+                [colors]="trainerCOpt.colors"
+                [dataLabels]="trainerCOpt.dataLabels"
+                [plotOptions]="trainerCOpt.plotOptions"
+                [yaxis]="trainerCOpt.yaxis"
+                [fill]="trainerCOpt.fill"
+                [stroke]="trainerCOpt.stroke"
+                [tooltip]="trainerCOpt.tooltip"
+                [xaxis]="trainerCOpt.xaxis"
+              ></apx-chart>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-3 mb-4">
+        <div class="customcard bg-dark bg-opacity-25">
+          <div class="card-body">
+            <div id="trainerPOpt">
+              <apx-chart
+                [series]="trainerPOpt.series"
+                [chart]="trainerPOpt.chart"
+                [colors]="trainerPOpt.colors"
+                [legend]="trainerPOpt.legend"
+                [labels]="trainerPOpt.labels"
+                [responsive]="trainerPOpt.responsive"
+              ></apx-chart>
+            </div>
           </div>
         </div>
       </div>

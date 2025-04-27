@@ -19,3 +19,22 @@
   max-width: 650px;
   margin: 35px auto;
 }
+.divider-container {
+  display: flex;
+  align-items: center;
+  text-align: center;
+}
+
+.divider-line {
+  flex: 1;
+  height: 10px;
+  background-color: #ccc;
+}
+
+.divider-text {
+  padding: 0 15px;
+  font-weight: bold;
+  font-size: larger;
+
+  white-space: nowrap;
+}
