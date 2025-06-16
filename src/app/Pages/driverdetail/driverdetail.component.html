@@ -230,7 +230,7 @@
                 formControlName="designation"
               />
             </div>
-            <label for="licensenumber" class="col-sm-1 col-form-label required"
+            <label for="licensenumber" class="col-sm-1 col-form-label"
               >License #:</label
             >
             <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
@@ -241,14 +241,14 @@
                 class="form-control form-control-sm"
                 formControlName="licensenumber"
               />
-              @if (licensenumber?.invalid && (licensenumber?.dirty ||
+              <!-- @if (licensenumber?.invalid && (licensenumber?.dirty ||
               licensenumber?.touched)) {
               <div class="text-danger">
                 @if (licensenumber?.errors?.['required']) {
                 <small>Driver license number is required</small>
                 }
               </div>
-              }
+              } -->
             </div>
             <label for="licensetypeid" class="col-sm-1 col-form-label"
               >License Type:</label
@@ -391,6 +391,29 @@
               />
               }
             </div>
+            <label for="client" class="col-sm-1 col-form-label">Clients:</label>
+            <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+              @if (isEdit) {
+              <select
+                class="form-select form-select-sm"
+                id="client"
+                formControlName="clientid"
+              >
+                <option disabled selected value="null">-----Select-----</option>
+                @for (item of clients(); track $index) {
+                <option [value]="item.id">{{ item.name }}</option>
+                }
+              </select>
+              }@else {
+              <input
+                class="form-control form-control-sm"
+                id="client"
+                placeholder="-----Select-----"
+                [value]="getClientName(driverForm.get('clientid')?.value)"
+                disabled
+              />
+              }
+            </div>
             <label for="contractorid" class="col-sm-1 col-form-label"
               >Contractor:</label
             >
@@ -402,7 +425,7 @@
                 formControlName="contractorid"
               >
                 <option disabled selected value="null">-----Select-----</option>
-                @for (item of contractors(); track $index) {
+                @for (item of filteredContractors(); track $index) {
                 <option [value]="item.id">{{ item.name }}</option>
                 }
               </select>
@@ -500,7 +523,7 @@
             <label for="comment" class="col-sm-1 col-form-label"
               >Comment:</label
             >
-            <div class="col-lg-7 col-md-11 col-sm-11 mt-2">
+            <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
               <textarea
                 id="comment"
                 name="comment"

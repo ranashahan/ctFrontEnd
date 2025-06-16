@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  computed,
   inject,
   OnDestroy,
   OnInit,
@@ -28,6 +29,8 @@ import { LocationService } from '../../Services/location.service';
 import { StageService } from '../../Services/stage.service';
 import { ResultService } from '../../Services/result.service';
 import { TitleService } from '../../Services/title.service';
+import { ClientService } from '../../Services/client.service';
+import { apiContractorModel } from '../../Models/Contractor';
 
 @Component({
   selector: 'app-driverdetail',
@@ -50,6 +53,7 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
   private stageService = inject(StageService);
   private resultService = inject(ResultService);
   private titleService = inject(TitleService);
+  private clientService = inject(ClientService);
 
   bloodgroups = this.bgService.bloodGroups;
   dltypes = this.dltypeService.dltypes;
@@ -59,10 +63,23 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
   stages = this.stageService.stages;
   results = this.resultService.results;
   titles = this.titleService.titles;
+  clients = this.clientService.clients;
   licenseVerification = signal<any[]>([]);
   gender = signal<string[]>([]);
   sessions = signal<apiSessionModel[]>([]);
   initialFormData: any;
+
+  selectedClient = signal<number | null>(null);
+  selectedContractor = signal<number | null>(null);
+
+  filteredContractors = computed(() => {
+    const clientid = this.selectedClient();
+    return clientid
+      ? this.contractors().filter(
+          (c) => Number(c.clientid) === Number(clientid)
+        )
+      : this.contractors();
+  });
   /**
    * Subscriptionlist so ngondestory will destory all registered subscriptions.
    */
@@ -100,10 +117,7 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
         ],
       ],
       nicexpiry: [{ value: null, disabled: !this.isEdit }],
-      licensenumber: [
-        { value: '', disabled: !this.isEdit },
-        Validators.required,
-      ],
+      licensenumber: [{ value: '', disabled: !this.isEdit }],
       licensetypeid: [{ value: null, disabled: !this.isEdit }],
       licenseexpiry: [{ value: '', disabled: !this.isEdit }],
       licenseverified: [{ value: null, disable: !this.isEdit }],
@@ -114,6 +128,7 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
       permitexpiry: [{ value: '', disabled: !this.isEdit }],
       medicalexpiry: [{ value: '', disabled: !this.isEdit }],
       bloodgroupid: [{ value: null, disabled: !this.isEdit }],
+      clientid: [{ value: null, disabled: !this.isEdit }],
       contractorid: [{ value: null, disabled: !this.isEdit }],
       visualid: [{ value: null, disabled: !this.isEdit }],
       ddccount: [{ value: 0, disabled: !this.isEdit }],
@@ -125,6 +140,16 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
       modifiedby: [{ value: '', disabled: true }],
       modified_at: [{ value: '', disabled: true }],
     });
+
+    this.driverForm.get('clientid')?.valueChanges.subscribe((clientid) => {
+      this.selectedClient.set(clientid);
+    });
+
+    this.driverForm
+      .get('contractorid')
+      ?.valueChanges.subscribe((contractorid) => {
+        this.selectedContractor.set(contractorid);
+      });
   }
   /**
    * This method will invoke all the methods while rendering the page
@@ -165,6 +190,14 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
    */
   getContractorName(itemId: number): string {
     return this.utils.getGenericName(this.contractors(), itemId);
+  }
+  /**
+   * This method will set contractor name against contractor ID
+   * @param itemId contractor ID
+   * @returns string contractor name
+   */
+  getClientName(itemId: number): string {
+    return this.utils.getGenericName(this.clients(), itemId);
   }
 
   /**
@@ -225,6 +258,10 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
       this.driverService.getDriverByID(id).subscribe((driverData: any) => {
         this.driverForm.patchValue(driverData[0]);
 
+        this.driverForm.patchValue({
+          clientid:
+            this.getClientID(this.driverForm.get('contractorid')?.value) || 0,
+        });
         const formattedDOB = this.utils.convertToMySQLDate(driverData[0].dob);
         this.driverForm.patchValue({
           dob: formattedDOB,
@@ -355,11 +392,21 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * This method for fetch contractors
+   */
+  getClientID(itemID: number): number {
+    const contractor = this.contractors().find(
+      (c: apiContractorModel) => c.id === itemID
+    );
+    return contractor?.clientid || 0;
+  }
+
+  /**
    * Getter method for driver license number
    */
-  get licensenumber() {
-    return this.driverForm.get('licensenumber');
-  }
+  // get licensenumber() {
+  //   return this.driverForm.get('licensenumber');
+  // }
 
   /**
    * This method will toggel the edit button

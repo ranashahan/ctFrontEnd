@@ -115,7 +115,9 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
       contractorid: [],
       courseid: [],
       categoryid: [],
-      startDate: [this.utils.monthAgo(3).toISOString().substring(0, 10)],
+      invoicenumber: [],
+      cheque: [],
+      startDate: [this.utils.monthAgo(6).toISOString().substring(0, 10)],
       endDate: [this.utils.daysAhead(1).toISOString().substring(0, 10)],
     });
     this.formTrainingSearch
@@ -142,13 +144,15 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
   public getFillterredData(): void {
     this.subscriptionList.push(
       this.trainingService
-        .getSessionbydate(
+        .getTrainingbydate(
           this.formTrainingSearch.value.name,
           this.formTrainingSearch.value.plandate,
           this.formTrainingSearch.value.courseid,
           this.formTrainingSearch.value.categoryid,
           this.formTrainingSearch.value.clientid,
           this.formTrainingSearch.value.contractorid,
+          this.formTrainingSearch.value.invoicenumber,
+          this.formTrainingSearch.value.cheque,
           this.formTrainingSearch.value.startDate,
           this.formTrainingSearch.value.endDate
         )
@@ -173,7 +177,9 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
   private getAllTrainings(): void {
     this.subscriptionList.push(
       this.trainingService
-        .getSessionbydate(
+        .getTrainingbydate(
+          undefined,
+          undefined,
           undefined,
           undefined,
           undefined,
@@ -426,7 +432,7 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
       nic: '',
       resultid: null,
       stageid: null,
-      startDate: this.utils.monthAgo(3).toISOString().substring(0, 10),
+      startDate: this.utils.monthAgo(6).toISOString().substring(0, 10),
       endDate: this.utils.daysAhead(1).toISOString().substring(0, 10),
     });
     this.trainings.set(this.initialValues);

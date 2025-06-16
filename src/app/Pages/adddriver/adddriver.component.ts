@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  computed,
   inject,
   OnDestroy,
   OnInit,
@@ -21,6 +22,7 @@ import { BloodgroupService } from '../../Services/bloodgroup.service';
 import { DltypeService } from '../../Services/dltype.service';
 import { ContractorService } from '../../Services/contractor.service';
 import { VisualService } from '../../Services/visual.service';
+import { ClientService } from '../../Services/client.service';
 
 @Component({
   selector: 'app-adddriver',
@@ -37,13 +39,28 @@ export class AdddriverComponent implements OnInit, OnDestroy {
   private dltypeService = inject(DltypeService);
   private cService = inject(ContractorService);
   private vService = inject(VisualService);
+  private clientService = inject(ClientService);
 
   contractors = this.cService.contractors;
   bloodgroups = this.bgService.bloodGroups;
   dltypes = this.dltypeService.dltypes;
   visuals = this.vService.visuals;
+  clients = this.clientService.clients;
   licenseVerification = signal<any[]>([]);
   gender = signal<string[]>([]);
+
+  selectedClient = signal<number | null>(null);
+  selectedContractor = signal<number | null>(null);
+
+  filteredContractors = computed(() => {
+    const clientid = this.selectedClient();
+    return clientid
+      ? this.contractors().filter(
+          (c) => Number(c.clientid) === Number(clientid)
+        )
+      : this.contractors();
+  });
+
   /**
    * Subscriptionlist so ngondestory will destory all registered subscriptions.
    */
@@ -65,7 +82,7 @@ export class AdddriverComponent implements OnInit, OnDestroy {
         ],
       ],
       nicexpiry: [null],
-      licensenumber: ['', Validators.required],
+      licensenumber: [null],
       licensetypeid: [null],
       licenseexpiry: [null],
       permitnumber: [null],
@@ -76,6 +93,7 @@ export class AdddriverComponent implements OnInit, OnDestroy {
       department: [''],
       medicalexpiry: [null],
       bloodgroupid: [null],
+      clientid: [],
       contractorid: [null],
       visualid: [null],
       ddccount: [0],
@@ -93,6 +111,16 @@ export class AdddriverComponent implements OnInit, OnDestroy {
           ?.setValue(this.formatDate(expiryDate));
       }
     });
+
+    this.formDriver.get('clientid')?.valueChanges.subscribe((clientid) => {
+      this.selectedClient.set(clientid);
+    });
+
+    this.formDriver
+      .get('contractorid')
+      ?.valueChanges.subscribe((contractorid) => {
+        this.selectedContractor.set(contractorid);
+      });
   }
 
   /**
@@ -176,9 +204,9 @@ export class AdddriverComponent implements OnInit, OnDestroy {
   /**
    * Getter method for driver license number
    */
-  get licensenumber() {
-    return this.formDriver.get('licensenumber');
-  }
+  // get licensenumber() {
+  //   return this.formDriver.get('licensenumber');
+  // }
   /**
    * This method will reset the form value to blank
    */

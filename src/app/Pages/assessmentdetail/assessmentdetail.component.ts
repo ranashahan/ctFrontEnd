@@ -39,6 +39,9 @@ import { CommonModule } from '@angular/common';
 import { apiSessionModel, DATA } from '../../Models/Assessment';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DriverService } from '../../Services/driver.service';
+import { TrainingService } from '../../Services/training.service';
+import { apiTrainerModel } from '../../Models/Trainer';
+import { apiTrainingModel } from '../../Models/Training';
 
 @Component({
   selector: 'app-assessmentdetail',
@@ -71,6 +74,7 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
   private vehicleService = inject(VehicleService);
   private clientService = inject(ClientService);
   private driverService = inject(DriverService);
+  private trainingService = inject(TrainingService);
   /**
    * Variables / Signals
    */
@@ -102,6 +106,7 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
   driverForm: FormGroup;
   isEdit = signal<boolean>(false);
   subscriptionList: Subscription[] = [];
+  trainings = signal<apiTrainingModel[]>([]);
 
   constructor(
     private fb: FormBuilder,
@@ -495,6 +500,15 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
             this.isLoading.set(false);
 
             // this.cdRef.detectChanges();
+          })
+      );
+      this.subscriptionList.push(
+        this.trainingService
+          .getTrainingBySessionID(this.sessionID)
+          .subscribe((res: any) => {
+            if (res) {
+              this.trainings.set(res);
+            }
           })
       );
     }, 200);

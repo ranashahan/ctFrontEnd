@@ -47,6 +47,17 @@
           >{{ sessionDetail()?.totalscore }}
         </p>
         <p class="mb-1">
+          @if(trainings().length===0){
+          <i
+            title="Training Link"
+            class="fa-solid fa-link-slash me-1 text-warning"
+          ></i
+          >Not Linked }@else {
+          <i title="Training" class="fa-solid fa-link me-1 text-warning"></i
+          >@for (item of trainings(); track $index) { {{ item.name }}, } }
+          <!-- {{ trainings()[0].name }} -->
+        </p>
+        <p class="mb-1">
           <i
             title="Created By"
             class="fa-solid fa-user-tie me-2 text-warning"

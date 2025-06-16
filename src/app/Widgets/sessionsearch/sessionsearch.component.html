@@ -9,7 +9,7 @@
     <div class="modal-content">
       <div class="modal-header bg-info-subtle">
         <h6 class="modal-title" id="sessionSearchModalLabel">
-          <i class="fa-solid fa-plus"></i> Add Assessment
+          <i class="fa-solid fa-plus"></i> Add Session
         </h6>
         <app-toast></app-toast>
         <button
@@ -48,10 +48,11 @@
         <table class="table table-hover table-bordered mt-2 fs-7">
           <thead class="table-primary">
             <tr>
-              <th>Sr #.</th>
+              <th>Sr.</th>
               <th>DBID</th>
               <th>Session ID</th>
               <th>Session Date</th>
+              <th>Contractor</th>
               <th>Driver Name</th>
               <th>N.I.C #</th>
               <th>
@@ -59,8 +60,8 @@
                   type="checkbox"
                   [checked]="selectAll"
                   (change)="selectAll = !selectAll; toggleSelectAll()"
+                  title="Select All"
                 />
-                Select ALL
               </th>
             </tr>
           </thead>
@@ -71,6 +72,7 @@
               <td>{{ item.id }}</td>
               <td>{{ item.name }}</td>
               <td>{{ item.sessiondate | date }}</td>
+              <td>{{ getContractorName(item.contractorid) }}</td>
               <td>{{ item.drivername }}</td>
               <td>{{ item.nic }}</td>
 

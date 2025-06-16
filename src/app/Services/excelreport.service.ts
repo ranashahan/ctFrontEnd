@@ -10,7 +10,10 @@ import { DltypeService } from './dltype.service';
 import { BloodgroupService } from './bloodgroup.service';
 import { VehicleService } from './vehicle.service';
 import { ResultService } from './result.service';
-import { apiSessionDriverReportModel } from '../Models/Assessment';
+import {
+  apiSessionDriverReportModel,
+  apiVSessionModel,
+} from '../Models/Assessment';
 import { ContractorService } from './contractor.service';
 import { TrainerService } from './trainer.service';
 import { apiTrainingModel } from '../Models/Training';
@@ -131,6 +134,43 @@ export class ExcelreportService {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
     XLSX.writeFile(wb, `${fileName + new Date().getTime()}.xlsx`);
+  }
+
+  async exportCardData(
+    drivers: apiVSessionModel[],
+    fileName: string,
+    onComplete: () => void
+  ) {
+    try {
+      const flattenedData = drivers.map((item: apiVSessionModel) => {
+        const row: any = {
+          Name: item.name,
+          Company: item.contractorname,
+          NIC: item.nic,
+          // Contractor: this.convertGeneric(
+          //   this.contractors(),
+          //   item.contractorid
+          // ),
+          DLNumber: item.licensenumber,
+          DLType: this.convertGeneric(this.dltypes(), item.licensetypeid),
+          DLValidity: item.licenseexpiry,
+          BG: this.convertGeneric(this.bloodgroups(), item.bloodgroupid),
+          ClassDate: item.classdate,
+          RoadTestDate: item.sessiondate,
+          Permit: item.permitnumber,
+          PermitExpiry: item.permitexpiry,
+        };
+        return row;
+      });
+      const ws = XLSX.utils.json_to_sheet(flattenedData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'DDCCards');
+      XLSX.writeFile(wb, `${fileName + new Date().getTime()}.xlsx`);
+    } catch (error) {
+      console.error('Error generating document:', error);
+    } finally {
+      onComplete(); // Stop loading after success or failure
+    }
   }
 
   /**

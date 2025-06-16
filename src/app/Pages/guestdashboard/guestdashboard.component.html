@@ -27,11 +27,25 @@
         </label>
         <div class="input-group">
           <input
-            type="text"
+            type="search"
             class="form-control form-control-sm my-inputextend"
             id="inlineFormInputGroupNic"
             placeholder="xxxxx-xxxxxxx-x"
             formControlName="nic"
+          />
+        </div>
+      </div>
+      <div class="col-auto">
+        <label class="label ms-1 strong" for="inlineFormInputGroupName"
+          >Certificate #
+        </label>
+        <div class="input-group">
+          <input
+            type="search"
+            class="form-control form-control-sm my-inputextend"
+            id="inlineFormInputGroupName"
+            placeholder="xxx-xxxx-xxxx-xx-xx"
+            formControlName="name"
           />
         </div>
       </div>
@@ -126,10 +140,13 @@
       <thead class="table-warning">
         <tr>
           <th>#</th>
-          <th>Session Name</th>
+          <th>Certificate #</th>
           <th>Session Date</th>
           <th>Candidate Name</th>
           <th>N.I.C. #</th>
+          <th>Permit #</th>
+          <th>Permit Issue</th>
+          <th>Permit Expiry</th>
           <th>Contractor</th>
           <th>Title</th>
           <th>Location</th>
@@ -164,6 +181,21 @@
           <td>
             <div>
               {{ item.nic }}
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ item.permitnumber }}
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ item.permitissue | date }}
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ item.permitexpiry | date }}
             </div>
           </td>
           <td>

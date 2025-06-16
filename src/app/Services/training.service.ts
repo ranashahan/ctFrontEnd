@@ -73,7 +73,7 @@ export class TrainingService {
    * This method will fetch all the active trainings
    * @returns Observable
    */
-  getAllTraining(): Observable<apiTrainingModel[]> {
+  public getAllTraining(): Observable<apiTrainingModel[]> {
     return this.http.get<apiTrainingModel[]>(this.apiURL + 'getAll');
   }
 
@@ -82,7 +82,9 @@ export class TrainingService {
    * @param trainingParam training signal
    * @returns training signal
    */
-  getTrainingsWithContractorNames(trainingParam: Signal<apiTrainingModel[]>) {
+  public getTrainingsWithContractorNames(
+    trainingParam: Signal<apiTrainingModel[]>
+  ) {
     return computed(() => {
       const trainings: apiTrainingModel[] = trainingParam();
       const contractorsValue = this.contractors();
@@ -135,17 +137,21 @@ export class TrainingService {
    * @param category training category
    * @param clientid training client id
    * @param contractorid training contractor id
+   * @param invoicenumber training invoice number
+   * @param cheque training cheque number
    * @param startDate training start date
    * @param endDate training end date
    * @returns Observable
    */
-  getSessionbydate(
+  public getTrainingbydate(
     name?: string,
     plandate?: string,
     courseid?: string,
     categoryid?: string,
     clientid?: number,
     contractorid?: number,
+    invoicenumber?: string,
+    cheque?: string,
     startDate?: string,
     endDate?: string
   ): Observable<apiTrainingModel[]> {
@@ -168,6 +174,12 @@ export class TrainingService {
     if (contractorid) {
       params = params.set('contractorid', contractorid);
     }
+    if (invoicenumber) {
+      params = params.set('invoicenumber', invoicenumber);
+    }
+    if (cheque) {
+      params = params.set('cheque', cheque);
+    }
     if (startDate) {
       params = params.set('startDate', startDate);
     }
@@ -184,8 +196,23 @@ export class TrainingService {
    * @param id number trainingid
    * @returns Observable
    */
-  getTrainingByID(id: number) {
+  public getTrainingByID(id: number) {
     return this.http.get<apiTrainingModel>(this.apiURL + id);
+  }
+
+  /**
+   * This method will fetch all the session against training id
+   * @param trainingid training id
+   * @returns Observable
+   */
+  public getTrainingBySessionID(
+    sessionid: number
+  ): Observable<apiTrainingModel[]> {
+    let params = new HttpParams();
+    params = params.set('sessionid', sessionid);
+    return this.http.get<apiTrainingModel[]>(this.apiURL + 'getst', {
+      params,
+    });
   }
 
   /**
@@ -525,7 +552,12 @@ export class TrainingService {
    */
   public getTrainingFinanceReport(
     month?: number,
-    year?: number
+    year?: number,
+    amountreceiveddate?: string,
+    bank?: string,
+    invoicenumber?: string,
+    cheque?: string,
+    notnull?: boolean
   ): Observable<apiTrainingModel[]> {
     let params = new HttpParams();
     if (month) {
@@ -533,6 +565,21 @@ export class TrainingService {
     }
     if (year) {
       params = params.set('year', year);
+    }
+    if (amountreceiveddate) {
+      params = params.set('amountreceiveddate', amountreceiveddate);
+    }
+    if (bank) {
+      params = params.set('bank', bank.trimEnd());
+    }
+    if (invoicenumber) {
+      params = params.set('invoicenumber', invoicenumber.trim());
+    }
+    if (cheque) {
+      params = params.set('cheque', cheque.trimEnd());
+    }
+    if (notnull) {
+      params = params.set('notnull', notnull);
     }
     return this.http.get<apiTrainingModel[]>(this.apiURL + 'getFinanceReport', {
       params,
