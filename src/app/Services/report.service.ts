@@ -68,7 +68,7 @@ export class ReportService {
   private results = this.resultsService.results;
 
   /**
-   * This method will generate and open pdf
+   * This method will generate and open pdfs
    * @param sessions apiVSessionModel
    */
   public async generatePdfReportSession(sessions: apiVSessionModel[]) {
@@ -110,8 +110,53 @@ export class ReportService {
     const printDate = new Date().toLocaleDateString('en-US');
     const documentContent: Content[] = sessions
       .map((session, index) => {
-        // debugger;
-        // Content for each session
+        var text1: string,
+          text2: string,
+          text3: string,
+          text4: string,
+          text5: string;
+        console.log(session.titleid);
+        switch (session.titleid) {
+          case 9008:
+            text1 = 'Basic';
+            text2 = 'Fire Fighting';
+            text3 = 'Course';
+            text4 = ' ';
+            break;
+          case 9007:
+            text1 = 'Standard';
+            text2 = 'First Aid';
+            text3 = 'Course';
+            text4 = ' ';
+            break;
+          case 9006:
+            text1 = 'Basic Fire Fighting';
+            text2 = '&';
+            text3 = 'Standard First Aid Course';
+            text4 = ' ';
+            break;
+          default:
+            (text1 = 'Defensive Driving Course'),
+              (text2 = '&'),
+              (text3 = 'Skill Assessment'),
+              (text4 = `for ${this.utils.getGenericName(
+                this.vehicles(),
+                session.vehicleid
+              )} driver`);
+            break;
+        }
+        switch (session.formid) {
+          case 16006:
+            const d = new Date(session.sessiondate);
+            d.setFullYear(d.getFullYear() + 1);
+            text5 = `Valid Thru:${this.utils.formatDatetoddMMMYYYY(d)}`;
+            break;
+          default:
+            text5 = `Valid Thru:${this.utils.formatDatetoddMMMYYYY(
+              session.permitexpiry
+            )}`;
+            break;
+        }
 
         const sessionContent: Content[] = [
           {
@@ -158,28 +203,25 @@ export class ReportService {
             margin: [0, 10, 0, 0],
           },
           {
-            text: `Defensive Driving Course`,
+            text: text1,
             style: 'course',
             alignment: 'center',
             margin: [0, 20, 0, 0],
           },
           {
-            text: '&',
+            text: text2,
             style: 'course',
             alignment: 'center',
             margin: [0, 20, 0, 0],
           },
           {
-            text: 'Skill Assessment',
+            text: text3,
             style: 'course',
             alignment: 'center',
             margin: [0, 20, 0, 0],
           },
           {
-            text: `for ${this.utils.getGenericName(
-              this.vehicles(),
-              session.vehicleid
-            )} driver`,
+            text: text4,
             style: 'subheader',
             alignment: 'center',
             margin: [0, 20, 0, 0],
@@ -220,16 +262,14 @@ export class ReportService {
               {
                 stack: [
                   {
-                    qr: `${session.name}`, // QR code content
+                    qr: `Cert#: ${session.name}`, // QR code content
                     fit: 50, // Set size for QR code
                     alignment: 'center', // Align the QR code
                   },
                   {
                     text: `Print Date: ${this.utils.formatDatetoddMMMYYYY(
                       printDate
-                    )} \nValid Thru:${this.utils.formatDatetoddMMMYYYY(
-                      session.permitexpiry
-                    )}`,
+                    )} \n${text5} \nCertificate #: ${session.name}`,
                     alignment: 'center',
                     style: 'verticalText',
                     margin: [0, 3, 0, 0],
@@ -511,6 +551,10 @@ export class ReportService {
     pdfMake.createPdf(docDefinition).open();
   }
 
+  /**
+   * This method will create pdf card
+   * @param drivers driver
+   */
   public async generateCardPDF(drivers: apiVSessionModel[]) {
     pdfMake.vfs = {
       'Roboto-Regular.ttf': fontsPDF.RobotoRegular,
@@ -2117,7 +2161,7 @@ export class ReportService {
               name: 'Normal',
               run: {
                 font: 'Arial',
-                size: 24, // 12pt font size (1pt = 2 half-points)
+                size: 18, // 12pt font size (1pt = 2 half-points)
               },
             },
           ],
@@ -2127,7 +2171,7 @@ export class ReportService {
             children: [
               new Table({
                 rows: tableRows,
-                width: { size: 100, type: WidthType.PERCENTAGE },
+                width: { size: 80, type: WidthType.PERCENTAGE },
               }),
             ],
           },
@@ -2177,7 +2221,7 @@ export class ReportService {
                   new ImageRun({
                     type: 'png',
                     data: logo, // Your loaded image buffer
-                    transformation: { width: 70, height: 50 },
+                    transformation: { width: 50, height: 40 },
                   }),
                 ],
                 alignment: AlignmentType.CENTER,
@@ -2209,7 +2253,7 @@ export class ReportService {
                   new TextRun({
                     text: `${cardTitle}`,
                     bold: true,
-                    size: 32,
+                    size: 22,
                   }),
                 ],
                 spacing: { before: 200 },
@@ -2239,7 +2283,7 @@ export class ReportService {
                   new ImageRun({
                     type: 'png',
                     data: imageBuffer,
-                    transformation: { width: 70, height: 70 },
+                    transformation: { width: 60, height: 60 },
                     altText: {
                       title: 'QR Code',
                       description: 'Generated QR Code',
@@ -2435,7 +2479,7 @@ export class ReportService {
                   new ImageRun({
                     type: 'jpg',
                     data: dummy, // Your loaded image buffer
-                    transformation: { width: 100, height: 100 },
+                    transformation: { width: 60, height: 60 },
                   }),
                 ],
                 alignment: AlignmentType.CENTER,
@@ -2443,7 +2487,7 @@ export class ReportService {
             ],
             columnSpan: 1,
             rowSpan: 6,
-            width: { size: 1600, type: WidthType.DXA },
+            width: { size: 1000, type: WidthType.DXA },
             verticalAlign: VerticalAlign.CENTER,
           }),
         ],
@@ -2723,7 +2767,7 @@ export class ReportService {
               new Paragraph({
                 children: [
                   new TextRun({
-                    text: `C.N.I.C. #:`,
+                    text: `C.N.I.C.#:`,
                   }),
                 ],
                 //spacing: { before: 90, line: 300 },
@@ -2941,14 +2985,14 @@ export class ReportService {
                   children: [
                     new TextRun({
                       text: `${driver.designation ?? ''}`,
-                      size: 16,
+                      size: 12,
                       color: 'FF0000',
                     }),
                   ],
                 }),
               ],
               columnSpan: 1,
-              width: { size: 1600, type: WidthType.DXA },
+              width: { size: 1000, type: WidthType.DXA },
             }),
           ],
         })
@@ -3003,7 +3047,7 @@ export class ReportService {
       children: [
         new Table({
           width: {
-            size: 80,
+            size: 70,
             type: WidthType.PERCENTAGE, // Ensure table spans the full width
           },
 

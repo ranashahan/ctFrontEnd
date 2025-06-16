@@ -209,6 +209,11 @@ export class UtilitiesService {
     );
   }
 
+  /**
+   * This method will return formatted dd-MMM-YYYY date
+   * @param date string or date
+   * @returns date
+   */
   public formatDatetoddMMMYYYY(date: string | Date): string {
     return this.datePipe.transform(date, 'dd-MMM-yyyy') || '';
   }

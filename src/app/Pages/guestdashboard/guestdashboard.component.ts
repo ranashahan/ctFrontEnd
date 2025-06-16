@@ -4,7 +4,6 @@ import {
   Component,
   inject,
   OnDestroy,
-  OnInit,
   signal,
 } from '@angular/core';
 import {
@@ -54,6 +53,7 @@ export class GuestdashboardComponent implements OnDestroy {
     this.utils.setTitle('Dashboard');
 
     this.formSession = this.fb.group({
+      name: [null],
       sessiondate: [null],
       locationid: [null],
       drivername: [''],
@@ -87,7 +87,7 @@ export class GuestdashboardComponent implements OnDestroy {
       this.assessmentService
         .getSessionbydate(
           this.formSession.value.nic,
-          null,
+          this.formSession.value.name,
           this.formSession.value.sessiondate,
           null,
           this.formSession.value.resultid,

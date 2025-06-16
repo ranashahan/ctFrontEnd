@@ -47,6 +47,8 @@ import {
   ApexFill,
   NgApexchartsModule,
 } from 'ng-apexcharts';
+import { ExceljsService } from '../../Services/exceljs.service';
+import { apiGenericModel } from '../../Models/Generic';
 
 @Component({
   selector: 'app-assessmentsreport',
@@ -71,6 +73,7 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
   private vehicleService = inject(VehicleService);
   private trainerService = inject(TrainerService);
   private excelReport = inject(ExcelreportService);
+  private exceljSReport = inject(ExceljsService);
   @ViewChild('chart') chart!: ChartComponent;
 
   public trendAssessments: {
@@ -714,9 +717,16 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
   public downloadWordReport() {
     if (this.filteredSession().length > 0) {
       this.apiCallInProgress.set(true);
-      this.reportService.generateWordCards(this.filteredSession(), () => {
-        this.apiCallInProgress.set(false); // Stop loading after download
-      });
+      // this.reportService.generateWordCards(this.filteredSession(), () => {
+      //   this.apiCallInProgress.set(false); // Stop loading after download
+      // });
+      this.exceljSReport.exportDriversWithQr(
+        this.filteredSession(),
+        this.formSession.value.sessionname + '_qr',
+        () => {
+          this.apiCallInProgress.set(false); // Stop loading after download
+        }
+      );
     } else {
       this.utils.showToast('Did not find any records', 'warning');
     }
@@ -736,12 +746,13 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * This is generic method for return result name.
-   * @param resultid resultid
-   * @returns resultName
+   * This method for get generic name for list
+   * @param itemIds generic list
+   * @param itemid generic item id
+   * @returns genericName
    */
-  public resultName(resultid: number): string {
-    return this.utils.getGenericName(this.results(), resultid);
+  public genericName(itemIds: apiGenericModel[], itemid: number): string {
+    return this.utils.getGenericName(itemIds, itemid);
   }
 
   /**

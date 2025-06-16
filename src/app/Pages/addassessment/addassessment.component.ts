@@ -289,7 +289,7 @@ export class AddassessmentComponent implements OnInit, OnDestroy {
    * This method will save the assessment into database
    */
   public saveAssessment(): void {
-    console.log(this.assessmentForm.getRawValue());
+    //console.log(this.assessmentForm.getRawValue());
     var driverId = this.driverForm.get('id')?.value;
     var contractorID = this.driverForm.get('contractorid')?.value;
     var vCategories: MasterCategory[] = this.assessmentForm.value.categories;

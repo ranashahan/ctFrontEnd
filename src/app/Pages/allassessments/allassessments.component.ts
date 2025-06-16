@@ -43,6 +43,7 @@ import { AuthService } from '../../Services/auth.service';
 import { SDLinkCellRendererComponent } from '../../Components/sdlink-cell-renderer/sdlink-cell-renderer.component';
 import { SLinkCellRendererComponent } from '../../Components/slink-cell-renderer/slink-cell-renderer.component';
 import { SActionCellRendererComponent } from '../../Components/saction-cell-renderer/saction-cell-renderer.component';
+import { TitleService } from '../../Services/title.service';
 @Component({
   selector: 'app-allassessments',
   imports: [
@@ -71,6 +72,7 @@ export class AllassessmentsComponent implements OnInit, OnDestroy {
   private locationService = inject(LocationService);
   private resultService = inject(ResultService);
   private stageService = inject(StageService);
+  private titleService = inject(TitleService);
   private assessmentService = inject(AssessmentService);
 
   sessions = signal<apiSessionModel[]>([]);
@@ -80,6 +82,7 @@ export class AllassessmentsComponent implements OnInit, OnDestroy {
   locations = this.locationService.locations;
   results = this.resultService.results;
   stages = this.stageService.stages;
+  titles = this.titleService.titles;
   sessionsWithName = this.assessmentService.getSessionsWithNames(this.sessions);
   public themeClass = signal<string>('ag-theme-quartz');
   gridApi!: GridApi;
@@ -187,6 +190,7 @@ export class AllassessmentsComponent implements OnInit, OnDestroy {
   public getLocationName(itemId: number): string {
     return this.utils.getGenericName(this.locations(), itemId);
   }
+
   /**
    * This method will fetch name against number
    * @param itemId item number
@@ -298,6 +302,12 @@ export class AllassessmentsComponent implements OnInit, OnDestroy {
       headerTooltip: 'Stage',
     },
     {
+      headerName: 'Title',
+      field: 'titleName',
+      filter: 'agTextColumnFilter',
+      headerTooltip: 'Title',
+    },
+    {
       headerName: 'Score',
       field: 'totalscore',
       filter: 'agNumberColumnFilter',
@@ -315,6 +325,9 @@ export class AllassessmentsComponent implements OnInit, OnDestroy {
     },
   ];
 
+  /**
+   * This method for default column defination
+   */
   defaultColDef = {
     flex: 1,
     minWidth: 80,
@@ -322,6 +335,9 @@ export class AllassessmentsComponent implements OnInit, OnDestroy {
     resizable: true,
   };
 
+  /**
+   * This method for components.
+   */
   components = {
     sdLinkCellRendererComponent: SDLinkCellRendererComponent,
     slinkCellRendererComponent: SLinkCellRendererComponent,
@@ -371,11 +387,17 @@ export class AllassessmentsComponent implements OnInit, OnDestroy {
     return undefined; // Default style for other rows.
   };
 
+  /**
+   * This method for expireRowStyle
+   */
   private expiredRowStyle: RowStyle = {
     background: '#f8d7da',
     color: '#842029',
   };
 
+  /**
+   * This method for grid options
+   */
   gridOptions = {
     components: this.components,
     context: {

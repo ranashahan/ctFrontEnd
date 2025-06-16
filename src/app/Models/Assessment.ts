@@ -202,6 +202,9 @@ export interface apiSessionModel {
   nic: string;
   drivername: string;
   driverid: number;
+  permitnumber: string;
+  permitissue: Date;
+  permitexpiry: Date;
   trainers: string;
   assessments: DATA[];
 }

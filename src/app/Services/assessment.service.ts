@@ -24,6 +24,7 @@ import {
   Slavecategory,
   SuperCategory,
 } from '../Models/Assessment';
+import { TitleService } from './title.service';
 
 @Injectable({
   providedIn: 'root',
@@ -37,11 +38,13 @@ export class AssessmentService {
   private locationService = inject(LocationService);
   private resultService = inject(ResultService);
   private stageService = inject(StageService);
+  private titleService = inject(TitleService);
 
   private contractors = this.cService.contractors;
   private locations = this.locationService.locations;
   private results = this.resultService.results;
   private stages = this.stageService.stages;
+  private titles = this.titleService.titles;
 
   /**
    * Assessment API call
@@ -299,6 +302,7 @@ export class AssessmentService {
       const locationsValue = this.locations();
       const resultsValue = this.results();
       const stagesValue = this.stages();
+      const titlesValue = this.titles();
 
       const contractorMap = contractorsValue.reduce(
         (map, contractor: apiContractorModel) => {
@@ -326,12 +330,18 @@ export class AssessmentService {
         return map;
       }, {} as Record<number, string>);
 
+      const titleMap = titlesValue.reduce((map, title: apiGenericModel) => {
+        map[title.id] = title.name;
+        return map;
+      }, {} as Record<number, string>);
+
       return sessions.map((session) => ({
         ...session,
         contractorName: contractorMap[session.contractorid] || '',
         locationName: locationMap[session.locationid] || '',
         resultName: resultMap[session.resultid] || '',
         stageName: stageMap[session.stageid] || '',
+        titleName: titleMap[session.titleid] || '',
       }));
     });
   }

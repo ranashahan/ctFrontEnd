@@ -40,10 +40,12 @@ import {
   ApexFill,
   NgApexchartsModule,
 } from 'ng-apexcharts';
+import { DatePipe } from '@angular/common';
+import { apiGenericModel } from '../../Models/Generic';
 
 @Component({
   selector: 'app-trainingsreport',
-  imports: [ReactiveFormsModule, ToastComponent, NgApexchartsModule],
+  imports: [ReactiveFormsModule, ToastComponent, NgApexchartsModule, DatePipe],
   templateUrl: './trainingsreport.component.html',
   styleUrl: './trainingsreport.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -97,6 +99,7 @@ export class TrainingsreportComponent implements OnInit, OnDestroy {
   sources = signal(this.utils.sources());
   formAll: FormGroup;
   formFinance: FormGroup;
+  formFinanceGrid: FormGroup;
   apiCallInProgress = signal<boolean>(false);
   selectedClient = signal<number | null>(null);
   private colors = [
@@ -322,6 +325,15 @@ export class TrainingsreportComponent implements OnInit, OnDestroy {
       month: [null],
       year: [null, Validators.required],
     });
+
+    this.formFinanceGrid = fb.group({
+      month: [null],
+      year: [null],
+      amountreceiveddate: [null],
+      bank: [null],
+      invoicenumber: [null],
+      cheque: [null],
+    });
   }
   /**
    * This method will invoke all the methods while rendering the page
@@ -337,7 +349,8 @@ export class TrainingsreportComponent implements OnInit, OnDestroy {
    */
   public getReportCount() {
     if (this.trainingCount.hasValue()) {
-      var dataSeries = this.getMonthlyTotals(this.trainingCount.value().series);
+      var series = this.trainingCount.value().series;
+      var dataSeries = this.getMonthlyTotals(series);
       this.trendTrainings = {
         series: [
           {
@@ -464,7 +477,7 @@ export class TrainingsreportComponent implements OnInit, OnDestroy {
       };
 
       this.trendTrainingsStacked = {
-        series: this.trainingCount.value().series,
+        series: series,
         chart: {
           type: 'bar',
           height: 350,
@@ -604,12 +617,74 @@ export class TrainingsreportComponent implements OnInit, OnDestroy {
         })
     );
   }
+
+  /**
+   * This method will load finance grid
+   */
+  public loadFinance(): void {
+    this.apiCallInProgress.set(true);
+    this.subscriptionList.push(
+      this.trainingService
+        .getTrainingFinanceReport(
+          this.formFinanceGrid.value.month,
+          this.formFinanceGrid.value.year,
+          this.formFinanceGrid.value.amountreceiveddate,
+          this.formFinanceGrid.value.bank,
+          this.formFinanceGrid.value.invoicenumber,
+          this.formFinanceGrid.value.cheque
+        )
+        .subscribe({
+          next: (data) => {
+            if (!data) {
+              this.utils.showToast(
+                'Did not fetch any record, please update criteria',
+                'warning'
+              );
+              this.apiCallInProgress.set(false);
+            } else {
+              this.trainings.set(data);
+              this.apiCallInProgress.set(false);
+            }
+          },
+          error: (err: any) => {
+            this.utils.showToast(err.message, 'error');
+            this.apiCallInProgress.set(false);
+          },
+        })
+    );
+  }
+
+  /**
+   * This method will return generic name
+   * @param items collections
+   * @param itemId itemid
+   * @returns string collection find.
+   */
+  public genaricName(items: apiGenericModel[], itemId: number): string {
+    return this.utils.getGenericName(items, itemId);
+  }
+
+  /**
+   * This method will get total summery of trainings
+   */
+  public get totalSummary() {
+    const data = this.trainings();
+    return {
+      totalAmount: data.reduce((sum, t) => sum + (t.total || 0), 0),
+      receivedAmount: data.reduce((sum, t) => sum + (t.amountreceived || 0), 0),
+      charges: data.reduce((sum, t) => sum + (t.charges || 0), 0),
+      tax: data.reduce((sum, t) => sum + (t.tax || 0), 0),
+      transportation: data.reduce((sum, t) => sum + (t.transportation || 0), 0),
+    };
+  }
+
   /**
    * This method will reset the form value to blank
    */
   resetForm(): void {
     this.formAll.reset();
     this.formFinance.reset();
+    this.formFinanceGrid.reset();
   }
 
   /**

@@ -95,9 +95,7 @@
         </div>
         <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
           <div class="form-group">
-            <label class="label ms-1 required" for="licensenumber"
-              >License #</label
-            >
+            <label class="label ms-1" for="licensenumber">License #</label>
             <input
               class="form-control form-control-sm"
               id="licensenumber"
@@ -105,17 +103,16 @@
               type="text"
               placeholder="QA-2233"
               formControlName="licensenumber"
-              required
             />
           </div>
-          @if (licensenumber?.invalid && (licensenumber?.dirty ||
+          <!-- @if (licensenumber?.invalid && (licensenumber?.dirty ||
           licensenumber?.touched)) {
           <div class="text-danger">
             @if (licensenumber?.errors?.['required']) {
             <small>Driver license number is required</small>
             }
           </div>
-          }
+          } -->
         </div>
         <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
           <label class="label ms-1" for="licensetypeid">License Type</label>
@@ -204,6 +201,20 @@
           />
         </div>
         <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
+          <label class="label ms-1" for="Client">Clients</label>
+          <select
+            class="form-select form-select-sm"
+            id="Client"
+            data-testid="adfClient"
+            formControlName="clientid"
+          >
+            <option disabled value="null">-----Select-----</option>
+            @for (item of clients(); track $index) {
+            <option [value]="item.id">{{ item.name }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
           <label class="label ms-1" for="contractor">Contractors</label>
           <select
             class="form-select form-select-sm"
@@ -212,7 +223,7 @@
             formControlName="contractorid"
           >
             <option disabled value="null">-----Select-----</option>
-            @for (item of contractors(); track $index) {
+            @for (item of filteredContractors(); track $index) {
             <option [value]="item.id">{{ item.name }}</option>
             }
           </select>
@@ -318,7 +329,7 @@
             formControlName="code"
           />
         </div>
-        <div class="col-lg-9 col-md-8 col-sm-12 mt-2">
+        <div class="col-lg-6 col-md-8 col-sm-12 mt-2">
           <label class="label ms-1" for="comment">Comments</label>
           <textarea
             class="form-control form-control-sm"

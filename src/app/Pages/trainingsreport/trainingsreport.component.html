@@ -59,14 +59,14 @@
   </div>
   <hr />
   <div class="row">
-    <div class="col-lg-12 col-md-12 col-sm-12">
+    <div class="col-12">
       <div class="card mb-4">
         <div class="card-body bg-primary bg-opacity-50">
           <h5 class="card-title">Training Report All</h5>
           <form [formGroup]="formAll">
-            <div class="row my-2">
+            <div class="row">
               <div class="col-auto">
-                <div class="form-floating mb-3">
+                <div class="form-floating mb-2">
                   <input
                     type="date"
                     class="form-control form-control-sm border border-primary border-3"
@@ -77,7 +77,7 @@
                 </div>
               </div>
               <div class="col-auto">
-                <div class="form-floating">
+                <div class="form-floating mb-2">
                   <input
                     type="date"
                     class="form-control form-control-sm border border-primary border-3"
@@ -88,7 +88,7 @@
                 </div>
               </div>
               <div class="col-auto">
-                <div class="form-floating">
+                <div class="form-floating mb-2">
                   <select
                     class="form-select form-select-sm border border-primary border-3"
                     id="floatingAllSelectcourse"
@@ -103,7 +103,7 @@
                 </div>
               </div>
               <div class="col-auto">
-                <div class="form-floating">
+                <div class="form-floating mb-2">
                   <select
                     class="form-select form-select-sm border border-primary border-3"
                     id="floatingAllSelectcategory"
@@ -118,7 +118,7 @@
                 </div>
               </div>
               <div class="col-auto">
-                <div class="form-floating">
+                <div class="form-floating mb-2">
                   <select
                     class="form-select form-select-sm border border-primary border-3"
                     id="floatingAllSelectTitle"
@@ -133,7 +133,7 @@
                 </div>
               </div>
               <div class="col-auto">
-                <div class="form-floating">
+                <div class="form-floating mb-2">
                   <select
                     class="form-select form-select-sm border border-primary border-3"
                     id="floatingAllSelectLocation"
@@ -148,7 +148,7 @@
                 </div>
               </div>
               <div class="col-auto">
-                <div class="form-floating">
+                <div class="form-floating mb-2">
                   <select
                     class="form-select form-select-sm border border-primary border-3"
                     id="floatingAllSelectSources"
@@ -163,7 +163,7 @@
                 </div>
               </div>
               <div class="col-auto">
-                <div class="form-floating">
+                <div class="form-floating mb-2">
                   <select
                     class="form-select form-select-sm border border-primary border-3"
                     id="floatingAllSelectStatus"
@@ -178,7 +178,7 @@
                 </div>
               </div>
               <div class="col-auto">
-                <div class="form-floating">
+                <div class="form-floating mb-2">
                   <select
                     class="form-select form-select-sm border border-primary border-3"
                     id="floatingAllSelectClient"
@@ -192,9 +192,8 @@
                   <label for="floatingAllSelectClient">Sponsor</label>
                 </div>
               </div>
-
               <div class="col-auto">
-                <div class="form-floating">
+                <div class="form-floating mb-2">
                   <select
                     class="form-select form-select-sm border border-primary border-3"
                     id="floatingSelectContractor"
@@ -209,7 +208,7 @@
                 </div>
               </div>
               <div class="col-auto">
-                <div class="form-floating">
+                <div class="form-floating mb-2">
                   <select
                     class="form-select form-select-sm border border-primary border-3"
                     id="floatingSelectTrainer"
@@ -258,15 +257,15 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-lg-3 col-md-6 col-sm-12">
+    <div class="col-lg-6 col-md-6 col-sm-12">
       <form [formGroup]="formFinance">
         <div class="card mb-4">
           <div class="card-body bg-primary bg-opacity-50">
             <h5 class="card-title">Financial Report By Month</h5>
             <div class="card-text">
-              <div class="row g-3 align-items-center">
+              <div class="row">
                 <div class="col-auto">
-                  <div class="form-floating">
+                  <div class="form-floating mb-2">
                     <select
                       class="form-select form-select-sm border border-primary border-3"
                       id="floatingAllSelectmonth"
@@ -281,7 +280,7 @@
                   </div>
                 </div>
                 <div class="col-auto">
-                  <div class="form-floating">
+                  <div class="form-floating mb-2">
                     <select
                       class="form-select form-select-sm border border-primary border-3"
                       id="floatingAllSelectyear"
@@ -292,29 +291,41 @@
                       <option [value]="item">{{ item }}</option>
                       }
                     </select>
-                    <label for="floatingAllSelectyear">Year</label>
+                    <label for="floatingAllSelectyear"
+                      ><span class="text-danger">*</span> Year</label
+                    >
                   </div>
                 </div>
               </div>
+              <div class="col-auto">
+                @if (apiCallInProgress()) {
+                <button class="btn btn-primary" type="button" disabled>
+                  <span
+                    class="spinner-grow spinner-grow-sm"
+                    aria-hidden="true"
+                  ></span>
+                  <span role="status"> Loading...</span>
+                </button>
+                }@else {
+                <button
+                  class="btn btn-primary"
+                  type="submit"
+                  title="Export Financial Report"
+                  (click)="exportFinance()"
+                  [disabled]="formFinance.invalid"
+                >
+                  <i class="fa-solid fa-file-excel"></i> Export
+                </button>
+                <button
+                  class="btn btn-secondary ms-1"
+                  (click)="resetForm()"
+                  title="Reset Filter"
+                >
+                  <i class="fa-solid fa-broom"></i> Reset
+                </button>
+                }
+              </div>
             </div>
-            <p class="card-text mt-1">
-              <button
-                class="btn btn-primary"
-                type="submit"
-                title="Export Financial Report"
-                (click)="exportFinance()"
-                [disabled]="formFinance.invalid"
-              >
-                <i class="fa-solid fa-file-excel"></i> Export
-              </button>
-              <button
-                class="btn btn-secondary ms-1"
-                (click)="resetForm()"
-                title="Reset Filter"
-              >
-                <i class="fa-solid fa-broom"></i> Reset
-              </button>
-            </p>
           </div>
         </div>
       </form>
@@ -323,37 +334,19 @@
       <div class="card mb-4">
         <div class="card-body bg-primary bg-opacity-50">
           <h5 class="card-title">Training Report</h5>
-          <p class="card-text">
-            <select
-              class="form-select form-select-sm border border-primary border-3"
-              id="driverexpiry2"
-            >
-              <option selected>-----Select-----</option>
-            </select>
-          </p>
-          <p class="card-text">
-            <button class="btn btn-primary" title="Export">
-              <i class="fa-solid fa-file-excel"></i> Export
-            </button>
-            <button class="btn btn-secondary ms-1" title="Reset Filter">
-              <i class="fa-solid fa-broom"></i> Reset
-            </button>
-          </p>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-3 col-md-6 col-sm-12">
-      <div class="card mb-4">
-        <div class="card-body bg-primary bg-opacity-50">
-          <h5 class="card-title">Training Report</h5>
-          <p class="card-text">
-            <select
-              class="form-select form-select-sm border border-primary border-3"
-              id="driverexpiry3"
-            >
-              <option selected>-----Select-----</option>
-            </select>
-          </p>
+          <div class="row">
+            <div class="col-auto">
+              <div class="form-floating mb-2">
+                <select
+                  class="form-select form-select-sm border border-primary border-3"
+                  id="floatingDummy1"
+                >
+                  <option value="null">-----Select-----</option>
+                </select>
+                <label for="floatingDummy1">ToBeDecided</label>
+              </div>
+            </div>
+          </div>
           <p class="card-text">
             <button class="btn btn-primary" title="Export">
               <i class="fa-solid fa-file-excel"></i> Export
@@ -369,17 +362,21 @@
       <div class="card mb-4">
         <div class="card-body bg-primary bg-opacity-50">
           <h5 class="card-title">Training Report</h5>
+          <div class="row">
+            <div class="col-auto">
+              <div class="form-floating mb-2">
+                <select
+                  class="form-select form-select-sm border border-primary border-3"
+                  id="floatingDummy2"
+                >
+                  <option value="null">-----Select-----</option>
+                </select>
+                <label for="floatingDummy2">ToBeDecided</label>
+              </div>
+            </div>
+          </div>
           <p class="card-text">
-            <select
-              class="form-select form-select-sm border border-primary border-3"
-              id="driverexpiry4"
-            >
-              <option selected>-----Select-----</option>
-              <option value="To be built">To be built</option>
-            </select>
-          </p>
-          <p class="card-text">
-            <button class="btn btn-primary" title="Export ">
+            <button class="btn btn-primary" title="Export">
               <i class="fa-solid fa-file-excel"></i> Export
             </button>
             <button class="btn btn-secondary ms-1" title="Reset Filter">
@@ -389,6 +386,198 @@
         </div>
       </div>
     </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <div class="card mb-4">
+        <div class="card-body bg-primary bg-opacity-50">
+          <h5 class="card-title">Financial Grid</h5>
+          <form [formGroup]="formFinanceGrid">
+            <div class="row">
+              <div class="col-auto">
+                <div class="form-floating mb-2">
+                  <input
+                    type="date"
+                    class="form-control form-control-sm border border-primary border-3"
+                    id="floatingreceived"
+                    formControlName="amountreceiveddate"
+                  />
+                  <label for="floatingreceived">Received Date</label>
+                </div>
+              </div>
+              <div class="col-auto">
+                <div class="form-floating mb-2">
+                  <input
+                    type="search"
+                    class="form-control border border-primary border-3"
+                    id="floatingBank"
+                    placeholder="Meezan"
+                    formControlName="bank"
+                  />
+                  <label for="floatingBank">Bank Name</label>
+                </div>
+              </div>
+              <div class="col-auto">
+                <div class="form-floating mb-2">
+                  <input
+                    type="search"
+                    class="form-control border border-primary border-3"
+                    id="floatingInvoice"
+                    placeholder="0103-25-3687"
+                    formControlName="invoicenumber"
+                  />
+
+                  <label for="floatingInvoice">Invoice #</label>
+                </div>
+              </div>
+              <div class="col-auto">
+                <div class="form-floating mb-2">
+                  <input
+                    type="search"
+                    class="form-control border border-primary border-3"
+                    id="floatingCheque"
+                    placeholder="35337071"
+                    formControlName="cheque"
+                  />
+                  <label for="floatingCheque">Cheque #</label>
+                </div>
+              </div>
+              <!-- <div class="col-auto">
+                <div class="form-floating mb-2">
+                  <select
+                    class="form-select form-select-sm border border-primary border-3"
+                    id="floatingyear"
+                    formControlName="year"
+                  >
+                    <option disabled value="null">-----Select-----</option>
+                    @for (item of years(); track $index) {
+                    <option [value]="item">{{ item }}</option>
+                    }
+                  </select>
+                  <label for="floatingyear"
+                    ><span class="text-danger">*</span> Year</label
+                  >
+                </div>
+              </div> -->
+              <div class="col-auto">
+                <button
+                  class="btn btn-primary"
+                  title="Load Grid"
+                  type="submit"
+                  (click)="loadFinance()"
+                  [disabled]="!formFinanceGrid.dirty"
+                >
+                  <i class="fa-solid fa-table-cells-column-lock"></i> Load Grid
+                </button>
+                <button
+                  class="btn btn-secondary ms-1"
+                  title="Reset Filter"
+                  (click)="resetForm()"
+                >
+                  <i class="fa-solid fa-broom"></i> Reset
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-hover table-bordered fs-7" id="training-table">
+      <thead class="table-primary">
+        <tr>
+          <th>#</th>
+          <th>Plan Date</th>
+          <th>Name</th>
+          <th>Sponsor</th>
+          <th>Contractor</th>
+          <th>Charged Amount</th>
+          <th>Tranportation</th>
+          <th>Tax</th>
+          <th>Total Amount</th>
+          <th>Received Amount</th>
+          <th>Received Date</th>
+          <th>Invoice</th>
+          <th>InvoiceDate</th>
+          <th>BankName</th>
+          <th>Cheque</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of trainings(); track $index) {
+        <tr>
+          <td>
+            <div>
+              {{ $index + 1 }}
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ item.plandate | date }}
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ item.name }}
+            </div>
+          </td>
+          <td>
+            {{ genaricName(clients(), item.clientid) }}
+          </td>
+          <td>
+            {{ genaricName(contractors(), item.contractorid) }}
+          </td>
+          <td>
+            {{ item.charges }}
+          </td>
+          <td>
+            {{ item.transportation }}
+          </td>
+          <td>
+            {{ item.tax }}
+          </td>
+          <td>
+            {{ item.total }}
+          </td>
+          <td>
+            {{ item.amountreceived }}
+          </td>
+          <td>
+            {{ item.amountreceiveddate | date }}
+          </td>
+          <td>{{ item.invoicenumber }}</td>
+          <td>
+            {{ item.invoicedate | date }}
+          </td>
+          <td>
+            {{ item.bank }}
+          </td>
+          <td>
+            {{ item.cheque }}
+          </td>
+        </tr>
+        }@empty {
+        <tr>
+          <p>Please update your search criteria for items to be displayed</p>
+        </tr>
+        }
+        <tr class="fw-bold">
+          <td colspan="1">Total</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td>{{ totalSummary.charges }}</td>
+          <td>{{ totalSummary.transportation }}</td>
+          <td>{{ totalSummary.tax }}</td>
+          <td>{{ totalSummary.totalAmount }}</td>
+          <td>{{ totalSummary.receivedAmount }}</td>
+          <!-- <td>{{ totalSummary.tax }}</td> -->
+        </tr>
+      </tbody>
+    </table>
   </div>
   <hr />
 </div>

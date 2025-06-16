@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
+  inject,
   Input,
   OnDestroy,
   Output,
@@ -15,11 +16,11 @@ import {
 } from '@angular/forms';
 import { apiSessionModel } from '../../Models/Assessment';
 import { Subscription } from 'rxjs';
-
 import { AssessmentService } from '../../Services/assessment.service';
 import { DatePipe } from '@angular/common';
 import { UtilitiesService } from '../../Services/utilities.service';
 import { ToastComponent } from '../toast/toast.component';
+import { ContractorService } from '../../Services/contractor.service';
 declare var bootstrap: any;
 @Component({
   selector: 'app-sessionsearch',
@@ -60,6 +61,9 @@ export class SessionsearchComponent implements OnDestroy {
    */
   selectAll: boolean = false;
 
+  private cService = inject(ContractorService);
+  contractors = this.cService.contractors;
+
   /**
    * Constructor
    * @param fb form builder
@@ -81,16 +85,26 @@ export class SessionsearchComponent implements OnDestroy {
    */
   searchSessions(): void {
     const searchCriteria = this.searchForm.value.name;
-    this.subscriptionList.push(
-      this.assessmentService
-        .getSessionbydate(null, searchCriteria)
-        .subscribe((data: any) => {
-          this.sessions.set(data);
-          //console.log(this.sessions());
-        })
-    );
+    if (searchCriteria) {
+      this.subscriptionList.push(
+        this.assessmentService
+          .getSessionbydate(null, searchCriteria)
+          .subscribe((data: any) => {
+            this.sessions.set(data);
+          })
+      );
+    } else {
+      this.utils.showToast(`Please insert session name first`, 'warning');
+    }
   }
-
+  /**
+   * This method will set contractor name against contractor ID
+   * @param itemId contractor ID
+   * @returns string contractor name
+   */
+  getContractorName(itemId: number): string {
+    return this.utils.getGenericName(this.contractors(), itemId);
+  }
   /**
    * This method will toggle selection
    * @param session session
@@ -148,7 +162,10 @@ export class SessionsearchComponent implements OnDestroy {
         this.assessmentService.createSessoinTraining(payload).subscribe({
           next: (res: any) => {
             //console.log(res.message);
-            this.utils.showToast('saved successfully', 'success');
+            this.utils.showToast(
+              'Sessions have been added with training successfully',
+              'success'
+            );
             this.close();
           },
           error: (err: any) => {
