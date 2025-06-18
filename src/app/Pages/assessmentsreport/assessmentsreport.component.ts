@@ -100,7 +100,10 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
 
   session = signal<apiVSessionModel[]>([]);
   filteredSession = computed(
-    () => this.session()?.filter((s) => s.resultid === 7001) || []
+    () =>
+      this.session()?.filter(
+        (s) => s.resultid === 7001 || s.resultid === 7006
+      ) || []
   );
   contractors = this.cService.contractors;
   clients = this.clientService.clients;

@@ -157,7 +157,7 @@ export class TrainingService {
   ): Observable<apiTrainingModel[]> {
     let params = new HttpParams();
     if (name) {
-      params = params.set('name', name);
+      params = params.set('name', name.trimEnd());
     }
     if (plandate) {
       params = params.set('plandate', plandate);
@@ -175,10 +175,10 @@ export class TrainingService {
       params = params.set('contractorid', contractorid);
     }
     if (invoicenumber) {
-      params = params.set('invoicenumber', invoicenumber);
+      params = params.set('invoicenumber', invoicenumber.trimEnd());
     }
     if (cheque) {
-      params = params.set('cheque', cheque);
+      params = params.set('cheque', cheque.trimEnd());
     }
     if (startDate) {
       params = params.set('startDate', startDate);
@@ -573,7 +573,7 @@ export class TrainingService {
       params = params.set('bank', bank.trimEnd());
     }
     if (invoicenumber) {
-      params = params.set('invoicenumber', invoicenumber.trim());
+      params = params.set('invoicenumber', invoicenumber.trimEnd());
     }
     if (cheque) {
       params = params.set('cheque', cheque.trimEnd());
