@@ -114,26 +114,78 @@ export class ReportService {
           text2: string,
           text3: string,
           text4: string,
-          text5: string;
+          text5: string,
+          text6: string;
         console.log(session.titleid);
         switch (session.titleid) {
-          case 9008:
-            text1 = 'Basic';
-            text2 = 'Fire Fighting';
-            text3 = 'Course';
-            text4 = ' ';
-            break;
-          case 9007:
-            text1 = 'Standard';
-            text2 = 'First Aid';
-            text3 = 'Course';
-            text4 = ' ';
-            break;
           case 9006:
-            text1 = 'Basic Fire Fighting';
+            text1 = 'Basic Fire Fighting Course';
             text2 = '&';
             text3 = 'Standard First Aid Course';
             text4 = ' ';
+            text6 = 'successfully completed';
+            break;
+          case 9007:
+            text1 = 'Standard First Aid Course';
+            text2 = '&';
+            text3 = 'Skill Assessment';
+            text4 = ' ';
+            text6 = 'successfully completed';
+            break;
+          case 9008:
+            text1 = 'Basic Fire Fighting Course';
+            text2 = '&';
+            text3 = 'Skill Assessment';
+            text4 = ' ';
+            text6 = 'successfully completed';
+            break;
+          case 9010:
+            text1 = 'Fork Lift Operator Training Course';
+            text2 = '&';
+            text3 = 'Skill Assessment';
+            text4 = `for ${this.utils.getGenericName(
+              this.vehicles(),
+              session.vehicleid
+            )} driver`;
+            text6 = 'successfully completed';
+            break;
+          case 9011:
+            text1 = 'Crane Operator Training Course';
+            text2 = '&';
+            text3 = 'Skill Assessment';
+            text4 = `for ${this.utils.getGenericName(
+              this.vehicles(),
+              session.vehicleid
+            )} driver`;
+            text6 = 'successfully completed';
+            break;
+          case 9012:
+            text1 = 'Awareness Course';
+            text2 = 'OF';
+            text3 = 'Defensive Driving';
+            text4 = ' ';
+            text6 = 'participated in';
+            break;
+          case 9013:
+            text1 = 'Awareness Course';
+            text2 = 'OF';
+            text3 = 'Fire Fighting';
+            text4 = ' ';
+            text6 = 'participated in';
+            break;
+          case 9014:
+            text1 = 'Awareness Course';
+            text2 = 'OF';
+            text3 = 'First Aid';
+            text4 = ' ';
+            text6 = 'participated in';
+            break;
+          case 9015:
+            text1 = 'Awareness Course';
+            text2 = 'OF';
+            text3 = 'Load Securing';
+            text4 = ' ';
+            text6 = 'participated in';
             break;
           default:
             (text1 = 'Defensive Driving Course'),
@@ -143,6 +195,7 @@ export class ReportService {
                 this.vehicles(),
                 session.vehicleid
               )} driver`);
+            text6 = 'successfully completed';
             break;
         }
         switch (session.formid) {
@@ -197,7 +250,7 @@ export class ReportService {
             margin: [0, 10, 0, 0],
           },
           {
-            text: 'successfully completed',
+            text: text6,
             style: 'subheader',
             alignment: 'center',
             margin: [0, 10, 0, 0],
@@ -1639,7 +1692,7 @@ export class ReportService {
                     children: [
                       new Paragraph({
                         children: [
-                          driver.resultid === 7001
+                          driver.resultid === 7001 || driver.resultid === 7006
                             ? new TextRun({
                                 text: `${this.utils.getGenericDescription(
                                   this.results(),
@@ -1656,7 +1709,7 @@ export class ReportService {
                                 size: 20,
                                 color: '#FF0000',
                               }),
-                          driver.resultid === 7001
+                          driver.resultid === 7001 || driver.resultid === 7006
                             ? new SymbolRun('F0FE') // ✅ Show 'F0FE' symbol when resultid is 7001
                             : new TextRun({ text: 'x', size: 20 }),
                         ],
