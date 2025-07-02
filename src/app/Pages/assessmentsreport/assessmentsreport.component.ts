@@ -9,7 +9,7 @@ import {
   signal,
   ViewChild,
 } from '@angular/core';
-import { apiVSessionModel, Series } from '../../Models/Assessment';
+import { apiVSessionModel } from '../../Models/Assessment';
 import {
   FormBuilder,
   FormGroup,
@@ -76,6 +76,9 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
   private exceljSReport = inject(ExceljsService);
   @ViewChild('chart') chart!: ChartComponent;
 
+  /**
+   * This method will render chart
+   */
   public trendAssessments: {
     series: ApexAxisChartSeries;
     chart: ApexChart;
@@ -86,7 +89,9 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
     fill: ApexFill;
     title: ApexTitleSubtitle;
   };
-
+  /**
+   * This method will render chart
+   */
   public trendAssessmentsStacked: {
     series: ApexAxisChartSeries;
     chart: ApexChart;
@@ -96,6 +101,7 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
     xaxis: ApexXAxis;
     legend: ApexLegend;
     fill: ApexFill;
+    colors: string[];
   };
 
   session = signal<apiVSessionModel[]>([]);
@@ -116,6 +122,17 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
   titles = this.titleService.titles;
   vehicles = this.vehicleService.vehicles;
   trainers = this.trainerService.trainers;
+  private colors = [
+    '#008FFB', // Blue
+    '#00E396', // green
+    '#FEB019', // yellow
+    '#FF4560', // pink
+    '#775DD0', // purple
+    '#608078', // gray
+    '#d68156', // orange
+    '#08a112', // Green
+  ];
+
   assessmentCount = this.assessmentService.assessmentsCountReport;
 
   apiCallInProgress = signal<boolean>(false);
@@ -175,6 +192,7 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
           enabled: true,
         },
       },
+      colors: this.colors,
       responsive: [
         {
           breakpoint: 480,
@@ -207,8 +225,8 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
         ],
       },
       legend: {
-        position: 'right',
-        offsetY: 40,
+        position: 'top',
+        offsetY: 10,
       },
       fill: {
         opacity: 1,
@@ -374,6 +392,7 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
    */
   public getReportCount() {
     if (this.assessmentCount.hasValue()) {
+      var series = this.assessmentCount.value().series;
       var dataSeries = this.getMonthlyTotals(
         this.assessmentCount.value().series
       );
@@ -503,7 +522,7 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
       };
 
       this.trendAssessmentsStacked = {
-        series: this.assessmentCount.value().series,
+        series: series,
         chart: {
           type: 'bar',
           height: 350,
@@ -515,6 +534,7 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
             enabled: true,
           },
         },
+        colors: this.colors,
         responsive: [
           {
             breakpoint: 480,
@@ -540,8 +560,8 @@ export class AssessmentsreportComponent implements OnInit, OnDestroy {
           categories: this.assessmentCount.value().categories,
         },
         legend: {
-          position: 'right',
-          offsetY: 40,
+          position: 'top',
+          offsetY: 10,
         },
         fill: {
           opacity: 1,

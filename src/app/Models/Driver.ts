@@ -3,6 +3,7 @@ export interface apiDriverModel {
   name: string;
   gender: string;
   dob: string;
+  mobile: string;
   age: number;
   nic: string;
   nicexpiry: Date;

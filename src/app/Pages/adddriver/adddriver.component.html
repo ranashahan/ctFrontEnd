@@ -25,7 +25,7 @@
         <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
           <div class="form-group">
             <label class="label ms-1 required" for="drivername"
-              >Driver Name</label
+              >Full Name</label
             >
             <input
               class="form-control form-control-sm"
@@ -189,6 +189,18 @@
         </div>
 
         <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
+          <label class="label ms-1" for="formmobile">Mobile #</label>
+          <input
+            class="form-control form-control-sm"
+            min="0"
+            id="formmobile"
+            data-testid="adfMobile"
+            type="tel"
+            placeholder="0000-0000000"
+            formControlName="mobile"
+          />
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-12 mt-2">
           <label class="label ms-1" for="formcount">DDC Count</label>
           <input
             class="form-control form-control-sm"
@@ -329,7 +341,7 @@
             formControlName="code"
           />
         </div>
-        <div class="col-lg-6 col-md-8 col-sm-12 mt-2">
+        <div class="col-lg-12 col-md-12 col-sm-12 mt-2">
           <label class="label ms-1" for="comment">Comments</label>
           <textarea
             class="form-control form-control-sm"

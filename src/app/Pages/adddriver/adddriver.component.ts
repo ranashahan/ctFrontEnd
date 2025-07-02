@@ -74,6 +74,7 @@ export class AdddriverComponent implements OnInit, OnDestroy {
       name: ['', Validators.required],
       gender: [null],
       dob: [null],
+      mobile: [null],
       nic: [
         '',
         [
@@ -156,6 +157,7 @@ export class AdddriverComponent implements OnInit, OnDestroy {
           this.formDriver.value.name,
           this.formDriver.value.gender,
           this.formDriver.value.dob,
+          this.formDriver.value.mobile,
           this.formDriver.value.nic,
           this.formDriver.value.nicexpiry,
           this.formDriver.value.licensenumber,

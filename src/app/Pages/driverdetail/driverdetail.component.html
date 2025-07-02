@@ -215,21 +215,7 @@
                 placeholder="mm/dd/yyyy"
               />
             </div>
-            <label
-              for="ddesignation"
-              class="col-sm-1 col-form-label text-success"
-              >Designation:</label
-            >
-            <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
-              <input
-                id="ddesignation"
-                type="text"
-                name="ddesignation"
-                placeholder="Safety Manager"
-                class="form-control form-control-sm"
-                formControlName="designation"
-              />
-            </div>
+
             <label for="licensenumber" class="col-sm-1 col-form-label"
               >License #:</label
             >
@@ -364,6 +350,19 @@
                 formControlName="medicalexpiry"
               />
             </div>
+            <label for="mobile" class="col-sm-1 col-form-label"
+              >Mobile #:</label
+            >
+            <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+              <input
+                id="mobile"
+                type="tel"
+                name="mobile"
+                class="form-control form-control-sm"
+                placeholder="0000-0000000"
+                formControlName="mobile"
+              />
+            </div>
             <label for="bloodgroup" class="col-sm-1 col-form-label"
               >Blood Group:</label
             >
@@ -387,6 +386,31 @@
                 [value]="
                   getBloodGroupName(driverForm.get('bloodgroupid')?.value)
                 "
+                disabled
+              />
+              }
+            </div>
+            <label for="visualid" class="col-sm-1 col-form-label"
+              >Visual Test:</label
+            >
+            <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+              @if (isEdit) {
+              <select
+                class="form-select form-select-sm"
+                id="visualid"
+                formControlName="visualid"
+              >
+                <option disabled selected value="null">-----Select-----</option>
+                @for (item of visuals(); track $index) {
+                <option [value]="item.id">{{ item.name }}</option>
+                }
+              </select>
+              }@else {
+              <input
+                class="form-control form-control-sm"
+                id="visualid"
+                placeholder="-----Select-----"
+                [value]="getVisualName(driverForm.get('visualid')?.value)"
                 disabled
               />
               }
@@ -441,31 +465,7 @@
               />
               }
             </div>
-            <label for="visualid" class="col-sm-1 col-form-label"
-              >Visual Test:</label
-            >
-            <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
-              @if (isEdit) {
-              <select
-                class="form-select form-select-sm"
-                id="visualid"
-                formControlName="visualid"
-              >
-                <option disabled selected value="null">-----Select-----</option>
-                @for (item of visuals(); track $index) {
-                <option [value]="item.id">{{ item.name }}</option>
-                }
-              </select>
-              }@else {
-              <input
-                class="form-control form-control-sm"
-                id="visualid"
-                placeholder="-----Select-----"
-                [value]="getVisualName(driverForm.get('visualid')?.value)"
-                disabled
-              />
-              }
-            </div>
+
             <label for="ddccount" class="col-sm-1 col-form-label"
               >DDC Count:</label
             >
@@ -478,6 +478,21 @@
                 placeholder="1"
                 class="form-control form-control-sm"
                 formControlName="ddccount"
+              />
+            </div>
+            <label
+              for="ddesignation"
+              class="col-sm-1 col-form-label text-success"
+              >Designation:</label
+            >
+            <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+              <input
+                id="ddesignation"
+                type="text"
+                name="ddesignation"
+                placeholder="Safety Manager"
+                class="form-control form-control-sm"
+                formControlName="designation"
               />
             </div>
             <label for="experience" class="col-sm-1 col-form-label"
@@ -523,7 +538,7 @@
             <label for="comment" class="col-sm-1 col-form-label"
               >Comment:</label
             >
-            <div class="col-lg-3 col-md-5 col-sm-11 mt-2">
+            <div class="col-lg-11 col-md-11 col-sm-11 mt-2">
               <textarea
                 id="comment"
                 name="comment"

@@ -177,6 +177,8 @@ export class DriverService {
    * @param name name
    * @param gender gender
    * @param dob date of birth
+   * @param mobile mobile
+   * @param licenseverified verification
    * @param nic nic
    * @param nicexpiry nic expiry
    * @param licensenumber license number
@@ -184,6 +186,7 @@ export class DriverService {
    * @param licenseexpiry expiry
    * @param designation designation
    * @param department department
+   * @param permitnumber permit number
    * @param permitissue permit issue date
    * @param permitexpiry permit expiry date
    * @param medicalexpiry medical expiry date
@@ -201,6 +204,7 @@ export class DriverService {
     name: string,
     gender: string,
     dob: string,
+    mobile: string,
     nic: string,
     nicexpiry: Date,
     licensenumber: string,
@@ -225,6 +229,7 @@ export class DriverService {
       name,
       gender,
       dob,
+      mobile,
       nic,
       nicexpiry,
       licensenumber,
@@ -253,6 +258,7 @@ export class DriverService {
    * @param name name
    * @param gender driver gender
    * @param dob date of birth
+   * @param mobile mobile
    * @param nic nic
    * @param nicexpiry nic expiry
    * @param licensenumber license number
@@ -278,6 +284,7 @@ export class DriverService {
     name: string,
     gender: string,
     dob: string,
+    mobile: string,
     nic: string,
     nicexpiry: Date,
     licensenumber: string,
@@ -302,6 +309,7 @@ export class DriverService {
       name,
       gender,
       dob,
+      mobile,
       nic,
       nicexpiry,
       licensenumber,
