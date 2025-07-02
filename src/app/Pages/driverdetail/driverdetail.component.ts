@@ -108,6 +108,7 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
       name: [{ value: '', disabled: !this.isEdit }, Validators.required],
       gender: [{ value: null, disabled: !this.isEdit }],
       dob: [{ value: null, disabled: !this.isEdit }],
+      mobile: [{ value: null, disabled: !this.isEdit }],
       age: [{ value: '', disabled: !this.isEdit }],
       nic: [
         { value: '', disabled: true },
@@ -338,6 +339,7 @@ export class DriverdetailComponent implements OnInit, OnDestroy {
             updatedDriver.name,
             updatedDriver.gender,
             updatedDriver.dob,
+            updatedDriver.mobile,
             updatedDriver.nic,
             updatedDriver.nicexpiry,
             updatedDriver.licensenumber,

@@ -1622,6 +1622,102 @@ export class ReportService {
                       new Paragraph({
                         children: [
                           new TextRun({
+                            text: `Vehicle:`,
+                            bold: true,
+                            size: 20,
+                          }),
+                        ],
+                      }),
+                    ],
+                    borders: {
+                      right: {
+                        style: BorderStyle.NONE,
+                        size: 0,
+                        color: 'FFFFFF',
+                      },
+                    },
+                  }),
+                  new TableCell({
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new TextRun({
+                            text: `${this.utils.getGenericName(
+                              this.vehicles(),
+                              driver.vehicleid
+                            )}`,
+                            size: 20,
+                          }),
+                        ],
+                      }),
+                    ],
+                    borders: {
+                      left: {
+                        style: BorderStyle.NONE,
+                        size: 0,
+                        color: 'FFFFFF',
+                      },
+                      right: {
+                        style: BorderStyle.NONE,
+                        size: 0,
+                        color: 'FFFFFF',
+                      },
+                    },
+                  }),
+                  new TableCell({
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new TextRun({
+                            text: `Quiz Score:`,
+                            bold: true,
+                            size: 20,
+                          }),
+                        ],
+                      }),
+                    ],
+                    borders: {
+                      left: {
+                        style: BorderStyle.NONE,
+                        size: 0,
+                        color: 'FFFFFF',
+                      },
+                      right: {
+                        style: BorderStyle.NONE,
+                        size: 0,
+                        color: 'FFFFFF',
+                      },
+                    },
+                  }),
+                  new TableCell({
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new TextRun({
+                            text: `${driver.quizscore ?? 0}`,
+
+                            size: 20,
+                          }),
+                        ],
+                      }),
+                    ],
+                    borders: {
+                      left: {
+                        style: BorderStyle.NONE,
+                        size: 0,
+                        color: 'FFFFFF',
+                      },
+                    },
+                  }),
+                ],
+              }),
+              new TableRow({
+                children: [
+                  new TableCell({
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new TextRun({
                             text: `Risk Rating:`,
                             bold: true,
                             size: 20,

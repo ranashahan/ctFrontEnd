@@ -109,7 +109,7 @@ export class TrainingsreportComponent implements OnInit, OnDestroy {
     '#FF4560', // pink
     '#775DD0', // purple
     '#608078', // gray
-    '#d68156', // Gray
+    '#d68156', // orange
     '#08a112', // Green
   ];
   years = signal(this.utils.years());
