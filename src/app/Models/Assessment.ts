@@ -198,6 +198,7 @@ export interface apiSessionModel {
   created_at: string;
   modified_at: string;
   contractorid: number;
+  trainerid: number;
   message: string;
   nic: string;
   drivername: string;

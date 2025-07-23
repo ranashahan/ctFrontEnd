@@ -284,6 +284,15 @@ export class AllassessmentsComponent implements OnInit, OnDestroy {
       headerTooltip: 'Session Contractor',
     },
     {
+      headerName: 'Trainer',
+      field: 'trainerName',
+      filter: 'agTextColumnFilter',
+      width: 70, // Set to a small but visible width in pixels
+      maxWidth: 70, // Enforce a maximum width
+      minWidth: 50, // Optionally enforce a minimum width
+      headerTooltip: 'Session Trainer',
+    },
+    {
       headerName: 'Location',
       field: 'locationName',
       filter: 'agTextColumnFilter',

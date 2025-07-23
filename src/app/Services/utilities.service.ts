@@ -253,7 +253,15 @@ export class UtilitiesService {
    * @returns array of string
    */
   public roles(): string[] {
-    return ['admin', 'biller', 'guest', 'member', 'manager', 'staff'];
+    return [
+      'admin',
+      'biller',
+      'guest',
+      'member',
+      'manager',
+      'staff',
+      'director',
+    ];
   }
 
   /**

@@ -5,6 +5,7 @@ export enum ROLES {
   MANAGER = 'manager',
   MEMBER = 'member',
   STAFF = 'staff',
+  DIRECTOR = 'director',
 }
 
 export const Constant = {
