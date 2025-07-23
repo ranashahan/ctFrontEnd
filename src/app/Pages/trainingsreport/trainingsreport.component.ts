@@ -42,6 +42,9 @@ import {
 } from 'ng-apexcharts';
 import { DatePipe } from '@angular/common';
 import { apiGenericModel } from '../../Models/Generic';
+import { UsersService } from '../../Services/users.service';
+import { AuthService } from '../../Services/auth.service';
+import { ROLES } from '../../Models/Constants';
 
 @Component({
   selector: 'app-trainingsreport',
@@ -62,6 +65,7 @@ export class TrainingsreportComponent implements OnInit, OnDestroy {
   private trainerService = inject(TrainerService);
   private subscriptionList: Subscription[] = [];
   private excelReport = inject(ExcelreportService);
+  private authService = inject(AuthService);
   @ViewChild('chart') chart!: ChartComponent;
 
   public trendTrainings: {
@@ -101,6 +105,7 @@ export class TrainingsreportComponent implements OnInit, OnDestroy {
   formFinance: FormGroup;
   formFinanceGrid: FormGroup;
   apiCallInProgress = signal<boolean>(false);
+  reportsEnabled = signal<boolean>(false);
   selectedClient = signal<number | null>(null);
   private colors = [
     '#008FFB', // Blue
@@ -335,6 +340,7 @@ export class TrainingsreportComponent implements OnInit, OnDestroy {
       cheque: [null],
     });
   }
+
   /**
    * This method will invoke all the methods while rendering the page
    */
@@ -342,6 +348,9 @@ export class TrainingsreportComponent implements OnInit, OnDestroy {
     this.trainingService.trainingReportCount.reload();
     this.utils.setTitle('Training Reports');
     this.getReportCount();
+    if (this.authService.getUserRole() === ROLES.ADMIN || ROLES.DIRECTOR) {
+      this.reportsEnabled.set(true);
+    }
   }
 
   /**

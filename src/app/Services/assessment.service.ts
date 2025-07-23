@@ -25,6 +25,8 @@ import {
   SuperCategory,
 } from '../Models/Assessment';
 import { TitleService } from './title.service';
+import { TrainerService } from './trainer.service';
+import { apiTrainerModel } from '../Models/Trainer';
 
 @Injectable({
   providedIn: 'root',
@@ -39,12 +41,14 @@ export class AssessmentService {
   private resultService = inject(ResultService);
   private stageService = inject(StageService);
   private titleService = inject(TitleService);
+  private trainerService = inject(TrainerService);
 
   private contractors = this.cService.contractors;
   private locations = this.locationService.locations;
   private results = this.resultService.results;
   private stages = this.stageService.stages;
   private titles = this.titleService.titles;
+  private trainer = this.trainerService.trainers;
 
   /**
    * Assessment API call
@@ -303,6 +307,7 @@ export class AssessmentService {
       const resultsValue = this.results();
       const stagesValue = this.stages();
       const titlesValue = this.titles();
+      const trainersValue = this.trainer();
 
       const contractorMap = contractorsValue.reduce(
         (map, contractor: apiContractorModel) => {
@@ -335,6 +340,14 @@ export class AssessmentService {
         return map;
       }, {} as Record<number, string>);
 
+      const trainerMap = trainersValue.reduce(
+        (map, trainer: apiTrainerModel) => {
+          map[trainer.id] = trainer.initials;
+          return map;
+        },
+        {} as Record<number, string>
+      );
+
       return sessions.map((session) => ({
         ...session,
         contractorName: contractorMap[session.contractorid] || '',
@@ -342,6 +355,7 @@ export class AssessmentService {
         resultName: resultMap[session.resultid] || '',
         stageName: stageMap[session.stageid] || '',
         titleName: titleMap[session.titleid] || '',
+        trainerName: trainerMap[session.trainerid] || '',
       }));
     });
   }

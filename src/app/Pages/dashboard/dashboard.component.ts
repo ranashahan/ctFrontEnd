@@ -113,6 +113,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       () =>
         this.authService.getUserRole() === ROLES.ADMIN ||
         this.authService.getUserRole() === ROLES.MANAGER ||
+        this.authService.getUserRole() === ROLES.DIRECTOR ||
         this.authService.getUserRole() === ROLES.BILLER
           ? this.trainingService.getAllTraining() // Returns an Observable
           : of([]) // Also an Observable
