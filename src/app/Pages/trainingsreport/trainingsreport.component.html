@@ -58,8 +58,7 @@
     </div>
   </div>
   <hr />
-
-  @if (reportsEnabled()) {
+  @if (financeEnabled()) {
   <div class="row">
     <div class="col-12">
       <div class="card mb-4">
@@ -485,7 +484,6 @@
       </div>
     </div>
   </div>
-  }
   <div class="table-responsive">
     <table class="table table-hover table-bordered fs-7" id="training-table">
       <thead class="table-primary">
@@ -582,4 +580,5 @@
     </table>
   </div>
   <hr />
+  }
 </div>

@@ -26,6 +26,8 @@ import { TrainerService } from '../../Services/trainer.service';
 import { TrainingService } from '../../Services/training.service';
 import { CourseService } from '../../Services/course.service';
 import { CategoryService } from '../../Services/category.service';
+import { AuthService } from '../../Services/auth.service';
+import { ROLES } from '../../Models/Constants';
 
 @Component({
   selector: 'app-addtraining',
@@ -49,6 +51,7 @@ export class AddtrainingComponent implements OnInit, OnDestroy {
   private courseService = inject(CourseService);
   private categoryService = inject(CategoryService);
   private utils = inject(UtilitiesService);
+  private authService = inject(AuthService);
 
   categories = this.categoryService.categories;
   courses = this.courseService.courses;
@@ -60,6 +63,7 @@ export class AddtrainingComponent implements OnInit, OnDestroy {
   titles = this.titleService.titles;
   locations = this.locationService.locations;
   previousTax = signal<number>(0);
+  financeEnabled = signal<boolean>(false);
 
   selectedClient = signal<number | null>(null);
   selectedContractor = signal<number | null>(null);
@@ -156,6 +160,14 @@ export class AddtrainingComponent implements OnInit, OnDestroy {
     this.statuses.set(this.utils.statuses());
     this.sources.set(this.utils.sources());
     setTimeout(() => this.generateKey(), 200);
+    const role = this.authService.getUserRole();
+    if (
+      role === ROLES.ADMIN ||
+      role === ROLES.DIRECTOR ||
+      role === ROLES.BILLER
+    ) {
+      this.financeEnabled.set(true);
+    }
   }
 
   /**

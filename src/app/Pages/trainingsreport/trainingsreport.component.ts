@@ -105,7 +105,7 @@ export class TrainingsreportComponent implements OnInit, OnDestroy {
   formFinance: FormGroup;
   formFinanceGrid: FormGroup;
   apiCallInProgress = signal<boolean>(false);
-  reportsEnabled = signal<boolean>(false);
+  financeEnabled = signal<boolean>(false);
   selectedClient = signal<number | null>(null);
   private colors = [
     '#008FFB', // Blue
@@ -348,8 +348,9 @@ export class TrainingsreportComponent implements OnInit, OnDestroy {
     this.trainingService.trainingReportCount.reload();
     this.utils.setTitle('Training Reports');
     this.getReportCount();
-    if (this.authService.getUserRole() === ROLES.ADMIN || ROLES.DIRECTOR) {
-      this.reportsEnabled.set(true);
+    const role = this.authService.getUserRole();
+    if (role === ROLES.ADMIN || role === ROLES.DIRECTOR) {
+      this.financeEnabled.set(true);
     }
   }
 
