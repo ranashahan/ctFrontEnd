@@ -116,7 +116,7 @@ export class ReportService {
           text4: string,
           text5: string,
           text6: string;
-        console.log(session.titleid);
+
         switch (session.titleid) {
           case 9006:
             text1 = 'Basic Fire Fighting Course';

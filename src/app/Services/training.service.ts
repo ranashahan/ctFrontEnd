@@ -208,11 +208,8 @@ export class TrainingService {
   public getTrainingBySessionID(
     sessionid: number
   ): Observable<apiTrainingModel[]> {
-    let params = new HttpParams();
-    params = params.set('sessionid', sessionid);
-    return this.http.get<apiTrainingModel[]>(this.apiURL + 'getst', {
-      params,
-    });
+    let params = new HttpParams().set('sessionid', sessionid);
+    return this.http.get<apiTrainingModel[]>(this.apiURL + 'getst', { params });
   }
 
   /**
