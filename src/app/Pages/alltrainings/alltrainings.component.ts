@@ -24,7 +24,12 @@ import { AuthService } from '../../Services/auth.service';
 import { AgGridAngular } from 'ag-grid-angular'; // Angular Data Grid Component
 import { AgGridModule } from 'ag-grid-angular';
 
-import { ColDef, DomLayoutType, GridApi } from 'ag-grid-community'; // Column Definition Type Interface
+import {
+  ColDef,
+  DomLayoutType,
+  GridApi,
+  ValueFormatterParams,
+} from 'ag-grid-community'; // Column Definition Type Interface
 import 'ag-grid-community/styles/ag-grid.css';
 /* Quartz Theme Specific CSS */
 import 'ag-grid-community/styles/ag-theme-quartz.css';
@@ -35,6 +40,7 @@ import { TActionCellRendererComponent } from '../../Components/taction-cell-rend
 import { DeleteConfirmationComponent } from '../../Widgets/delete-confirmation/delete-confirmation.component';
 import { CourseService } from '../../Services/course.service';
 import { CategoryService } from '../../Services/category.service';
+import { ROLES } from '../../Models/Constants';
 
 @Component({
   selector: 'app-alltrainings',
@@ -84,6 +90,7 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
   sources = signal<string[]>([]);
   selectedClient = signal<number | null>(null);
   isLoading = signal<boolean>(true);
+  financeEnabled = signal<boolean>(false);
 
   filteredContractors = computed(() => {
     const clientid = this.selectedClient();
@@ -136,6 +143,10 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
     this.sources.set(this.utils.sources());
     this.updatetheme();
     this.getAllTrainings();
+    const role = this.authService.getUserRole();
+    if (role === ROLES.ADMIN || role === ROLES.DIRECTOR) {
+      this.financeEnabled.set(true);
+    }
   }
 
   /**
@@ -226,107 +237,237 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
   /**
    * This is table columns definations
    */
+
   colDefs: ColDef[] = [
-    {
-      headerName: '#',
-      valueGetter: 'node.rowIndex + 1', // Add 1 to make it 1-based index
-      cellClass: 'serial-number-cell',
-      width: 50, // Set to a small but visible width in pixels
-      maxWidth: 50, // Enforce a maximum width
-      minWidth: 30, // Optionally enforce a minimum width
-      headerTooltip: 'Sr. #',
-    },
-    {
-      headerName: 'Training ID',
-      field: 'name',
-      filter: 'agTextColumnFilter',
-      cellRenderer: 'tlinkCellRendererComponent',
-      flex: 1.5,
-      headerClass: 'bold-header',
-      headerTooltip: 'Training ID',
-    },
-    {
-      headerName: 'Plan Date',
-      field: 'plandate',
-      valueGetter: (params) =>
-        params.data.plandate ? new Date(params.data.plandate) : null,
-      valueFormatter: (params) =>
-        this.datePipe.transform(params.value, 'MM-dd-yyyy') || '',
-      filter: 'agDateColumnFilter',
-      headerTooltip: 'Plan Date',
-    },
-    {
-      headerName: 'End Date',
-      field: 'enddate',
-      valueGetter: (params) =>
-        params.data.enddate ? new Date(params.data.enddate) : null,
-      valueFormatter: (params) =>
-        this.datePipe.transform(params.value, 'MM-dd-yyyy') || '',
-      filter: 'agDateColumnFilter',
-      headerTooltip: 'End Date',
-    },
-    {
-      headerName: 'Trainer',
-      field: 'trainerName',
-      filter: 'agTextColumnFilter',
-      headerTooltip: 'Trainers',
-    },
-    {
-      headerName: 'Course Title',
-      field: 'courseName',
-      filter: 'agTextColumnFilter',
-      flex: 1.5,
-      headerTooltip: 'Courses',
-    },
-    {
-      headerName: 'Sponsor',
-      field: 'clientName',
-      filter: 'agTextColumnFilter',
-      headerTooltip: 'Clients',
-    },
-    {
-      headerName: 'Contractor',
-      field: 'contractorName',
-      filter: 'agTextColumnFilter',
-      headerTooltip: 'Contractors',
-    },
-    {
-      headerName: 'Total',
-      field: 'total',
-      filter: 'agNumberColumnFilter',
-      valueFormatter: (params) => {
-        // Check for null or undefined values
-        return params.value != null ? `Rs. ${params.value}` : ''; // Show empty string if null
-      },
-      headerTooltip: 'Total Amount',
-    },
-    {
-      headerName: 'Received',
-      field: 'amountreceived',
-      filter: 'agNumberColumnFilter',
-      valueFormatter: (params) => {
-        // Check for null or undefined values
-        return params.value != null ? `Rs. ${params.value}` : ''; // Show empty string if null
-      },
-      headerTooltip: 'Received Amount',
-    },
-    {
-      headerName: 'Status',
-      field: 'status',
-      filter: 'agTextColumnFilter',
-      headerTooltip: 'Job Status',
-    },
-    {
-      headerName: 'Actions',
-      field: 'actions',
-      cellRenderer: 'actionCellRenderer',
-      cellRendererParams: {
-        onDelete: this.deleteTraining.bind(this),
-      },
-      editable: false,
-      sortable: false,
-    },
+    // {
+    //   headerName: '#',
+    //   valueGetter: 'node.rowIndex + 1', // Add 1 to make it 1-based index
+    //   cellClass: 'serial-number-cell',
+    //   width: 50, // Set to a small but visible width in pixels
+    //   maxWidth: 50, // Enforce a maximum width
+    //   minWidth: 30, // Optionally enforce a minimum width
+    //   headerTooltip: 'Sr. #',
+    // },
+    // {
+    //   headerName: 'Training ID',
+    //   field: 'name',
+    //   filter: 'agTextColumnFilter',
+    //   cellRenderer: 'tlinkCellRendererComponent',
+    //   flex: 1.5,
+    //   headerClass: 'bold-header',
+    //   headerTooltip: 'Training ID',
+    // },
+    // {
+    //   headerName: 'Plan Date',
+    //   field: 'plandate',
+    //   valueGetter: (params) =>
+    //     params.data.plandate ? new Date(params.data.plandate) : null,
+    //   valueFormatter: (params) =>
+    //     this.datePipe.transform(params.value, 'MM-dd-yyyy') || '',
+    //   filter: 'agDateColumnFilter',
+    //   headerTooltip: 'Plan Date',
+    // },
+    // {
+    //   headerName: 'End Date',
+    //   field: 'enddate',
+    //   valueGetter: (params) =>
+    //     params.data.enddate ? new Date(params.data.enddate) : null,
+    //   valueFormatter: (params) =>
+    //     this.datePipe.transform(params.value, 'MM-dd-yyyy') || '',
+    //   filter: 'agDateColumnFilter',
+    //   headerTooltip: 'End Date',
+    // },
+    // {
+    //   headerName: 'Trainer',
+    //   field: 'trainerName',
+    //   filter: 'agTextColumnFilter',
+    //   headerTooltip: 'Trainers',
+    // },
+    // {
+    //   headerName: 'Course Title',
+    //   field: 'courseName',
+    //   filter: 'agTextColumnFilter',
+    //   flex: 1.5,
+    //   headerTooltip: 'Courses',
+    // },
+    // {
+    //   headerName: 'Sponsor',
+    //   field: 'clientName',
+    //   filter: 'agTextColumnFilter',
+    //   headerTooltip: 'Clients',
+    // },
+    // {
+    //   headerName: 'Contractor',
+    //   field: 'contractorName',
+    //   filter: 'agTextColumnFilter',
+    //   headerTooltip: 'Contractors',
+    // },
+    // // {
+    // //   headerName: 'Total',
+    // //   field: 'total',
+    // //   filter: 'agNumberColumnFilter',
+    // //   valueFormatter: (params) => {
+    // //     // Check for null or undefined values
+    // //     return params.value != null ? `Rs. ${params.value}` : ''; // Show empty string if null
+    // //   },
+    // //   headerTooltip: 'Total Amount',
+    // // },
+    // // {
+    // //   headerName: 'Received',
+    // //   field: 'amountreceived',
+    // //   filter: 'agNumberColumnFilter',
+    // //   valueFormatter: (params) => {
+    // //     // Check for null or undefined values
+    // //     return params.value != null ? `Rs. ${params.value}` : ''; // Show empty string if null
+    // //   },
+    // //   headerTooltip: 'Received Amount',
+    // // },
+    // {
+    //   headerName: 'Status',
+    //   field: 'status',
+    //   filter: 'agTextColumnFilter',
+    //   headerTooltip: 'Job Status',
+    // },
+    // {
+    //   headerName: 'Actions',
+    //   field: 'actions',
+    //   cellRenderer: 'actionCellRenderer',
+    //   cellRendererParams: {
+    //     onDelete: this.deleteTraining.bind(this),
+    //   },
+    //   editable: false,
+    //   sortable: false,
+    // },
   ];
+
+  loadColumnDefs() {
+    this.colDefs = [
+      {
+        headerName: '#',
+        valueGetter: 'node.rowIndex + 1', // Add 1 to make it 1-based index
+        cellClass: 'serial-number-cell',
+        width: 50, // Set to a small but visible width in pixels
+        maxWidth: 50, // Enforce a maximum width
+        minWidth: 30, // Optionally enforce a minimum width
+        headerTooltip: 'Sr. #',
+      },
+      {
+        headerName: 'Training ID',
+        field: 'name',
+        filter: 'agTextColumnFilter',
+        cellRenderer: 'tlinkCellRendererComponent',
+        flex: 1.5,
+        headerClass: 'bold-header',
+        headerTooltip: 'Training ID',
+      },
+      {
+        headerName: 'Plan Date',
+        field: 'plandate',
+        valueGetter: (params) =>
+          params.data.plandate ? new Date(params.data.plandate) : null,
+        valueFormatter: (params) =>
+          this.datePipe.transform(params.value, 'MM-dd-yyyy') || '',
+        filter: 'agDateColumnFilter',
+        headerTooltip: 'Plan Date',
+      },
+      {
+        headerName: 'End Date',
+        field: 'enddate',
+        valueGetter: (params) =>
+          params.data.enddate ? new Date(params.data.enddate) : null,
+        valueFormatter: (params) =>
+          this.datePipe.transform(params.value, 'MM-dd-yyyy') || '',
+        filter: 'agDateColumnFilter',
+        headerTooltip: 'End Date',
+      },
+      {
+        headerName: 'Trainer',
+        field: 'trainerName',
+        filter: 'agTextColumnFilter',
+        headerTooltip: 'Trainers',
+      },
+      {
+        headerName: 'Course Title',
+        field: 'courseName',
+        filter: 'agTextColumnFilter',
+        flex: 1.5,
+        headerTooltip: 'Courses',
+      },
+      {
+        headerName: 'Sponsor',
+        field: 'clientName',
+        filter: 'agTextColumnFilter',
+        headerTooltip: 'Clients',
+      },
+      {
+        headerName: 'Contractor',
+        field: 'contractorName',
+        filter: 'agTextColumnFilter',
+        headerTooltip: 'Contractors',
+      },
+      // {
+      //   headerName: 'Total',
+      //   field: 'total',
+      //   filter: 'agNumberColumnFilter',
+      //   valueFormatter: (params) => {
+      //     // Check for null or undefined values
+      //     return params.value != null ? `Rs. ${params.value}` : ''; // Show empty string if null
+      //   },
+      //   headerTooltip: 'Total Amount',
+      // },
+      // {
+      //   headerName: 'Received',
+      //   field: 'amountreceived',
+      //   filter: 'agNumberColumnFilter',
+      //   valueFormatter: (params) => {
+      //     // Check for null or undefined values
+      //     return params.value != null ? `Rs. ${params.value}` : ''; // Show empty string if null
+      //   },
+      //   headerTooltip: 'Received Amount',
+      // },
+      {
+        headerName: 'Status',
+        field: 'status',
+        filter: 'agTextColumnFilter',
+        headerTooltip: 'Job Status',
+      },
+      {
+        headerName: 'Actions',
+        field: 'actions',
+        cellRenderer: 'actionCellRenderer',
+        cellRendererParams: {
+          onDelete: this.deleteTraining.bind(this),
+        },
+        editable: false,
+        sortable: false,
+      },
+    ];
+
+    const statusIndex = this.colDefs.findIndex((col) => col.field === 'status');
+    if (this.financeEnabled()) {
+      const extraColumns: ColDef[] = [
+        {
+          headerName: 'Total',
+          field: 'total',
+          filter: 'agNumberColumnFilter',
+          valueFormatter: (params: ValueFormatterParams) =>
+            params.value != null ? `Rs. ${params.value}` : '',
+          headerTooltip: 'Total Amount',
+        },
+        {
+          headerName: 'Received',
+          field: 'amountreceived',
+          filter: 'agNumberColumnFilter',
+          valueFormatter: (params: ValueFormatterParams) =>
+            params.value != null ? `Rs. ${params.value}` : '',
+          headerTooltip: 'Received Amount',
+        },
+      ];
+
+      // Insert before status
+      this.colDefs.splice(statusIndex, 0, ...extraColumns);
+    }
+  }
 
   /**
    * Default column defination
@@ -372,6 +513,7 @@ export class AlltrainingsComponent implements OnInit, OnDestroy {
    */
   onGridReady(params: any) {
     this.gridApi = params.api;
+    this.loadColumnDefs();
   }
 
   /**

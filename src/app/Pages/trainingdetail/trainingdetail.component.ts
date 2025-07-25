@@ -36,6 +36,8 @@ import { DeleteConfirmationComponent } from '../../Widgets/delete-confirmation/d
 import { CourseService } from '../../Services/course.service';
 import { CategoryService } from '../../Services/category.service';
 import { DltypeService } from '../../Services/dltype.service';
+import { AuthService } from '../../Services/auth.service';
+import { ROLES } from '../../Models/Constants';
 
 @Component({
   selector: 'app-trainingdetail',
@@ -80,6 +82,7 @@ export class TrainingdetailComponent implements OnInit, OnDestroy {
   private assessmentService = inject(AssessmentService);
   private courseService = inject(CourseService);
   private categoryService = inject(CategoryService);
+  private authService = inject(AuthService);
 
   categories = this.categoryService.categories;
   courses = this.courseService.courses;
@@ -96,6 +99,7 @@ export class TrainingdetailComponent implements OnInit, OnDestroy {
   previousTax = signal<number>(0);
   sessions = signal<apiVSessionModel[]>([]);
   verificationStatus = signal<any[]>([]);
+  financeEnabled = signal<boolean>(false);
 
   selectedClient = signal<number | null>(null);
   selectedContractor = signal<number | null>(null);
@@ -204,6 +208,14 @@ export class TrainingdetailComponent implements OnInit, OnDestroy {
     this.statuses.set(this.utils.statuses());
     this.sources.set(this.utils.sources());
     this.verificationStatus.set(this.utils.verificationStatus());
+    const role = this.authService.getUserRole();
+    if (
+      role === ROLES.ADMIN ||
+      role === ROLES.DIRECTOR ||
+      role === ROLES.BILLER
+    ) {
+      this.financeEnabled.set(true);
+    }
   }
 
   /**
