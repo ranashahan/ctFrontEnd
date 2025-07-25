@@ -20,7 +20,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { MasterCategory, SuperCategory } from '../../Models/Assessment';
+import { MasterCategory } from '../../Models/Assessment';
 import { BloodgroupService } from '../../Services/bloodgroup.service';
 import { DltypeService } from '../../Services/dltype.service';
 import { ContractorService } from '../../Services/contractor.service';
@@ -40,7 +40,6 @@ import { apiSessionModel, DATA } from '../../Models/Assessment';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DriverService } from '../../Services/driver.service';
 import { TrainingService } from '../../Services/training.service';
-import { apiTrainerModel } from '../../Models/Trainer';
 import { apiTrainingModel } from '../../Models/Training';
 
 @Component({
@@ -108,11 +107,7 @@ export class AssessmentdetailComponent implements OnInit, OnDestroy {
   subscriptionList: Subscription[] = [];
   trainings = signal<apiTrainingModel[]>([]);
 
-  constructor(
-    private fb: FormBuilder,
-    private cdRef: ChangeDetectorRef,
-    private route: ActivatedRoute
-  ) {
+  constructor(private fb: FormBuilder, private route: ActivatedRoute) {
     this.sessionID = parseInt(this.route.snapshot.paramMap.get('id') ?? '0');
 
     this.assessmentForm = this.fb.group({
