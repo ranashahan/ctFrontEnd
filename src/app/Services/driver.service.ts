@@ -1,6 +1,6 @@
 import { computed, inject, Injectable, Signal } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, httpResource } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { Observable } from 'rxjs';
 import { apiDriverModel } from '../Models/Driver';
@@ -331,5 +331,25 @@ export class DriverService {
       comment,
       userid: this.authService.getUserID(),
     });
+  }
+
+  /**
+   * This method will fetch count driver
+   */
+  countDriver = httpResource<number>(() => {
+    return `${this.apiURL}getCount`;
+  });
+
+  /**
+   * This method will generate key for auto increasement
+   * @returns string generetedKey
+   */
+  async generateKey(): Promise<string> {
+    await this.countDriver.reload(); // Ensures the latest value is fetched
+    await new Promise((resolve) => setTimeout(resolve, 100)); // S
+    const count = this.countDriver.value(); // Get the latest value
+    if (count === undefined) throw new Error('Count not loaded'); // Handle potential undefined values
+    const key = `CNTD-${this.countDriver.value()}`;
+    return key; // Return k
   }
 }
