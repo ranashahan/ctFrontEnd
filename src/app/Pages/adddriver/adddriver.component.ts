@@ -145,6 +145,19 @@ export class AdddriverComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.licenseVerification.set(this.utils.verificationStatus());
     this.gender.set(this.utils.gender());
+    setTimeout(() => this.generateKey(), 200);
+  }
+
+  /**
+   * This method will set generated key
+   */
+  async generateKey() {
+    try {
+      const generatedKey = await this.dService.generateKey();
+      this.formDriver.get('permitnumber')?.setValue(generatedKey);
+    } catch (error) {
+      console.error('Error generating key:', error);
+    }
   }
 
   /**
@@ -218,6 +231,7 @@ export class AdddriverComponent implements OnInit, OnDestroy {
       licenseverified: 1,
     });
     this.formDriver.get('licenseverified')?.updateValueAndValidity();
+    setTimeout(() => this.generateKey(), 200);
   }
   /**
    * This method will destory all the subscriptions
